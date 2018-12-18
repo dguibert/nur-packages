@@ -8,7 +8,7 @@
 
 { pkgs ? import <nixpkgs> {} }:
 
-{
+rec {
   # The `lib`, `modules`, and `overlay` names are special
   lib = import ./lib { inherit pkgs; }; # functions
   modules = import ./modules; # NixOS modules
@@ -17,5 +17,35 @@
   example-package = pkgs.callPackage ./pkgs/example-package { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
+  dyninst = pkgs.callPackage ./pkgs/dyninst { };
+  palabos = pkgs.callPackage ./pkgs/palabos { };
+  otf2 = pkgs.callPackage ./pkgs/otf2 { };
+
+  score-p = pkgs.callPackage ./pkgs/score-p {
+    inherit otf2;
+    inherit cubew;
+    inherit cubelib;
+  };
+  caliper = pkgs.callPackage ./pkgs/caliper {
+    inherit dyninst;
+  };
+  cubew = pkgs.callPackage ./pkgs/cubew { };
+  cubelib = pkgs.callPackage ./pkgs/cubelib { };
+  cubegui = pkgs.callPackage ./pkgs/cubegui { inherit cubelib; };
+
+  lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
+  lulesh = pkgs.callPackage ./pkgs/lulesh { };
+
+  must = pkgs.callPackage ./pkgs/must { inherit dyninst; };
+  muster = pkgs.callPackage ./pkgs/muster { };
+  nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
+  ravel = pkgs.callPackage ./pkgs/ravel {
+    inherit otf2;
+    inherit muster;
+  };
+
+  # miniapps
+  miniapp-ping-pong = pkgs.callPackage ./pkgs/miniapp-ping-pong { inherit caliper; };
+  stream = pkgs.callPackage ./pkgs/stream { };
 }
 
