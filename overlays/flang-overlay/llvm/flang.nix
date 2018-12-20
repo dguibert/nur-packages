@@ -1,7 +1,13 @@
-{ stdenv, fetchFromGitHub, cmake, clang, openmp, llvm, version, python, flang_src, libpgmath }:
+{ stdenv, fetchFromGitHub, cmake, clang, openmp, llvm, version, python, flang_src, libpgmath 
+, wrapCC
+}:
 
 let
-  gcc = if stdenv.cc.isGNU then stdenv.cc.cc else stdenv.cc.cc.gcc;
+  gcc_ = if stdenv.cc.isGNU then stdenv.cc.cc else stdenv.cc.cc.gcc;
+  gcc = wrapCC (gcc_.override {
+    name = "gcc";
+    langFortran = true;
+  });
 
   src = flang_src;
 
@@ -18,7 +24,6 @@ let
     cmakeFlags = [
       "-DTARGET_ARCHITECTURE=x86_64" # uname -i
       "-DTARGET_OS=Linux"            # uname -s
-      "-DCMAKE_CXX_FLAGS=-std=c++11"
       "-DCMAKE_CXX_COMPILER=clang++"
       "-DCMAKE_C_COMPILER=clang"
       "-DCMAKE_Fortran_COMPILER=flang"
