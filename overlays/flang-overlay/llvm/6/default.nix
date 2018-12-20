@@ -66,7 +66,7 @@ let
           stdenv = llvmPackages_6.stdenv; 
         };
         flang-unwrapped = callPackage ../flang.nix { 
-          #stdenv = llvmPackages_6.stdenv;
+          stdenv = llvmPackages_6.stdenv;
           inherit (libraries) openmp;
         };
         flang = wrapCCWith rec {
