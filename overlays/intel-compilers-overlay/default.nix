@@ -69,7 +69,7 @@ self: super:
     intel-compilers_2018 = self.intel-compilers_2018_3_222;
 
     intel-compilers_2019_0_117 = self.intel-compilers { version="2019.0.117"; sha256="1qhicj98x60csr4a2hjb3krvw74iz3i3dclcsdc4yp1y6m773fcl"; };
-    intel-compilers_2019_1_144 = self.intel-compilers { version="2019.1.144"; sha256="1ppwinn81g859qs0dlyvvi4arrpp6fsx73s2gqsqjwp5gica470r"; };
+    intel-compilers_2019_1_144 = self.intel-compilers { version="2019.1.144"; sha256="1rhcfbig0qvkh622cvf8xjk758i3jh2vbr5ajdgms7jnwq99mii8"; };
     intel-compilers_2019 = self.intel-compilers_2019_1_144;
 
     stdenvIntel = self.intel-compilers_2019.stdenv;
