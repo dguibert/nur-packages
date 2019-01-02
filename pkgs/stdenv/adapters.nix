@@ -7,7 +7,7 @@ pkgs:
 rec {
   # https://stackoverflow.com/questions/42136197/how-to-override-compile-flags-for-a-single-package-in-nixos
   # https://github.com/NixOS/nixpkgs/issues/305
-  extraNativeCflagsFun = pkgs: import (pkgs.runCommand "cflags" {
+  extraNativeCflags = import (pkgs.runCommand "cflags" {
      preferLocalBuild = true;
      #__noChroot = true; # '__noChroot' set, but that's not allowed when 'sandbox' is 'true'
      #hashChangingValue = builtins.readFile /some/system-dependent-file-that-doesn't-have-size-0 or builtins.currentTime;
@@ -19,8 +19,7 @@ rec {
    echo "builtins.readFile ./flags" > $out/default.nix
   '');
 
-  customFlags = {...}@flags_: customFlagsFun pkgs flags_;
-  customFlagsFun = pkgs:
+  customFlags =
     {    flags ? "" # all flags (cflags, fflags, ldflags)
       , cflags ? ""
       , fflags ? ""
@@ -35,6 +34,6 @@ rec {
   });
 
   # newStdenv = stdenv: stdenv // (mkDerivation = args: stdenv.mkDerivation (args // {}));
-  optimizePackage = customFlagsFun pkgs { cflags="${extraNativeCflagsFun pkgs}";};
-  withOpenMP = customFlagsFun pkgs { flags="-fopenmp"; };
+  optimizePackage = customFlags { cflags="${extraNativeCflags}";};
+  withOpenMP = customFlags      { flags="-fopenmp"; };
 }
