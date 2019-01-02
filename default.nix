@@ -16,7 +16,7 @@ rec {
   envs = import ./envs { inherit pkgs; };
 
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
-  inherit (adapters) optimizePackage withOpenMP;
+  inherit (adapters) optimizePackage withOpenMP optimizedStdEnv;
 
   example-package = pkgs.callPackage ./pkgs/example-package { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
