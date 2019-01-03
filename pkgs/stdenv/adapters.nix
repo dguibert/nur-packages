@@ -29,6 +29,7 @@ rec {
     preConfigure = ''
       export CFLAGS="$CFLAGS ${flags} ${cflags}"
       export FFLAGS="$FFLAGS ${flags} ${fflags}"
+      export FCFLAGS="$FCFLAGS ${flags} ${fflags}"
       export LDFLAGS="$LDFLAGS ${flags} ${ldflags}"
     '' + "${attrs.preConfigure or ""}";
   });
@@ -43,6 +44,7 @@ rec {
       preConfigure = ''
         export CFLAGS="$CFLAGS ${flags} ${cflags}"
         export FFLAGS="$FFLAGS ${flags} ${fflags}"
+        export FCFLAGS="$FCFLAGS ${flags} ${fflags}"
         export LDFLAGS="$LDFLAGS ${flags} ${ldflags}"
       '' + "${args.preConfigure or ""}";
     });
