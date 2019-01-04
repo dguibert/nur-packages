@@ -51,5 +51,11 @@ rec {
   # miniapps
   miniapp-ping-pong = pkgs.callPackage ./pkgs/miniapp-ping-pong { inherit caliper; };
   stream = pkgs.callPackage ./pkgs/stream { };
+
+  # fix
+  gitAndTools = pkgs.gitAndTools // {
+    git-annex = pkgs.haskell.lib.appendConfigureFlag pkgs.gitAndTools.git-annex "--ghc-options=-XNoMonadFailDesugaring";
+  };
+
 }
 
