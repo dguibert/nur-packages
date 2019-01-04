@@ -189,7 +189,7 @@ stdenv.mkDerivation {
         export named_fc=${targetPrefix}gfortran
       fi
       if [ -e $ccPath/${targetPrefix}ifort ]; then
-        wrap flang ${./cc-wrapper.sh} $ccPath/ifort
+        wrap ifort ${./cc-wrapper.sh} $ccPath/ifort
         export named_fc=${targetPrefix}ifort
       fi
     ''
