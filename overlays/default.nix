@@ -1,4 +1,5 @@
 {
+  aocc = import ./aocc-overlay;
   flang = import ./flang-overlay;
   qemu-user = import ./qemu-user.nix;
   intel-compilers = import ./intel-compilers-overlay;
