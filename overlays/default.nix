@@ -1,4 +1,6 @@
 {
+  default = import ../overlay.nix;
+
   aocc = import ./aocc-overlay;
   flang = import ./flang-overlay;
   qemu-user = import ./qemu-user.nix;
