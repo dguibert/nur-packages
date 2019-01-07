@@ -1,4 +1,5 @@
 {
+  default = import ../overlay.nix;
   flang = import ./flang-overlay;
   qemu-user = import ./qemu-user.nix;
   intel-compilers = import ./intel-compilers-overlay;
