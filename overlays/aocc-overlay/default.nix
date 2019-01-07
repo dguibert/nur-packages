@@ -21,15 +21,22 @@ let
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-in
-{
-  aoccPackages_130 = {
-    unwrapped = super.callPackage ./aocc {};
+  aoccPackages = { version, sha256 }: rec {
+    unwrapped = super.callPackage ./aocc {
+      inherit version sha256;
+    };
     aocc = wrapCCWith rec {
-      cc = self.aoccPackages_130.unwrapped;
+      cc = unwrapped;
       extraPackages = [
       ];
       #extraBuildCommands = mkExtraBuildCommands cc;
     };
+  };
+
+in
+{
+  aoccPackages_130 = aoccPackages {
+    version="1.3.0";
+    sha256 ="0zi1j23h9gmw62d883m3yfa9hjkpznky5jlc4w2d34mmj4njwmms";
   };
 }

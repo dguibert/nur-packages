@@ -3,14 +3,16 @@
 , zlib
 , ncurses
 , libxml2
+, version
+, sha256
 }:
 
 stdenv.mkDerivation {
-  name = "aocc-1.3.0";
+  name = "aocc-${version}";
   src = requireFile {
     url = "https://developer.amd.com/amd-aocc/";
-    name = "AOCC-1.3.0-Compiler.tar.xz";
-    sha256 = "0zi1j23h9gmw62d883m3yfa9hjkpznky5jlc4w2d34mmj4njwmms";
+    name = "AOCC-${version}-Compiler.tar.xz";
+    inherit sha256;
   };
   dontStrip = true;
 
