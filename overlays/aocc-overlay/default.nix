@@ -35,6 +35,10 @@ let
 
 in
 {
+  aoccPackages_121 = aoccPackages {
+    version="1.2.1";
+    sha256 ="008w6algs72d3klkdpaj95nz6ax1y2dyp4zflv4xpz3ybbc7whar";
+  };
   aoccPackages_130 = aoccPackages {
     version="1.3.0";
     sha256 ="0zi1j23h9gmw62d883m3yfa9hjkpznky5jlc4w2d34mmj4njwmms";
