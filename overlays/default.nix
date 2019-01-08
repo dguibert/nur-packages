@@ -1,5 +1,6 @@
 {
   default = import ../overlay.nix;
+  local = self: super: if (builtins.pathExists ./local.nix) then (import (./local.nix)) self super else {};
 
   flang = import ./flang-overlay;
   qemu-user = import ./qemu-user.nix;
