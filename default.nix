@@ -36,6 +36,8 @@ rec {
   cubelib = pkgs.callPackage ./pkgs/cubelib { };
   cubegui = pkgs.callPackage ./pkgs/cubegui { inherit cubelib; };
 
+  jobs = pkgs.callPackage ./pkgs/jobs { inherit stream; };
+
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };
 
