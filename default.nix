@@ -14,6 +14,8 @@ rec {
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
+  envs = import ./envs { inherit pkgs overlays lib; };
+
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
   inherit (adapters) optimizePackage withOpenMP optimizedStdEnv;
 
@@ -38,16 +40,23 @@ rec {
 
   jobs = pkgs.callPackage ./pkgs/jobs { inherit stream; };
 
+  hpcg = pkgs.callPackage ./pkgs/hpcg { };
+  hpl = pkgs.callPackage ./pkgs/hpl { };
+
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };
 
   must = pkgs.callPackage ./pkgs/must { inherit dyninst; };
   muster = pkgs.callPackage ./pkgs/muster { };
+  nemo_36 = pkgs.callPackage ./pkgs/nemo/3.6.nix { xios = xios_10; };
+  nemo = pkgs.callPackage ./pkgs/nemo { };
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
   ravel = pkgs.callPackage ./pkgs/ravel {
     inherit otf2;
     inherit muster;
   };
+  xios_10 = pkgs.callPackage ./pkgs/xios/1.0.nix { };
+  xios = pkgs.callPackage ./pkgs/xios { };
 
   # miniapps
   miniapp-ping-pong = pkgs.callPackage ./pkgs/miniapp-ping-pong { inherit caliper; };
