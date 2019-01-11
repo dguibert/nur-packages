@@ -41,6 +41,7 @@ rec {
 
   must = pkgs.callPackage ./pkgs/must { inherit dyninst; };
   muster = pkgs.callPackage ./pkgs/muster { };
+  nemo = pkgs.callPackage ./pkgs/nemo { };
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
   ravel = pkgs.callPackage ./pkgs/ravel {
     inherit otf2;
