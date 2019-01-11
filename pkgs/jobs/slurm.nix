@@ -28,10 +28,14 @@ let
              , script ? ""
              , options ? {}
              , buildInputs ? []
+             , scratch ? null
              }: let
-      in runCommand name { buildInputs = [
-        /*benchPrintEnvironmentHook*/
-      ] ++ buildInputs; } ''
+      in runCommand name {
+             buildInputs = [
+               /*benchPrintEnvironmentHook*/
+             ] ++ buildInputs;
+             outputs = [ "out" ] ++ lib.optional (scratch !=null) "scratch";
+      } ''
       failureHooks+=(_benchFail)
       _benchFail() {
         cat $out/job
@@ -39,6 +43,7 @@ let
       set -xuef -o pipefail
       mkdir $out
       ${define_job_basename_sh name}
+      ${lib.optionalString (scratch !=null) ''echo "${scratch}/$job_basename" > $scratch''}
       cancel() {
         scancel $(squeue -o %i -h -n $job_basename)
       }

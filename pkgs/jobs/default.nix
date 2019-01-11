@@ -144,11 +144,11 @@ with pkgs; let
             '';}
             )
           ));
-    summary_bench = runCommand "test" { } ''
-      ${lib.concatMapStrings (node: "echo ${node}: state ${(builtins.getAttr node nodes).State }\n")
-        (partitions.SKL-20c_edr-ib2_192gb_2666.NodeSet)
-      }
-    '';
+    #summary_bench = runCommand "test" { } ''
+    #  ${lib.concatMapStrings (node: "echo ${node}: state ${(builtins.getAttr node nodes).State }\n")
+    #    (partitions.SKL-20c_edr-ib2_192gb_2666.NodeSet)
+    #  }
+    #'';
 
     default_sbatch_genji = {
       job-name="bash";
@@ -165,7 +165,7 @@ with pkgs; let
 
     job1 = runJob { name="test";
       options = default_sbatch_genji // {
-        nodes="2";
+        nodes="1";
       };
       script = ''
         ${figlet}/bin/figlet "srun"
