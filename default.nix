@@ -37,6 +37,7 @@ rec {
   cubegui = pkgs.callPackage ./pkgs/cubegui { inherit cubelib; };
 
   hpcg = pkgs.callPackage ./pkgs/hpcg { };
+  hpl = pkgs.callPackage ./pkgs/hpl { };
 
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };
