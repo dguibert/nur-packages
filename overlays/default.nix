@@ -2,6 +2,7 @@
   default = import ../overlay.nix;
   local = self: super: if (builtins.pathExists ./local.nix) then (import (./local.nix)) self super else {};
 
+  aocc = import ./aocc-overlay;
   flang = import ./flang-overlay;
   qemu-user = import ./qemu-user.nix;
   intel-compilers = import ./intel-compilers-overlay;
