@@ -4,12 +4,12 @@ with pkgs.lib; pkgs.lib // {
   # Add your library functions here
   #
   # hexint = x: hexvals.${toLower x};
-  compose = list: pkgs.lib.fix (builtins.foldl' (pkgs.lib.flip pkgs.lib.extends) (self: pkgs) list);
+  compose = list: fix (builtins.foldl' (flip extends) (self: pkgs) list);
 
   composeOverlays = foldl' composeExtensions (self: super: {});
 
   makeExtensible' = pkgs: list: builtins.foldl' /*op nul list*/
-    (o: f: o.extend f) (pkgs.lib.makeExtensible (self: pkgs)) list;
+    (o: f: o.extend f) (makeExtensible (self: pkgs)) list;
 
   mkEnv = { name ? "env"
           , buildInputs ? []
