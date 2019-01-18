@@ -7,6 +7,7 @@ with pkgs; let
   jobs = recurseIntoAttrs (rec {
     bench-helpers = import ./bench-helpers.nix { inherit pkgs; };
     slurm = import ./slurm.nix { inherit pkgs date; };
+    vnc = import ./vnc.nix { inherit pkgs slurm; };
 
     node_check = lib.genAttrs (lib.mapAttrsToList (n: v: n) slurm.partitions)
       (partition: lib.genAttrs slurm.partitions."${partition}".NodeSet
