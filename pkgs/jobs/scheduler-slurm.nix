@@ -6,7 +6,7 @@ with pkgs;
 
 let
   define_job_basename_sh = name: ''job_out=$(basename $out); job_basename=${name}-''${job_out:0:12}'';
-  sbatch = rec {
+  scheduler_sbatch = rec {
     job_template = name: options: script: writeScript "${name}.sbatch" ''
       #!${stdenv.shell}
       ${lib.concatMapStrings (n: if lib.isBool options.${n} then
@@ -28,10 +28,14 @@ let
              , script ? ""
              , options ? {}
              , buildInputs ? []
+             , scratch ? null
              }: let
-      in runCommand name { buildInputs = [
-        /*benchPrintEnvironmentHook*/
-      ] ++ buildInputs; } ''
+      in runCommand name {
+             buildInputs = [
+               /*benchPrintEnvironmentHook*/
+             ] ++ buildInputs;
+             outputs = [ "out" ] ++ lib.optional (scratch !=null) "scratch";
+      } ''
       failureHooks+=(_benchFail)
       _benchFail() {
         cat $out/job
@@ -39,6 +43,11 @@ let
       set -xuef -o pipefail
       mkdir $out
       ${define_job_basename_sh name}
+      ${lib.optionalString (scratch !=null) ''
+        echo "${scratch}/$job_basename" > $scratch
+        scratch_=$(cat $scratch)
+        mkdir -p $scratch_; cd $scratch_
+      ''}
       cancel() {
         scancel $(squeue -o %i -h -n $job_basename)
       }
@@ -53,12 +62,14 @@ let
       set +x
     '';
 
+    # https://gist.github.com/giovtorres/8c0d97b4049534ab82b5
     scontrol_show = keyword: condition: let
         json_file="${date}-${keyword}.json";
       in runCommand "${json_file}" { buildInputs = [ coreutils jq ]; } ''
       set -xeufo pipefail
       echo "{" >${json_file}
       /usr/bin/scontrol show -o ${keyword}${condition} | sed -e 's@^\(${keyword}Name\|${keyword}\)=\([^ ]\+\)@"\2": {@'   \
+                                                 -e 's@"slurmstepd:"@slurmstepd@g' \
                                                  -e 's@ \([A-Za-z0-9]\+\)=@","\1": "@g' \
                                                  -e 's@$@"},@' |tee -a ${json_file}
       echo "}" >> ${json_file}
@@ -106,4 +117,4 @@ let
        node_names;
   };
 
-in sbatch
+in scheduler_sbatch
