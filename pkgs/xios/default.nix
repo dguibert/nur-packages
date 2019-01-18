@@ -2,14 +2,12 @@
 , gfortran
 , openmpi
 , mpi ? openmpi
-, netcdf
-, netcdffortran
-, hdf5
+, substituteAll
 , perl
 , perlPackages
-, substituteAll
+, netcdf-mpi
+, netcdffortran
 }:
-
 let
   arch-X86_nix_fcm = substituteAll {
     src = ./arch-X86_nix.fcm;
@@ -22,32 +20,38 @@ let
   };
 
 in stdenv.mkDerivation {
-  name = "nemo-3.6-10492";
+  name = "xios-2.0";
   src = fetchsvn {
-    url = "http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/trunk";
-    rev = "10492";
-    sha256 = "0k5sric9bkri7l28vjyd225dwp4cbjja6p2lngzyprdlz012a794";
+    url = "http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/trunk/";
+    rev = "1637";
+    sha256 = "196vv9mh22vs67pasr56478k25yw79z7sfzwc1x9cckydj9xim0m";
   };
-  buildInputs = [ gfortran mpi netcdf netcdffortran hdf5 perl
+  buildInputs = [ gfortran mpi perl netcdf-mpi netcdffortran
     perlPackages.URI
   ];
   patchPhase = ''
+    # Installation des sources
+    nb_files_gz=`ls tools/archive | grep tar.gz | wc -l`
+    if [ ''${nb_files_gz} -ne 0 ]; then
+      echo -e "- uncompress archives ..."
+      for tarname in `ls tools/archive/*.tar.gz` ; do
+        tar -vxf $tarname
+        rm $tarname
+      done
+    fi
     patchShebangs .
   '';
   buildPhase = ''
     cp ${arch-X86_nix_fcm} arch/arch-X64_nix.fcm
+    cp ${./arch-X86_nix.path} arch/arch-X64_nix.path
+    touch arch/arch-X64_nix.env
     cat arch/arch-X64_nix.fcm
-    ./makenemo -a BENCH -m X64_nix -j$(nproc)
+    bash -x ./make_xios --arch X64_nix --job $(nproc)
   '';
   installPhase = ''
-    mkdir -p $out/share/nemo/tests/BENCH/
-    cp -av cfgs $out/share/nemo
-    cp -av tests/BENCH/EXP00 $out/share/nemo/tests/BENCH
-    rm $out/share/nemo/tests/BENCH/EXP00/nemo
-    cp -aLv tests/BENCH/EXP00/nemo $out/share/nemo/tests/BENCH/EXP00/
-
-    # create symlink just to call nemo directly
-    mkdir $out/bin
-    ln -s $out/share/nemo/tests/BENCH/EXP00/nemo $out/bin/nemo
+    mkdir $out
+    cp -a bin $out/bin
+    cp -a lib $out/lib
+    cp -a inc $out/include
   '';
 }

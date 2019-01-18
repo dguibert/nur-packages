@@ -24,8 +24,8 @@
 %AR                  ar
 %ARFLAGS             rs
 %MK                  make
-%USER_INC            -I@netcdffortran@/include
-%USER_LIB            -lnetcdff -lnetcdf -lhdf5
+%USER_INC            -I@netcdffortran@/include -I@xios@/include
+%USER_LIB            -lxios -lnetcdff -lnetcdf -lhdf5
 
 %CC                  @cc@
 %CFLAGS              -O3
