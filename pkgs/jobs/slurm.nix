@@ -43,7 +43,11 @@ let
       set -xuef -o pipefail
       mkdir $out
       ${define_job_basename_sh name}
-      ${lib.optionalString (scratch !=null) ''echo "${scratch}/$job_basename" > $scratch''}
+      ${lib.optionalString (scratch !=null) ''
+        echo "${scratch}/$job_basename" > $scratch
+        scratch_=$(cat $scratch)
+        mkdir -p $scratch_; cd $scratch_
+      ''}
       cancel() {
         scancel $(squeue -o %i -h -n $job_basename)
       }
