@@ -50,6 +50,12 @@ rec {
     ./pkgs/dwm/0010-pinenetry-as-float.patch
   ];};
 
+  gitAndTools = pkgs.gitAndTools // {
+    git-credential-password-store = pkgs.callPackage ./pkgs/git-credential-password-store { };
+    # fix
+    git-annex = pkgs.haskell.lib.appendConfigureFlag pkgs.gitAndTools.git-annex "--ghc-options=-XNoMonadFailDesugaring";
+  };
+
   jobs = pkgs.callPackage ./pkgs/jobs {
     inherit stream;
     #scheduler = jobs.scheduler_slurm;
@@ -83,11 +89,6 @@ rec {
   # miniapps
   miniapp-ping-pong = pkgs.callPackage ./pkgs/miniapp-ping-pong { inherit caliper; };
   stream = pkgs.callPackage ./pkgs/stream { };
-
-  # fix
-  gitAndTools = pkgs.gitAndTools // {
-    git-annex = pkgs.haskell.lib.appendConfigureFlag pkgs.gitAndTools.git-annex "--ghc-options=-XNoMonadFailDesugaring";
-  };
 
 }
 
