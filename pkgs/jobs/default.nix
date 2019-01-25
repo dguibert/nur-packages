@@ -1,18 +1,22 @@
 { pkgs
 , stream
 , date ? "20181216"
+, scheduler
 }:
 with pkgs; let
 
   jobs = recurseIntoAttrs (rec {
     bench-helpers = import ./bench-helpers.nix { inherit pkgs; };
-    slurm = import ./slurm.nix { inherit pkgs date; };
-    vnc = import ./vnc.nix { inherit pkgs slurm; };
 
-    node_check = lib.genAttrs (lib.mapAttrsToList (n: v: n) slurm.partitions)
-      (partition: lib.genAttrs slurm.partitions."${partition}".NodeSet
+    scheduler_local = import ./scheduler-local.nix { inherit pkgs date; };
+    scheduler_slurm = import ./scheduler-slurm.nix { inherit pkgs date; };
+
+    vnc = import ./vnc.nix { inherit pkgs scheduler; };
+
+    node_check = lib.genAttrs (lib.mapAttrsToList (n: v: n) scheduler.partitions)
+      (partition: lib.genAttrs scheduler.partitions."${partition}".NodeSet
         (node:
-          (slurm.runJob { name="node-check-${node}-${date}";
+          (scheduler.runJob { name="node-check-${node}-${date}";
              options = default_sbatch_genji // {
                #partition="${partitions.${partition}.name}";
                partition="all"; # to get the same check across partitions
@@ -109,9 +113,14 @@ with pkgs; let
                fi
 
                ## MEM CONF SIZE
-               dimm_size=$(/usr/bin/sudo ${admin_scripts_dir}/dmidecode_t_memory.sh | grep -i size | grep MB | awk '{ print $2 }' | uniq)
-               dimm_nb=$(/usr/bin/sudo ${admin_scripts_dir}/dmidecode_t_memory.sh | grep -i size | grep MB | awk '{ print $2 }' | wc -l)
-               sum=$(((dimm_size * dimm_nb)/1024))
+               dimm_size=$(/usr/bin/sudo ${admin_scripts_dir}/dmidecode_t_memory.sh | grep -i size | grep "\(MB\|GB\)" | awk '{ print $2 }' | uniq)
+               dimm_nb=$(/usr/bin/sudo ${admin_scripts_dir}/dmidecode_t_memory.sh | grep -i size | grep "\(MB\|GB\)" | awk '{ print $2 }' | wc -l)
+               if /usr/bin/sudo ${admin_scripts_dir}/dmidecode_t_memory.sh | grep -i size | grep MB >/dev/null; then
+                 sum=$(((dimm_size * dimm_nb)/1024))
+               else
+                 sum=$((dimm_size * dimm_nb))
+               fi
+
                if $exists_; then
                  MEM_SIZE=$( cat $CONF_FILE | grep "^MEM_SIZE" | awk -F: '{print $2 }' )
                  if [ "$sum" != "$MEM_SIZE" ]; then
@@ -153,7 +162,7 @@ with pkgs; let
     default_sbatch_genji = {
       job-name="bash";
       nodes="1";
-      partition=slurm.partitions.SKL-20c_edr-ib2_192gb_2666.name;
+      partition=scheduler_slurm.partitions.SKL-20c_edr-ib2_192gb_2666.name;
       time="00:03:00";
       exclusive=true;
       verbose=true;
@@ -162,7 +171,7 @@ with pkgs; let
       #cpus-per-task="5";
       #threads-per-core="1";
     };
-    inherit (slurm) runJob;
+    inherit (scheduler) runJob;
 
     job1 = runJob { name="test";
       options = default_sbatch_genji // {

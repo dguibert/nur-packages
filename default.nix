@@ -36,7 +36,11 @@ rec {
   cubelib = pkgs.callPackage ./pkgs/cubelib { };
   cubegui = pkgs.callPackage ./pkgs/cubegui { inherit cubelib; };
 
-  jobs = pkgs.callPackage ./pkgs/jobs { inherit stream; };
+  jobs = pkgs.callPackage ./pkgs/jobs {
+    inherit stream;
+    #scheduler = jobs.scheduler_slurm;
+    scheduler = jobs.scheduler_local;
+  };
 
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };

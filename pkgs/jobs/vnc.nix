@@ -1,8 +1,8 @@
 { pkgs
-, slurm
+, scheduler
 }:
 with pkgs; {
-  job = slurm.runJob {
+  job = scheduler.runJob {
     name = "vnc-${toString builtins.currentTime}";
     options = {
       partition="BDW-14c_edr_128gb_2400"; # to get the same check across partitions
