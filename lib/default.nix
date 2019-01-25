@@ -6,6 +6,8 @@ with pkgs.lib; pkgs.lib // {
   # hexint = x: hexvals.${toLower x};
   compose = list: pkgs.lib.fix (builtins.foldl' (pkgs.lib.flip pkgs.lib.extends) (self: pkgs) list);
 
+  composeOverlays = foldl' composeExtensions (self: super: {});
+
   makeExtensible' = pkgs: list: builtins.foldl' /*op nul list*/
     (o: f: o.extend f) (pkgs.lib.makeExtensible (self: pkgs)) list;
 
