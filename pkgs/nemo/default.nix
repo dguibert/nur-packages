@@ -8,12 +8,13 @@
 , perl
 , perlPackages
 , substituteAll
+, xios
 }:
 
 let
   arch-X86_nix_fcm = substituteAll {
     src = ./arch-X86_nix.fcm;
-    inherit netcdffortran;
+    inherit netcdffortran xios;
     fc=if ((mpi.isIntel or false) && (stdenv.cc.isIntel or false)) then "mpiifort" else "mpif90";
     cc=if ((mpi.isIntel or false) && (stdenv.cc.isIntel or false)) then "mpiicc" else "mpicc";
     fflags=if (stdenv.cc.isIntel or false) then
