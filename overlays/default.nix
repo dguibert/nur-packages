@@ -10,5 +10,6 @@
   nix-home-nfs-bguibertd          = import ./nix-store-overlay.nix "/home_nfs/bguibertd/nix";
   nix-home-nfs-robin-ib-bguibertd = import ./nix-store-overlay.nix "/home_nfs_robin_ib/bguibertd/nix";
   nix-scratch-gpfs-bguibertd      = import ./nix-store-overlay.nix "/scratch_gpfs/bguibertd/nix";
+  nix-ccc-guibertd                = import ./nix-store-overlay.nix "/ccc/home/cont003/bull/guibertd";
 }
 
