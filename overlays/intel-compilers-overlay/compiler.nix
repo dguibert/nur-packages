@@ -84,6 +84,10 @@ versions = {
     url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/14854/parallel_studio_xe_2019_update1_professional_edition.tgz";
     sha256 = "1rhcfbig0qvkh622cvf8xjk758i3jh2vbr5ajdgms7jnwq99mii8";
   };
+  "2019.2.187" = fetchurl {
+    url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15089/parallel_studio_xe_2019_update2_professional_edition.tgz";
+    sha256 = "1sk4dsq3n8p155m394nsikv1vqw1l3k687vz3753bl8j8vbjkdnd";
+  };
 };
 
 
