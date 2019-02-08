@@ -52,8 +52,6 @@ rec {
 
   gitAndTools = pkgs.gitAndTools // {
     git-credential-password-store = pkgs.callPackage ./pkgs/git-credential-password-store { };
-    # fix
-    git-annex = pkgs.haskell.lib.appendConfigureFlag pkgs.gitAndTools.git-annex "--ghc-options=-XNoMonadFailDesugaring";
   };
 
   jobs = pkgs.callPackage ./pkgs/jobs {
