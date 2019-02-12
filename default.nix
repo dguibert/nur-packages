@@ -74,12 +74,12 @@ rec {
     inherit otf2;
     inherit muster;
   };
-  st = pkgs.st.override {patches = [
-    ./pkgs/st/0001-apply-st-no_bold_colors-20170623-b331da5.diff.patch
-    ./pkgs/st/0002-apply-st-solarized-light-20170623-b331da5.diff.patch
-    ./pkgs/st/0003-custom-changes.patch
-    ./pkgs/st/0004-apply-st-scrollback-0.8.diff.patch
-  ];};
+#  st = pkgs.st.override {patches = [
+#    ./pkgs/st/0001-apply-st-no_bold_colors-20170623-b331da5.diff.patch
+#    ./pkgs/st/0002-apply-st-solarized-light-20170623-b331da5.diff.patch
+#    ./pkgs/st/0003-custom-changes.patch
+#    ./pkgs/st/0004-apply-st-scrollback-0.8.diff.patch
+#  ];};
   xios_10 = pkgs.callPackage ./pkgs/xios/1.0.nix { };
   xios = pkgs.callPackage ./pkgs/xios { };
 
