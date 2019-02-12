@@ -38,16 +38,15 @@ rec {
   cubelib = pkgs.callPackage ./pkgs/cubelib { };
   cubegui = pkgs.callPackage ./pkgs/cubegui { inherit cubelib; };
   dwm = pkgs.dwm.override {patches = [
-    ./pkgs/dwm/0001-pertag.patch
-    ./pkgs/dwm/0002-apply-dwm-6.1-systray.diff.patch
+    ./pkgs/dwm/0001-dwm-pertag-20170513-ceac8c9.patch
+    ./pkgs/dwm/0002-dwm-systray-20180314-3bd8466.diff.patch
     ./pkgs/dwm/0003-config.h-azerty.patch
     ./pkgs/dwm/0004-config.h-audio-controls.patch
-    ./pkgs/dwm/0005-solarized-theme.patch
+    ./pkgs/dwm/0005-light-solarized-theme.patch
     ./pkgs/dwm/0006-config-support-shortcuts-for-vbox-inside-windows.patch
-    ./pkgs/dwm/0007-light-solarized-theme.patch
-    ./pkgs/dwm/0008-xpra-as-float.patch
-    ./pkgs/dwm/0009-qtpass-as-float.patch
-    ./pkgs/dwm/0010-pinenetry-as-float.patch
+    ./pkgs/dwm/0007-xpra-as-float.patch
+    ./pkgs/dwm/0008-qtpass-as-float.patch
+    ./pkgs/dwm/0009-pineentry-as-float.patch
   ];};
 
   gitAndTools = pkgs.gitAndTools // {
