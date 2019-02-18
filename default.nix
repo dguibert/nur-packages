@@ -74,12 +74,12 @@ rec {
     inherit otf2;
     inherit muster;
   };
-#  st = pkgs.st.override {patches = [
-#    ./pkgs/st/0001-apply-st-no_bold_colors-20170623-b331da5.diff.patch
-#    ./pkgs/st/0002-apply-st-solarized-light-20170623-b331da5.diff.patch
-#    ./pkgs/st/0003-custom-changes.patch
-#    ./pkgs/st/0004-apply-st-scrollback-0.8.diff.patch
-#  ];};
+  st = pkgs.st.override {patches = [
+    ./pkgs/st/0001-theme-from-base16-c_header.patch
+    #./pkgs/st/0002-Update-base-patch-to-0.8.1.patch
+    ./pkgs/st/0003-Show-bold-not-as-bright.patch
+    (pkgs.fetchpatch { url="https://st.suckless.org/patches/clipboard/st-clipboard-20180309-c5ba9c0.diff"; sha256="1f7fgzvbiikdm98icmh34abjha361nvf6a9r7lq38lhnwlyw12a9"; })
+  ];};
   xios_10 = pkgs.callPackage ./pkgs/xios/1.0.nix { };
   xios = pkgs.callPackage ./pkgs/xios { };
 
