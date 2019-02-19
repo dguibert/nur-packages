@@ -13,7 +13,10 @@ with pkgs.lib; pkgs.lib // {
 
   mkEnv = { name ? "env"
           , buildInputs ? []
-    }: let name_=name; in pkgs.stdenv.mkDerivation rec {
+          , ...
+        }@args: let name_=name;
+                    args_ = builtins.removeAttrs args [ "name" "buildInputs" "shellHook" ];
+        in pkgs.stdenv.mkDerivation (rec {
     name = "${name_}-env";
     phases = [ "buildPhase" ];
     postBuild = "ln -s ${env} $out";
@@ -22,7 +25,7 @@ with pkgs.lib; pkgs.lib // {
     shellHook = ''
       export ENVRC=${name_}
       source ~/.bashrc
-    '';
-  };
+    '' + (args.shellHook or "");
+  } // args_);
 }
 
