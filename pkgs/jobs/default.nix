@@ -11,6 +11,8 @@ with pkgs; let
     scheduler_local = import ./scheduler-local.nix { inherit pkgs date; };
     scheduler_slurm = import ./scheduler-slurm.nix { inherit pkgs date; };
 
+    inherit scheduler;
+
     vnc = import ./vnc.nix { inherit pkgs scheduler; };
 
     node_check = lib.genAttrs (lib.mapAttrsToList (n: v: n) scheduler.partitions)
