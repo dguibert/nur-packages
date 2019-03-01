@@ -1,8 +1,5 @@
 # vim: set ts=2 :
 { pkgs }:
-let
-  versions = import <config/lib/versions.nix>;
-in
 {
   permittedInsecurePackages = [
     "oraclejdk-10.0.2"
@@ -16,8 +13,4 @@ in
   allowBroken = true; # xpra-2.3.4
   pulseaudio = true;
   virtualbox.enableExtensionPack = true;
-
-  packageOverrides = super: let self = super.pkgs; in with self; {
-    pkgs-18_09 = (import versions."nixos-18.09" { inherit system; });
-  };
 }
