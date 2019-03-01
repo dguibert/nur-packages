@@ -1,12 +1,14 @@
-{ stdenv, fetchurl, perl, tcl, lua, luafilesystem, luaposix, rsync, procps, makeWrapper }:
+{ stdenv, fetchFromGitHub, perl, tcl, lua, luafilesystem, luaposix, rsync, procps, makeWrapper }:
 
 stdenv.mkDerivation rec {
   name = "Lmod-${version}";
 
-  version = "6.0.20";
-  src = fetchurl {
-    url = "http://github.com/TACC/Lmod/archive/${version}.tar.gz";
-    sha256 = "89885202fb4d3308be9150758cde079732ba774d96a5c35b6f8ec9bfd0c58653";
+  version = "7.8.21";
+  src = fetchFromGitHub {
+    owner = "TACC";
+    repo = "Lmod";
+    rev = "refs/tags/${version}";
+    sha256 = "0ydn8vbcw3y06mfx9ygazfv55rva6jggp8k27lqawdlq1cj2qjki";
   };
 
   buildInputs = [ lua tcl perl rsync procps makeWrapper ];

@@ -65,19 +65,8 @@ rec {
   lmod = pkgs.callPackage ./pkgs/lmod {
       inherit (pkgs.luaPackages) luafilesystem;
       inherit luaposix;
-    };
-    luaposix = pkgs.luaPackages.buildLuaPackage rec {
-      name = "luaposix-32";
-
-      buildInputs = [ pkgs.perl ];
-      src = pkgs.fetchurl {
-        url = "https://github.com/luaposix/luaposix/archive/release-v32.tar.gz";
-        sha256 = "09dbbde825fd9b76a8a1f6a80920434f8629a392cd1840021ed4b95b21fcf073";
-      };
-      meta = {
-        homepage = "https://github.com/luaposix/luaposix";
-      };
-    };
+  };
+  luaposix = pkgs.callPackage ./pkgs/luaposix { };
 
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };
