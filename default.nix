@@ -82,6 +82,39 @@ rec {
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };
 
+  mkModulefiles = { modPrefix ? "nix"
+                  , paths ? []
+                  , ...
+                  }@args: let
+    args_ = builtins.removeAttrs args [ "name" "paths" "shellHook" ];
+    genModulefiles = pkg: modulefile (args_ // {
+      inherit pkg;
+    });
+    paths_ = map genModulefiles paths;
+  in pkgs.buildEnv rec {
+    name = "modulefiles";
+    paths = paths_;
+  };
+
+  mkEnv = { name ? "env"
+          , buildInputs ? []
+          , ...
+        }@args: let name_=name;
+                    args_ = builtins.removeAttrs args [ "name" "buildInputs" "shellHook" ];
+        in pkgs.stdenv.mkDerivation (rec {
+    name = "${name_}-env";
+    phases = [ "buildPhase" ];
+    postBuild = "ln -s ${env} $out";
+    env = pkgs.buildEnv { name = name; paths = buildInputs; ignoreCollisions = true; };
+    inherit buildInputs;
+    shellHook = ''
+      export ENVRC=${name_}
+      source ~/.bashrc
+    '' + (args.shellHook or "");
+  } // args_);
+
+  modulefile = pkgs.callPackage ./pkgs/gen-modulefile { };
+
   must = pkgs.callPackage ./pkgs/must { inherit dyninst; };
   muster = pkgs.callPackage ./pkgs/muster { };
   nemo_36 = pkgs.callPackage ./pkgs/nemo/3.6.nix { xios = xios_10; };
