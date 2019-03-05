@@ -65,54 +65,78 @@ let
     # https://gist.github.com/giovtorres/8c0d97b4049534ab82b5
     scontrol_show = keyword: condition: let
         json_file="${date}-${keyword}.json";
-      in runCommand "${json_file}" { buildInputs = [ coreutils jq ]; } ''
+        scontrol_show_py = writeScript "scontrol-show.py" ''
+          #!${python}/bin/python
+          import sys
+          from datetime import datetime
+          from operator import itemgetter
+
+          import time
+          import pyslurm
+          import json
+
+          def display(part_dict):
+            if len(part_dict) > 0:
+              for key, value in part_dict.items():
+                print("{0} :".format(key))
+                for part_key in sorted(value.keys()):
+                  valStr = value[part_key]
+                  if 'default_time' in part_key:
+                    if isinstance(value[part_key], int):
+                      valStr = "{0} minutes".format(value[part_key]/60)
+                    else:
+                      valStr = value[part_key]
+                  elif part_key in [ 'max_nodes', 'max_time', 'max_cpus_per_node']:
+                    if value[part_key] == "UNLIMITED":
+                      valStr = "Unlimited"
+                  print("\t{0:<20} : {1}".format(part_key, valStr))
+                print('{0:*^80}'.format(""))
+
+
+          try:
+            ${keyword} = pyslurm.${keyword}()
+            all_ = ${keyword}.get()
+          except ValueError as e:
+            print("${keyword} error - {0}".format(e.args[0]))
+            exit(1)
+          else:
+            if len(all_) > 0:
+              print(json.dumps(all_, sort_keys=True))
+              #display(all_)
+        '';
+      in runCommand "${json_file}" { buildInputs = [ coreutils jq pythonPackages.pyslurm ]; } ''
       set -xeufo pipefail
-      echo "{" >${json_file}
-      /usr/bin/scontrol show -o ${keyword}${condition} | sed -e 's@^\(${keyword}Name\|${keyword}\)=\([^ ]\+\)@"\2": {@'   \
-                                                 -e 's@"slurmstepd:"@slurmstepd@g' \
-                                                 -e 's@ \([A-Za-z0-9]\+\)=@","\1": "@g' \
-                                                 -e 's@$@"},@' |tee -a ${json_file}
-      echo "}" >> ${json_file}
-
-      # cleanup
-      sed -i -e 's@{",@{@' ${json_file}
-      sed -i -e 's@,}@}@' ${json_file}
-      n=$(wc -l ${json_file} | awk '{print $1}')
-      n=$((n-1))
-      sed -i -e "$n s@},@}@" ${json_file}
-
-      # format json file
-      cat ${json_file} | jq '.' > $out
+      ${scontrol_show_py} | jq '.' |sed -e 's@\\u001b\[D@ @g' > $out
       set +x
     '';
 
-    partitions_json = scontrol_show "PartitionName" "";
-    nodes_json      = scontrol_show "Node" ""; #"=genji500";
+    partitions_json = scontrol_show "partition" "";
+    nodes_json      = scontrol_show "node" ""; #"=genji500";
 
     partitions = let
       extendNodeSet = p/*name*/: p_/*value*/:
         p_ // rec {
           name = p;
-          NodeSet_ = lib.splitString " " (builtins.readFile (runCommand "nodeset-${p}" {} ''
+          nodeset_ = lib.splitString " " (builtins.readFile (runCommand "nodeset-${p}" {} ''
             set -xeufo pipefail
-            nodeset=$(/usr/bin/nodeset -e -S' ' -O '%s' ${p_.Nodes})
+            nodeset=$(/usr/bin/nodeset -e -S' ' -O '%s' ${p_.nodes})
             echo -n $nodeset > $out
             set +x
           ''));
           # keep only available nodes
-          NodeSet = filtered_nodes NodeSet_;
+          nodeset = filtered_nodes nodeset_;
         };
       in lib.mapAttrs extendNodeSet (builtins.fromJSON (builtins.readFile partitions_json));
 
     nodes = builtins.fromJSON (builtins.readFile nodes_json);
 
     filtered_nodes = node_names: builtins.filter (n:
-    let n_ = builtins.getAttr n nodes; in n_.State != "DOWN"
-                                       && n_.State != "DOWN*"
-                                       && n_.State != "DOWN*+DRAIN"
-                                       && n_.State != "IDLE+DRAIN"
-                                       && n_.State != "RESERVED"
-                                       && n_.State != "RESERVED+DRAIN"
+    let n_ = builtins.getAttr n nodes; in n_.state != "DOWN"
+                                       && n_.state != "DOWN*"
+                                       && n_.state != "DOWN*+DRAIN"
+                                       && n_.state != "IDLE+DRAIN"
+                                       && n_.state != "RESERVED"
+                                       && n_.state != "RESERVED+DRAIN"
        )
        node_names;
   };

@@ -56,6 +56,7 @@ rec {
   jobs = pkgs.callPackage ./pkgs/jobs {
     inherit stream;
     #scheduler = jobs.scheduler_slurm;
+    admin_scripts_dir = "";
     scheduler = jobs.scheduler_local;
   };
 
@@ -113,6 +114,7 @@ rec {
     inherit otf2;
     inherit muster;
   };
+  slurm_17_11_5 = pkgs.callPackage ./pkgs/slurm/17.11.5.nix { gtk2 = null; };
   st = pkgs.st.override {patches = [
     ./pkgs/st/0001-theme-from-base16-c_header.patch
     #./pkgs/st/0002-Update-base-patch-to-0.8.1.patch
