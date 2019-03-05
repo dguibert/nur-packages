@@ -127,6 +127,7 @@ rec {
   # miniapps
   miniapp-ping-pong = pkgs.callPackage ./pkgs/miniapp-ping-pong { inherit caliper; };
   stream = pkgs.callPackage ./pkgs/stream { };
+  test-dgemm = pkgs.callPackage ./pkgs/test-dgemm { };
 
 }
 
