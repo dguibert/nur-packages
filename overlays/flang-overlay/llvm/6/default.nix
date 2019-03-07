@@ -20,7 +20,7 @@ let
       owner = "flang-compiler";
       repo = "flang";
       rev = "master";
-      sha256 = "1l267bj3ylfjlizgmc70im6am0w8haylg6gikvnlv6n6kb0m7s6j";
+      sha256 = "1j201chl9lp48rx6w2qx740aq2a8vqs6llmn53g3c8v2fd1jmppx";
     };
 
     libraries  = let
@@ -53,19 +53,19 @@ let
         nativeLibc = targetPlatform == hostPlatform && stdenv.cc.nativeLibc or false;
         nativePrefix = stdenv.cc.nativePrefix or "";
         noLibc = !self.nativeLibc && (self.libc == null);
-  
+
         isGNU = cc.isGNU or false;
         isClang = cc.isClang or false;
-  
+
         inherit cc bintools libc;
       } // extraArgs; in self);
 
     in llvmPackages_6.tools.extend (s: p: {
         clang-unwrapped = callPackage ./clang { };
         libpgmath = callPackage ../libpgmath.nix {
-          stdenv = llvmPackages_6.stdenv; 
+          stdenv = llvmPackages_6.stdenv;
         };
-        flang-unwrapped = callPackage ../flang.nix { 
+        flang-unwrapped = callPackage ../flang.nix {
           stdenv = llvmPackages_6.stdenv;
           inherit (libraries) openmp;
         };
@@ -88,7 +88,7 @@ let
           ];
           extraBuildCommands = mkExtraBuildCommands cc;
         };
-    
+
         libcxxClang = wrapCCWith rec {
           cc = tools.clang-unwrapped;
           extraPackages = [
