@@ -4,6 +4,7 @@ let
    (import ./default.nix).default
    (import ./default.nix).nix-ccc-guibertd
    (self: super: {
+     _toolchain = builtins.trace "toolchain: ${super._toolchain}.genji" ("${super._toolchain}.inti");
      aws-sdk-cpp = super.aws-sdk-cpp.overrideAttrs (attrs: {
        doCheck = false;
      });
