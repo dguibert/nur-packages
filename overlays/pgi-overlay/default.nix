@@ -34,6 +34,7 @@ let
       echo "$ccLDFlags" > $out/nix-support/cc-ldflags
       '';
     };
+    stdenv = super.overrideCC super.stdenv pgi;
   };
 
 in
