@@ -12,5 +12,6 @@
 
   allowBroken = true; # xpra-2.3.4
   pulseaudio = true;
-  virtualbox.enableExtensionPack = true;
+  # trace: warning: 'nixpkgs.virtualbox.enableExtensionPack' has no effect, please use 'virtualisation.virtualbox.host.enableExtensionPack'
+  virtualbox.host.enableExtensionPack = true;
 }
