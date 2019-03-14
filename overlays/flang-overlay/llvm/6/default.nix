@@ -20,7 +20,7 @@ let
       owner = "flang-compiler";
       repo = "flang";
       rev = "master";
-      sha256 = "1j201chl9lp48rx6w2qx740aq2a8vqs6llmn53g3c8v2fd1jmppx";
+      sha256 = "114ld89vm4w7mmkmhbyls8jsjqizr2jayxpixwlqyr1m9gqnsjqb";
     };
 
     libraries  = let
