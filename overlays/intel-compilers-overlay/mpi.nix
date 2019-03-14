@@ -50,6 +50,10 @@ let
       url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15040/l_mpi_2019.2.187.tgz";
       sha256 = "084bfw29swvpjm1lynl1pfj3y3v2j563k7lnvvvy7yay7f9hacva";
     };
+    "2019.3.199" = fetchurl {
+      url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15260/l_mpi_2019.3.199.tgz";
+      sha256 = "143951k7c3pj4jqi627j5whwiky5a57v3vjhf9wxwr1zhrn3812k";
+    };
   };
 
   components_ = [
@@ -58,7 +62,10 @@ let
   ];
 
   extract = pattern: ''
-    for rpm in $(ls /build/l_mpi_*/rpm/${pattern}); do
+    ls $build
+    ls $build/rpm
+    ls $build/rpm/${pattern}
+    for rpm in $(ls $build/rpm/${pattern}); do
       ${rpm}/bin/rpm2cpio $rpm | ${cpio}/bin/cpio -ivd
     done
   '';
@@ -76,11 +83,13 @@ self = stdenv.mkDerivation rec {
 
   installPhase = ''
     set -xv
+    export build=$PWD
     mkdir $out
     cd $out
     echo "${stdenv.lib.concatStringsSep "+" components_}"
     ${stdenv.lib.concatMapStringsSep "\n" extract components_}
 
+    ls -R .
     mv ${preinstDir}/* .
     rm -rf opt
     set +xv
