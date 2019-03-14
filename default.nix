@@ -17,7 +17,7 @@ rec {
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  envs = import ./envs { inherit pkgs overlays lib; };
+  envs = import ./envs { inherit nixpkgs lib; };
 
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
   inherit (adapters) optimizePackage withOpenMP optimizedStdEnv;
