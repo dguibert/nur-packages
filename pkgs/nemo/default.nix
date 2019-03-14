@@ -23,11 +23,11 @@ let
   };
 
 in stdenv.mkDerivation {
-  name = "nemo-3.6-10492";
+  name = "nemo-4.0-10741";
   src = fetchsvn {
-    url = "http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/trunk";
-    rev = "10492";
-    sha256 = "0k5sric9bkri7l28vjyd225dwp4cbjja6p2lngzyprdlz012a794";
+    url = "http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/release-4.0";
+    rev = "10741";
+    sha256 = "1w8hv1alqvyl5lgjd9xw3kfbvj15sp0aaf9ky0s151kcvkdjm40j";
   };
   buildInputs = [ gfortran mpi netcdf netcdffortran hdf5 perl
     perlPackages.URI
