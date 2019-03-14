@@ -6,7 +6,10 @@
 # commands such as:
 #     nix-build -A mypackage
 
-{ pkgs ? import <nixpkgs> {} }:
+{ versions ? import ./versions.nix
+, nixpkgs ? { outPath = versions.nixpkgs; revCount = 123456; shortRev = "gfedcba"; }
+, pkgs ? import nixpkgs {}
+}:
 
 rec {
   # The `lib`, `modules`, and `overlay` names are special
