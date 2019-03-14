@@ -31,6 +31,7 @@ let
       ];
       #extraBuildCommands = mkExtraBuildCommands cc;
     };
+    stdenv = super.overrideCC super.stdenv aocc;
   };
 
 in

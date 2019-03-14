@@ -80,7 +80,8 @@ in {
     intelPackages_2019_0_117 = intelPackages "2019.0.117";
     intelPackages_2019_1_144 = intelPackages "2019.1.144";
     intelPackages_2019_2_187 = intelPackages "2019.2.187";
-    intelPackages_2019 = self.intelPackages_2019_1_144;
+    intelPackages_2019_3_199 = intelPackages "2019.3.199";
+    intelPackages_2019 = self.intelPackages_2019_3_199;
 
     stdenvIntel = self.intelPackages_2019.stdenv;
 

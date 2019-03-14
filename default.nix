@@ -6,7 +6,10 @@
 # commands such as:
 #     nix-build -A mypackage
 
-{ pkgs ? import <nixpkgs> {} }:
+{ versions ? import ./versions.nix
+, nixpkgs ? { outPath = versions.nixpkgs; revCount = 123456; shortRev = "gfedcba"; }
+, pkgs ? import nixpkgs {}
+}:
 
 rec {
   # The `lib`, `modules`, and `overlay` names are special
@@ -14,7 +17,7 @@ rec {
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  envs = import ./envs { inherit pkgs overlays lib; };
+  envs = import ./envs { inherit nixpkgs lib; };
 
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
   inherit (adapters) optimizePackage withOpenMP optimizedStdEnv;
@@ -56,14 +59,65 @@ rec {
   jobs = pkgs.callPackage ./pkgs/jobs {
     inherit stream;
     #scheduler = jobs.scheduler_slurm;
+    admin_scripts_dir = "";
     scheduler = jobs.scheduler_local;
   };
 
   hpcg = pkgs.callPackage ./pkgs/hpcg { };
   hpl = pkgs.callPackage ./pkgs/hpl { };
 
+  lmod = pkgs.callPackage ./pkgs/lmod {
+      inherit (pkgs.luaPackages) luafilesystem;
+      inherit luaposix;
+  };
+  luaposix = pkgs.callPackage ./pkgs/luaposix { };
+
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };
+
+  gnumake_slurm = pkgs.gnumake.overrideAttrs (attrs: {
+    patches = (attrs.patches or []) ++ [
+       ./pkgs/make/make-4.2.slurm.patch
+       #(pkgs.fetchpatch {
+       #   url = "https://raw.githubusercontent.com/SchedMD/slurm/master/contribs/make-4.0.slurm.patch";
+       #   sha256 = "1rnwcw6xniwq6d0qpbz1b15bzmkl6r9zj20m6jnivif8qd7gkjqf";
+       #   stripLen = 1;
+       #})
+    ];
+  });
+
+  mkModulefiles = { modPrefix ? "nix"
+                  , paths ? []
+                  , ...
+                  }@args: let
+    args_ = builtins.removeAttrs args [ "name" "paths" "shellHook" ];
+    genModulefiles = pkg: modulefile (args_ // {
+      inherit pkg;
+    });
+    paths_ = map genModulefiles paths;
+  in pkgs.buildEnv rec {
+    name = "modulefiles";
+    paths = paths_;
+  };
+
+  mkEnv = { name ? "env"
+          , buildInputs ? []
+          , ...
+        }@args: let name_=name;
+                    args_ = builtins.removeAttrs args [ "name" "buildInputs" "shellHook" ];
+        in pkgs.stdenv.mkDerivation (rec {
+    name = "${name_}-env";
+    phases = [ "buildPhase" ];
+    postBuild = "ln -s ${env} $out";
+    env = pkgs.buildEnv { name = name; paths = buildInputs; ignoreCollisions = true; };
+    inherit buildInputs;
+    shellHook = ''
+      export ENVRC=${name_}
+      source ~/.bashrc
+    '' + (args.shellHook or "");
+  } // args_);
+
+  modulefile = pkgs.callPackage ./pkgs/gen-modulefile { };
 
   must = pkgs.callPackage ./pkgs/must { inherit dyninst; };
   muster = pkgs.callPackage ./pkgs/muster { };
@@ -74,6 +128,7 @@ rec {
     inherit otf2;
     inherit muster;
   };
+  slurm_17_11_5 = pkgs.callPackage ./pkgs/slurm/17.11.5.nix { gtk2 = null; };
   st = pkgs.st.override {patches = [
     ./pkgs/st/0001-theme-from-base16-c_header.patch
     #./pkgs/st/0002-Update-base-patch-to-0.8.1.patch
@@ -86,6 +141,7 @@ rec {
   # miniapps
   miniapp-ping-pong = pkgs.callPackage ./pkgs/miniapp-ping-pong { inherit caliper; };
   stream = pkgs.callPackage ./pkgs/stream { };
+  test-dgemm = pkgs.callPackage ./pkgs/test-dgemm { };
 
 }
 

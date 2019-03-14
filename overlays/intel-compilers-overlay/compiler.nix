@@ -44,7 +44,7 @@ let
   ];
 
   extract = pattern: ''
-    for rpm in $(ls /build/parallel_studio_xe_*/rpm/${pattern} | grep -v 32bit); do
+    for rpm in $(ls $build/rpm/${pattern} | grep -v 32bit); do
       ${rpm}/bin/rpm2cpio $rpm | ${cpio}/bin/cpio -ivd
     done
   '';
@@ -88,6 +88,10 @@ versions = {
     url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15089/parallel_studio_xe_2019_update2_professional_edition.tgz";
     sha256 = "1sk4dsq3n8p155m394nsikv1vqw1l3k687vz3753bl8j8vbjkdnd";
   };
+  "2019.3.199" = fetchurl {
+    url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15269/parallel_studio_xe_2019_update3_professional_edition.tgz";
+    sha256 = "1y97gam3798nqpr89x5x2f5xfrywpizxj337ykng3gfh0s8qga4j";
+  };
 };
 
 
@@ -104,6 +108,7 @@ self = stdenv.mkDerivation rec {
 
   installPhase = ''
     set -xv
+    export build=$PWD
     mkdir $out
     cd $out
     echo "${stdenv.lib.concatStringsSep "+" components_}"

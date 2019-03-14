@@ -34,10 +34,15 @@ let
       echo "$ccLDFlags" > $out/nix-support/cc-ldflags
       '';
     };
+    stdenv = super.overrideCC super.stdenv pgi;
   };
 
 in
 {
+  pgiPackages_1804 = pgiPackages {
+    version="184";
+    sha256 ="07w5q1dv4824z4nzj1bh1xlrmb16bm0m343dzl72dbwlc5kkhmw7";
+  };
   pgiPackages_1810 = pgiPackages {
     version="1810";
     sha256 ="09p3ndkddvqjxslx8ll93dqyyqwfzxp296fmpq0n1phk58yzhgsb";

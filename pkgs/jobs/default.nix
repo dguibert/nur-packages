@@ -1,6 +1,7 @@
 { pkgs
 , stream
 , date ? "20181216"
+, admin_scripts_dir
 , scheduler
 }:
 with pkgs; let
@@ -16,7 +17,7 @@ with pkgs; let
     vnc = import ./vnc.nix { inherit pkgs scheduler; };
 
     node_check = lib.genAttrs (lib.mapAttrsToList (n: v: n) scheduler.partitions)
-      (partition: lib.genAttrs scheduler.partitions."${partition}".NodeSet
+      (partition: lib.genAttrs scheduler.partitions."${partition}".nodeset
         (node:
           (scheduler.runJob { name="node-check-${node}-${date}";
              options = default_sbatch_genji // {
@@ -101,7 +102,7 @@ with pkgs; let
                ############################################################"
 
                #### MEMORY FREQ
-               MEM_SPEED=$(/usr/bin/sudo ${admin_scripts_dir}/dmidecode_t_memory.sh | grep -i speed | grep MHz |  awk -F: '{ print $2 }' | uniq)
+               MEM_SPEED=$(/usr/bin/sudo ${admin_scripts_dir}/dmidecode_t_memory.sh | grep -i "Configured Clock Speed" | grep MHz |  awk -F: '{ print $2 }' | uniq)
                MEM_SPEED=$(echo -e $MEM_SPEED)
                if $exists_; then
                  MEM_FREQ=$( cat $CONF_FILE | grep "^MEM_FREQ" | awk -F: '{print $2 }' )
