@@ -72,6 +72,17 @@ rec {
   lo2s = pkgs.callPackage ./pkgs/lo2s { inherit otf2; };
   lulesh = pkgs.callPackage ./pkgs/lulesh { };
 
+  gnumake_slurm = pkgs.gnumake.overrideAttrs (attrs: {
+    patches = (attrs.patches or []) ++ [
+       ./pkgs/make/make-4.2.slurm.patch
+       #(pkgs.fetchpatch {
+       #   url = "https://raw.githubusercontent.com/SchedMD/slurm/master/contribs/make-4.0.slurm.patch";
+       #   sha256 = "1rnwcw6xniwq6d0qpbz1b15bzmkl6r9zj20m6jnivif8qd7gkjqf";
+       #   stripLen = 1;
+       #})
+    ];
+  });
+
   mkModulefiles = { modPrefix ? "nix"
                   , paths ? []
                   , ...
