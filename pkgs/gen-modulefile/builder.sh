@@ -65,6 +65,10 @@ addPaths () {
 	if [[ -d $1/lib/perl5/site_perl ]] ; then
 		echo "prepend_path(\"PERL5LIB\", \"$1/lib/perl5/site_perl\")" >> $modfile
 	fi
+    pythonpath=($1/lib/python*/site-packages)
+	if [[ -n $pythonpath ]] ; then
+		echo "prepend_path(\"PYTHONPATH\", \"$pythonpath\")" >> $modfile
+	fi
 	libs=($1/lib/lib*.so)
 	if [[ $addLDLibraryPath && -n $libs ]] ; then
 		echo "prepend_path(\"LD_LIBRARY_PATH\", \"$1/lib\")" >> $modfile

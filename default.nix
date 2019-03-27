@@ -86,18 +86,10 @@ rec {
     ];
   });
 
-  mkModulefiles = { modPrefix ? "nix"
-                  , paths ? []
-                  , ...
-                  }@args: let
-    args_ = builtins.removeAttrs args [ "name" "paths" "shellHook" ];
-    genModulefiles = pkg: modulefile (args_ // {
-      inherit pkg;
-    });
-    paths_ = map genModulefiles paths;
-  in pkgs.buildEnv rec {
-    name = "modulefiles";
-    paths = paths_;
+  hdf5 = pkgs.callPackage ./pkgs/hdf5 {
+    gfortran = null;
+    szip = null;
+    mpi = null;
   };
 
   mkEnv = { name ? "env"

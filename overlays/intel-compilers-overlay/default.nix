@@ -32,7 +32,7 @@ let
 
       compilers = wrapCCWith {
         cc = unwrapped;
-        extraPackages = [ redist super.which super.binutils ];
+        extraPackages = [ redist super.which super.binutils unwrapped ];
       };
 
       /* Return a modified stdenv that uses Intel compilers */
