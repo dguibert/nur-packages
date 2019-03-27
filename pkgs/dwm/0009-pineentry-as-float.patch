@@ -13,7 +13,7 @@ index 3b5fff0..13a4d91 100644
 +++ b/config.def.h
 @@ -35,6 +35,7 @@ static const Rule rules[] = {
  	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
- 	{ ".xpra-wrapped",     NULL,       NULL,       0,            1,           -1 },
+ 	{ "Xpra",     NULL,       NULL,       0,            1,           -1 },
  	{ "QtPass",     NULL,       NULL,       0,            1,           -1 },
 +	{ "Pinentry",     NULL,       NULL,       0,            1,           -1 },
  	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
