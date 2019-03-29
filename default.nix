@@ -116,6 +116,9 @@ rec {
   nemo_36 = pkgs.callPackage ./pkgs/nemo/3.6.nix { xios = xios_10; };
   nemo = pkgs.callPackage ./pkgs/nemo { };
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
+
+  openmpi = builtins.trace "openmpi" (pkgs.callPackage ./pkgs/openmpi { });
+
   ravel = pkgs.callPackage ./pkgs/ravel {
     inherit otf2;
     inherit muster;
