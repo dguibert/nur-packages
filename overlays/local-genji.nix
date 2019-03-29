@@ -1,7 +1,6 @@
 self: super:
 let
   overlay = (super.lib.composeOverlays [
-   (import ./default.nix).default
    (import ./default.nix).nix-home-nfs-robin-ib-bguibertd
    (self: super: {
      _toolchain = builtins.trace "toolchain: ${super._toolchain}.genji" ("${super._toolchain}.genji");
