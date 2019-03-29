@@ -13,8 +13,25 @@
 # (--enable-unsupported could be used to force the build)
 assert !cpp || mpi == null;
 
-let inherit (stdenv.lib) optional optionals; in
+let inherit (stdenv.lib) optional optionals;
 
+compilers_line = {
+  intel = {
+    intel = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
+    openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
+    none = "CC=icc CXX=icpc F77=ifort FC=ifort";
+  };
+  gnu = {
+    openmpi = "CC=${mpi}/bin/mpicc";
+    none = "";
+  };
+}."${compiler_id}"."${mpi_id}";
+
+compiler_id = if (stdenv.cc.isIntel or false) then "intel" else "gnu";
+mpi_id = if (mpi.isIntel or false) then "intel" else
+         if (mpi != null) then "openmpi" else "none";
+
+in
 stdenv.mkDerivation rec {
   version = "1.10.4";
   name = "hdf5-${version}";
@@ -43,18 +60,7 @@ stdenv.mkDerivation rec {
     ++ optional (gfortran != null) "--enable-fortran"
     ++ optional (szip != null) "--with-szlib=${szip}"
     ++ optionals (mpi != null) ["--enable-parallel" /*"CC=${mpi}/bin/mpicc"*/]
-    ++ optionals ((mpi != null) && !(stdenv.cc.isIntel or false)) [
-      "CC=${mpi}/bin/mpicc"
-    ]
-    ++ optionals ((mpi != null) && (mpi.isIntel or false) && (stdenv.cc.isIntel or false)) [
-      "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort"
-    ]
-    ++ optionals ((mpi != null) && !(mpi.isIntel or true) && (stdenv.cc.isIntel or false)) [
-      "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90"
-    ]
-    ++ optionals ((mpi == null) && (stdenv.cc.isIntel or false)) [
-      "CC=icc CXX=icpc F77=ifort FC=ifort"
-    ]
+    ++ [ compilers_line ]
     ++ optional enableShared "--enable-shared";
 
   patches = [
