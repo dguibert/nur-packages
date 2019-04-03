@@ -25,6 +25,10 @@ let
     unwrapped = super.callPackage ./pgi {
       inherit version sha256;
     };
+    mpi = super.callPackage ./pgi/mpi.nix {
+      inherit version sha256 pgi;
+    };
+
     pgi = wrapCCWith rec {
       cc = unwrapped;
       extraPackages = [

@@ -39,7 +39,7 @@ stdenv.mkDerivation {
     export PGI_SILENT=true
     export PGI_ACCEPT_EULA="accept"
     #PGI_INSTALL_DIR=/opt/pgi
-        export PGI_INSTALL_DIR=$out
+    export PGI_INSTALL_DIR=$out
     ##  Installation of CUDA is the default and PGI_INSTALL_NVIDIA=true has no effect.
     ##  To skip CUDA installation, explicitly set to 'false':  PGI_INSTALL_NVIDIA=false
     ##  See documentation for how to use a different CUDA installation.
