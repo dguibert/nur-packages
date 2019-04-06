@@ -7,6 +7,7 @@
 , szip ? null
 , mpi ? null
 , enableShared ? true
+, compilers_line
 }:
 
 # cpp and mpi options are mutually exclusive
@@ -14,22 +15,6 @@
 assert !cpp || mpi == null;
 
 let inherit (stdenv.lib) optional optionals;
-
-compilers_line = {
-  intel = {
-    intel = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
-    openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
-    none = "CC=icc CXX=icpc F77=ifort FC=ifort";
-  };
-  gnu = {
-    openmpi = "CC=${mpi}/bin/mpicc";
-    none = "";
-  };
-}."${compiler_id}"."${mpi_id}";
-
-compiler_id = if (stdenv.cc.isIntel or false) then "intel" else "gnu";
-mpi_id = if (mpi.isIntel or false) then "intel" else
-         if (mpi != null) then "openmpi" else "none";
 
 in
 stdenv.mkDerivation rec {
@@ -60,7 +45,7 @@ stdenv.mkDerivation rec {
     ++ optional (gfortran != null) "--enable-fortran"
     ++ optional (szip != null) "--with-szlib=${szip}"
     ++ optionals (mpi != null) ["--enable-parallel" /*"CC=${mpi}/bin/mpicc"*/]
-    ++ [ compilers_line ]
+    ++ [ (compilers_line stdenv mpi) ]
     ++ optional enableShared "--enable-shared";
 
   patches = [
