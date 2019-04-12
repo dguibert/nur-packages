@@ -2,6 +2,8 @@
 , cpio, rpm
 , patchelf
 , version ? "2019.0.117"
+, url
+, sha256
 , preinstDir ? "opt/intel/compilers_and_libraries_${version}/linux"
 , config
 }:
@@ -49,57 +51,11 @@ let
     done
   '';
 
-versions = {
-# "2016.0.109"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/7997/parallel_studio_xe_2016.tgz
-# "2016.1.150"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/8365/parallel_studio_xe_2016_update1.tgz
-# "2016.2.181"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/8676/parallel_studio_xe_2016_update2.tgz
-# "2016.3.210" = null;
-# "2016.3.223"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/9061/parallel_studio_xe_2016_update3.tgz
-# "2016.4.258"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/9781/parallel_studio_xe_2016_update4.tgz
-#
-#
-# "2017.0.098"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/9651/parallel_studio_xe_2017.tgz
-# "2017.1.132"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/10973/parallel_studio_xe_2017_update1.tgz
-# "2017.2.174"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11298/parallel_studio_xe_2017_update2.tgz
-# http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11460/parallel_studio_xe_2017_update3.tgz
-# "2017.4.196"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11537/parallel_studio_xe_2017_update4.tgz
-# "2017.5.239"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12138/parallel_studio_xe_2017_update5.tgz
-# http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12534/parallel_studio_xe_2017_update6.tgz
-# "2017.7.259"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12856/parallel_studio_xe_2017_update7.tgz
-# http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13709/parallel_studio_xe_2017_update8.tgz
-#
-#
-# "2018.0.128"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12062/parallel_studio_xe_2018_professional_edition.tgz
-# "2018.1.163"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12375/parallel_studio_xe_2018_update1_professional_edition.tgz
-# "2018.2.199"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12718/parallel_studio_xe_2018_update2_professional_edition.tgz
-# "2018.3.222"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12999/parallel_studio_xe_2018_update3_professional_edition.tgz
-# "2018.5.274"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13718/parallel_studio_xe_2018_update4_professional_edition.tgz
-
-
-  "2019.0.117" = fetchurl {
-    url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13578/parallel_studio_xe_2019_professional_edition.tgz";
-    sha256 = "1qhicj98x60csr4a2hjb3krvw74iz3i3dclcsdc4yp1y6m773fcl";
-  };
-  "2019.1.144" = fetchurl {
-    url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/14854/parallel_studio_xe_2019_update1_professional_edition.tgz";
-    sha256 = "1rhcfbig0qvkh622cvf8xjk758i3jh2vbr5ajdgms7jnwq99mii8";
-  };
-  "2019.2.187" = fetchurl {
-    url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15089/parallel_studio_xe_2019_update2_professional_edition.tgz";
-    sha256 = "1sk4dsq3n8p155m394nsikv1vqw1l3k687vz3753bl8j8vbjkdnd";
-  };
-  "2019.3.199" = fetchurl {
-    url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15269/parallel_studio_xe_2019_update3_professional_edition.tgz";
-    sha256 = "1y97gam3798nqpr89x5x2f5xfrywpizxj337ykng3gfh0s8qga4j";
-  };
-};
-
-
 self = stdenv.mkDerivation rec {
   inherit version;
   name = "intel-compilers-${version}";
 
-  src = versions."${version}";
+  src = fetchurl { inherit url sha256; };
 
   nativeBuildInputs= [ file patchelf ];
 

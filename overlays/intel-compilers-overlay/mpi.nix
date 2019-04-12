@@ -4,57 +4,11 @@
 , makeWrapper
 , preinstDir ? "opt/intel/compilers_and_libraries_${version}/linux/mpi"
 , version ? "2019.1.144"
+, url
+, sha256
 }:
 
 let
-
-  versions = {
-    # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11595/l_mpi_2017.3.196.tgz
-    # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11334/l_mpi_2017.2.174.tgz
-    # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11014/l_mpi_2017.1.132.tgz
-    ## # built from parallel_studio_xe_2016.3.068
-    # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/9278/l_mpi_p_5.1.3.223.tgz
-    #"2017.4.239" = fetchurl {
-    #  url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
-    #  sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d6";
-    #};
-    #"2018.0.128" = fetchurl {
-    #  url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12120/l_mpi_2018.0.128.tgz";
-    #  sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d5";
-    #};
-    #"2018.1.163" = fetchurl {
-    #  url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12414/l_mpi_2018.1.163.tgz";
-    #  sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d4";
-    #};
-    #"2018.2.189" = fetchurl {
-    #  url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12748/l_mpi_2018.2.199.tgz";
-    #  sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d3";
-    #};
-    "2018.3.222" = fetchurl {
-      url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13112/l_mpi_2018.3.222.tgz";
-      sha256 = "16c94p7w12hyd9x5v28hhq2dg101sx9lsvhlkzl99isg6i5x28ah";
-    };
-    "2018.5.274" = fetchurl {
-      url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13741/l_mpi_2018.4.274.tgz";
-      sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d1";
-    };
-    "2019.0.117" = fetchurl {
-      url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13584/l_mpi_2019.0.117.tgz";
-      sha256 = "025ww7qa03mbbs35fb63g4x8qm67i49bflm9g8ripxhskks07d6z";
-    };
-    "2019.1.144" = fetchurl {
-      url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/14879/l_mpi_2019.1.144.tgz";
-      sha256 = "1kf3av1bzaa98p5h6wagc1ajjhvahlspbca26wqh6rdqnrfnmj6s";
-    };
-    "2019.2.187" = fetchurl {
-      url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15040/l_mpi_2019.2.187.tgz";
-      sha256 = "084bfw29swvpjm1lynl1pfj3y3v2j563k7lnvvvy7yay7f9hacva";
-    };
-    "2019.3.199" = fetchurl {
-      url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15260/l_mpi_2019.3.199.tgz";
-      sha256 = "143951k7c3pj4jqi627j5whwiky5a57v3vjhf9wxwr1zhrn3812k";
-    };
-  };
 
   components_ = [
     "intel-mpi-rt-*"
@@ -74,7 +28,7 @@ let
 self = stdenv.mkDerivation rec {
   inherit version;
   name = "intelmpi-${version}";
-  src = versions."${version}";
+  src = fetchurl { inherit url sha256; };
 
   nativeBuildInputs= [ file patchelf makeWrapper ];
 

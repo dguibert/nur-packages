@@ -1,23 +1,16 @@
 { stdenv, fetchurl, glibc, file
 , patchelf
 , version ? "2019.0.117"
+, url
+, sha256
 , preinstDir ? "compilers_and_libraries_${version}/linux"
 }:
 
-let
-redist_srcs = {
-  #https://software.intel.com/en-us/articles/redistributable-libraries-for-intel-c-and-fortran-2019-compilers-for-linux
-  "2019.1.144" = fetchurl { url="https://software.intel.com/sites/default/files/managed/79/cd/l_comp_lib_2019.1.144_comp.for_redist.tgz"; sha256="05kd2lc2iyq3rgnbcalri86nf615n0c1ii21152yrfyxyhk60dxm"; };
-  #"2019.2.187" = fetchurl { url="https://software.intel.com/sites/default/files/managed/2f/24/l_comp_lib_2019.2.187_comp.cpp_redist.tgz"; sha256=""; };
-  "2019.2.187" = fetchurl { url="https://software.intel.com/sites/default/files/managed/95/e7/l_comp_lib_2019.2.187_comp.for_redist.tgz"; sha256="0sj0plax2bnid1qm1jqvijiflzfvs37vkfmg93mb7202g9fp7q77"; };
-  "2019.3.199" = fetchurl { url="https://software.intel.com/sites/default/files/managed/7f/23/l_comp_lib_2019.3.199_comp.for_redist.tgz"; sha256="06c3w65ir481bqnwbmd9nqigrhcb3qyxbmx2ympckygjiparwh05"; };
-};
-
-in stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   inherit version;
   name = "intel-compilers-redist-${version}";
 
-  src = redist_srcs."${version}";
+  src = fetchurl { inherit url sha256; };
   nativeBuildInputs= [ file patchelf ];
 
   dontPatchELF = true;
@@ -41,7 +34,7 @@ in stdenv.mkDerivation rec {
         ;;
       "application/x-sharedlib"|"application/x-pie-executable")
         echo "Patching library: $f"
-        patchelf --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
+        patchelf --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib:${stdenv.cc.cc.lib}/lib $f || true
         ;;
       *)
         echo "$f ($type) not patched"
