@@ -41,6 +41,7 @@ rec {
       ,ldflags ? ""
     }:
     stdenv: stdenv // {mkDerivation = args: stdenv.mkDerivation (args // {
+      phases = [ "preConfigure" ] ++ args.phases;
       preConfigure = ''
         export CFLAGS="$CFLAGS ${flags} ${cflags}"
         export FFLAGS="$FFLAGS ${flags} ${fflags}"

@@ -20,7 +20,12 @@ rec {
   envs = import ./envs { inherit pkgs lib; };
 
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
-  inherit (adapters) optimizePackage withOpenMP optimizedStdEnv customFlags;
+  inherit (adapters) optimizePackage
+                     withOpenMP
+		     optimizedStdEnv
+		     customFlags
+		     extraNativeCflags
+		     customFlagsWithinStdEnv;
 
   example-package = pkgs.callPackage ./pkgs/example-package { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
