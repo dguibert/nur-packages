@@ -21,15 +21,27 @@ let
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-  aoccPackages = { version, sha256 }: rec {
+  aoccPackages = { version, sha256, release_version, llvmPackages }: let
+    mkExtraBuildCommands = cc: flang: ''
+      ${super.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -Wl,-rpath ${flang}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
+      rsrc="$out/resource-root"
+      mkdir "$rsrc"
+      ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
+      ln -s "${cc}/lib" "$rsrc/lib"
+      echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
+    '' + super.stdenv.lib.optionalString super.stdenv.targetPlatform.isLinux ''
+      echo "--gcc-toolchain=${llvmPackages.tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
+    '';
+  in rec {
     unwrapped = super.callPackage ./aocc {
       inherit version sha256;
     };
     aocc = wrapCCWith rec {
       cc = unwrapped;
       extraPackages = [
+	#llvmPackages.libraries.compiler-rt
       ];
-      #extraBuildCommands = mkExtraBuildCommands cc;
+      extraBuildCommands = mkExtraBuildCommands cc cc;
     };
     stdenv = super.overrideCC super.stdenv aocc;
   };
@@ -37,10 +49,15 @@ let
 in
 {
   aoccPackages_121 = aoccPackages {
+    release_version = "6.0.0";
+    llvmPackages = super.llvmPackages_6;
     version="1.2.1";
     sha256 ="008w6algs72d3klkdpaj95nz6ax1y2dyp4zflv4xpz3ybbc7whar";
   };
+
   aoccPackages_130 = aoccPackages {
+    release_version = "7.0.0";
+    llvmPackages = super.llvmPackages_7;
     version="1.3.0";
     sha256 ="0zi1j23h9gmw62d883m3yfa9hjkpznky5jlc4w2d34mmj4njwmms";
   };
