@@ -25,10 +25,10 @@ with pkgs; let
                partition="all"; # to get the same check across partitions
                nodelist="${node}";
                time="00:03:00";
-               exclusive=false;
-               ntasks="1";
+               exclusive=true;
+               #ntasks="1";
              };
-             buildInputs = [ stream ];
+             buildInputs = [ envs._intel19._avx512.stream time ];
              script = ''
                ${figlet}/bin/figlet "Node Check"
                set -xuef -o pipefail
