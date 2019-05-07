@@ -3,9 +3,9 @@ let
     # Intel compiler
     intelPackages =
       { version
-      , comp_url, comp_sha256
-      , mpi_url, mpi_sha256
-      , redist_url, redist_sha256
+      , comp_url, comp_sha256 ? ""
+      , mpi_url, mpi_sha256 ? ""
+      , redist_url, redist_sha256 ? ""
       , gcc ? super.gcc7
       }:
       let
@@ -32,7 +32,7 @@ let
       } // extraArgs; in self);
 
 
-      in rec {
+    in (if (comp_url != null) then rec {
       redist = self.callPackage ./redist.nix { inherit version; url=redist_url; sha256=redist_sha256; };
       unwrapped = self.callPackage ./compiler.nix { inherit version gcc; url=comp_url; sha256=comp_sha256; };
 
@@ -54,8 +54,8 @@ let
           '';
         });
       };
-
-      mpi = super.callPackage ./mpi.nix { inherit version; url=mpi_url; sha256=mpi_sha256;};
+    } else {}) // {
+      mpi = if (mpi_url!=null) then super.callPackage ./mpi.nix { inherit version; url=mpi_url; sha256=mpi_sha256;} else null;
     };
 
 in {
@@ -87,17 +87,32 @@ in {
     # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11334/l_mpi_2017.2.174.tgz
     # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11460/parallel_studio_xe_2017_update3.tgz
     #intelPackages_2017_4_196 = intelPackages "2017.4.196";
-    # "2017.4.196"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11537/parallel_studio_xe_2017_update4.tgz
+    # "2017.3.196"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11537/parallel_studio_xe_2017_update4.tgz
     # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/11595/l_mpi_2017.3.196.tgz
     #intelPackages_2017_5_239 = intelPackages "2017.5.239";
     # "2017.5.239"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12138/parallel_studio_xe_2017_update5.tgz
     #  mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
     #  mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d6";
     # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12534/parallel_studio_xe_2017_update6.tgz
-    #intelPackages_2017_7_259 = intelPackages "2017.7.259";
-    # "2017.7.259"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12856/parallel_studio_xe_2017_update7.tgz
-    #intelPackages_2017 = self.intelPackages_2017_7_259;
     # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13709/parallel_studio_xe_2017_update8.tgz
+    intelPackages_2017_4_239 = intelPackages {
+      version = "2017.4.239";
+      comp_url = null;
+      redist_url = null;
+      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
+      mpi_sha256 = "02si091w8gvq7nsclngiz1ckqjy9hcf4g2apnisvrs6whk94h42s";
+      gcc = super.gcc7;
+    };
+    intelPackages_2017_7_259 = intelPackages {
+      version = "2017.7.259";
+      comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12856/parallel_studio_xe_2017_update7.tgz";
+      comp_sha256 = "0q331y0vlr4lrl8bwczhh8m4arqljw7sjf4r2i4gx921k2lklg0k";
+      redist_url = "https://software.intel.com/sites/default/files/managed/e1/e4/l_comp_lib_2017.7.259_comp.for_redist.tgz";
+      redist_sha256 = "06wq03l257ywklywrs6qnx7zqmx0m8f3xfqa5l8a10w9axbh8s39";
+      mpi_url = null;
+      gcc = super.gcc7;
+    };
+    intelPackages_2017 = self.intelPackages_2017_7_259;
 
     #intelPackages_2018_0_128 = intelPackages "2018.0.128";
     # "2018.0.128"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12062/parallel_studio_xe_2018_professional_edition.tgz
@@ -113,6 +128,7 @@ in {
     intelPackages_2018_2_199 = intelPackages {
       version = "2018.2.199";
       comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12718/parallel_studio_xe_2018_update2_professional_edition.tgz";
+      comp_sha256 = "";
       redist_url = "l_comp_lib_2018.2.199_comp.for_redist.tgz";
       redist_sha256 = "6d9e5383f81296edf702351826f1bc618cd8ca0cc7a692d272a922516e997604";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12748/l_mpi_2018.2.199.tgz";
@@ -122,6 +138,7 @@ in {
     intelPackages_2018_3_222 = intelPackages {
       version = "2018.3.222";
       comp_url ="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12999/parallel_studio_xe_2018_update3_professional_edition.tgz";
+      comp_sha256 = "";
       redist_url = "l_comp_lib_2018.3.222_comp.for_redist.tgz";
       redist_sha256 = "b9eaf0ed8b8dac01b4d169165624aafc86776c4ae5ed73f564b04090a94a1be6";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13112/l_mpi_2018.3.222.tgz";
