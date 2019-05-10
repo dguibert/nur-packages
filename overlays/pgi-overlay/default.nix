@@ -51,5 +51,9 @@ in
     version="1810";
     sha256 ="09p3ndkddvqjxslx8ll93dqyyqwfzxp296fmpq0n1phk58yzhgsb";
   };
+  pgiPackages_1904 = pgiPackages {
+    version="1904";
+    sha256 ="13pngkq16w5n3g2578335qbvv3jk0f5vc96n8zrdc7bmvbaf1vi3";
+  };
 }
 
