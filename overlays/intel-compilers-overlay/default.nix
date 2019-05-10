@@ -202,7 +202,18 @@ in {
       gcc = super.gcc7;
     };
 
-    intelPackages_2019 = self.intelPackages_2019_3_199;
+    intelPackages_2019_4_227 = intelPackages {
+      version = "2019.4.227";
+      comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/parallel_studio_xe_2019_update4_composer_edition.tgz";
+      comp_sha256 = "0n7wjq789v7z0rqmymb4ly54yiixshjlyrz80x0pjpz2zn6zlmpw";
+      mpi_url = null;
+      mpi_sha256 = "";
+      redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/l_comp_lib_2019.4.227_comp.for_redist.tgz";
+      redist_sha256="0f3lz0carshqi4nfpmdmi4kmndgml6prh9frf820sdg31w7khcbl";
+      gcc = super.gcc7;
+    };
+
+    intelPackages_2019 = self.intelPackages_2019_4_227;
 
     stdenvIntel = self.intelPackages_2019.stdenv;
 
