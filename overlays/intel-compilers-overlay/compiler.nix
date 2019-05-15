@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, gcc, file
+{ stdenv, fetchannex, gcc, file
 , cpio, rpm
 , patchelf
 , version ? "2019.0.117"
@@ -55,7 +55,7 @@ self = stdenv.mkDerivation rec {
   inherit version;
   name = "intel-compilers-${version}";
 
-  src = fetchurl { inherit url sha256; };
+  src = fetchannex { inherit url sha256; };
 
   nativeBuildInputs= [ file patchelf ];
 
@@ -113,11 +113,11 @@ self = stdenv.mkDerivation rec {
     libc=$(dirname $(dirname $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2)))
     for comp in icc icpc ifort ; do
       echo "-idirafter $libc/include -dynamic-linker $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2)" >> $out/bin/intel64/$comp.cfg
-      cat $out/bin/intel64/$comp.cfg
     done
 
     for comp in icc icpc ifort xild xiar; do
       echo "#!/bin/sh" > $out/bin/$comp
+
       echo "export PATH=${gcc}/bin:${gcc.cc}/bin:\$PATH" >> $out/bin/$comp
       echo "source $out/bin/compilervars.sh intel64" >> $out/bin/$comp
       echo "$out/bin/intel64/$comp \"\$@\"" >> $out/bin/$comp

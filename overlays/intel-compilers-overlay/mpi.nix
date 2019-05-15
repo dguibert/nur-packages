@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, glibc, gcc, file
+{ stdenv, fetchannex, glibc, gcc, file
 , cpio, rpm
 , patchelf
 , makeWrapper
@@ -28,7 +28,7 @@ let
 self = stdenv.mkDerivation rec {
   inherit version;
   name = "intelmpi-${version}";
-  src = fetchurl { inherit url sha256; };
+  src = fetchannex { inherit url sha256; };
 
   nativeBuildInputs= [ file patchelf makeWrapper ];
 

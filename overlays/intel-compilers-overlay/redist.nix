@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, glibc, file
+{ stdenv, fetchannex, glibc, file
 , patchelf
 , version ? "2019.0.117"
 , url
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
   inherit version;
   name = "intel-compilers-redist-${version}";
 
-  src = fetchurl { inherit url sha256; };
+  src = fetchannex { inherit url sha256; };
   nativeBuildInputs= [ file patchelf ];
 
   dontPatchELF = true;
