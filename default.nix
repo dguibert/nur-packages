@@ -74,6 +74,7 @@ rec {
     ./pkgs/dwm/0009-pineentry-as-float.patch
   ];};
 
+  fetchannex = pkgs.callPackage ./pkgs/build-support/fetchannex { git-annex = gitAndTools.git-annex; };
   gitAndTools = pkgs.gitAndTools // {
     git-credential-password-store = pkgs.callPackage ./pkgs/git-credential-password-store { };
   };
