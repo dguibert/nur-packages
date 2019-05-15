@@ -4,6 +4,7 @@
 , zlib
 , ncurses
 , libxml2
+, pgi_version
 , version
 , sha256
 , glibc
@@ -14,11 +15,14 @@
 , pgi
 }:
 
+let
+  variant = if (stdenv.lib.versionAtLeast "2018-1812" pgi_version)  then "" else "-nollvm";
+in
 stdenv.mkDerivation {
-  name = "openmpi-pgi-2.1.2";
+  name = "openmpi-pgi-${version}";
   src = requireFile {
     url = "https://www.pgroup.com/support/release_archive.php";
-    name = "pgilinux-2018-${version}-x86-64.tar.gz";
+    name = "pgilinux-${pgi_version}-x86-64.tar.gz";
     inherit sha256;
   };
   dontPatchELF = true;
@@ -41,8 +45,8 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir $out
     # MPI
-    tar xf openmpi-2.1.2-2018-x86-64.tar.gz
-    tar xv --one-top-level=$out --strip-components=4 -f linux86-64.openmpi-2.1.2.tar.gz || true
+    tar xf openmpi-*-x86-64.tar.gz
+    tar xv --one-top-level=$out --strip-components=4 -f linux86-64${variant}.openmpi-${version}.tar.gz || true
     # /nix/store/dlwn87hlmxd78xiabj35yy6b5pbadjba-pgilinux-1810-mpi/bin/.bin/mpiCC: error while loading shared libraries: libibverbs.so.1: failed to map segment from shared object
     rm $out/lib/librdmacm.so.1
     rm $out/lib/libibverbs.so.1

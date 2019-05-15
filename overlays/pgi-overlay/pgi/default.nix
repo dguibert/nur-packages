@@ -11,11 +11,14 @@
 , gcc
 }:
 
+let
+  variant = if (stdenv.lib.versionAtLeast "2018-1812" version)  then "" else "-nollvm";
+in
 stdenv.mkDerivation {
   name = "pgilinux-${version}";
   src = requireFile {
     url = "https://www.pgroup.com/support/release_archive.php";
-    name = "pgilinux-2018-${version}-x86-64.tar.gz";
+    name = "pgilinux-${version}-x86-64.tar.gz";
     inherit sha256;
   };
   dontPatchELF = true;
@@ -49,13 +52,13 @@ stdenv.mkDerivation {
     #PGI_MPI_GPU_SUPPORT=true
     ##
 
-    LINUXPART=$(cat .parts/linux86-64)
+    LINUXPART=$(cat .parts/linux86-64${variant})
     for i in $LINUXPART ; do
       tar cf - $i | ( cd $out; tar --no-same-owner -xf - )
     done
 
-    for d in $(cd $out/linux86-64/*/; ls); do
-      ln -s $out/linux86-64/*/$d $out/$d
+    for d in $(cd $out/linux86-64${variant}/*/; ls); do
+      ln -s $out/linux86-64${variant}/*/$d $out/$d
     done
     cp common/license.dat $out
 
