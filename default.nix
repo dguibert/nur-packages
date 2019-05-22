@@ -75,7 +75,8 @@ rec {
   ];};
 
   fetchannex = pkgs.callPackage ./pkgs/build-support/fetchannex { git-annex = gitAndTools.git-annex; };
-  gitAndTools = pkgs.gitAndTools // {
+  # throw "use gitAndTools.hub instead"
+  gitAndTools = (removeAttrs pkgs.gitAndTools ["hubUnstable"]) // {
     git-credential-password-store = pkgs.callPackage ./pkgs/git-credential-password-store { };
   };
 
