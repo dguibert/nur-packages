@@ -9,6 +9,7 @@
 , netcdffortran
 , hdf5-mpi
 , blitz, boost
+, gcc
 }:
 let
   netcdffortran_ = netcdffortran.override { netcdf = netcdf-mpi; hdf5 = hdf5-mpi; };
@@ -40,6 +41,7 @@ in stdenv.mkDerivation {
   buildInputs = [ gfortran mpi perl netcdf-mpi netcdffortran_
     perlPackages.URI
     blitz boost.all
+    gcc /* cpp */
   ];
   patchPhase = ''
     # Installation des sources
