@@ -113,6 +113,7 @@ rec {
     gfortran = null;
     szip = null;
     mpi = null;
+    inherit compilers_line;
   };
 
   mkEnv = { name ? "env"
