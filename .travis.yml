@@ -13,6 +13,7 @@ matrix:
     - env: NIX_PATH=nixpkgs=https://github.com/dguibert/nixpkgs/archive/pu.tar.gz
 
 install:
+ - nix-env -i nix
  - nix --version
  - if [ -n "${CACHIX_CACHE}" ]; then nix-env -i cachix; fi
  - if [ -n "${CACHIX_CACHE}" ]; then cachix use "${CACHIX_CACHE}"; fi
