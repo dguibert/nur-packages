@@ -66,6 +66,6 @@ let
 
   updater = writeScript "updater.sh" ''
     #!/usr/bin/env bash
-    ${version-updater} versions.json nixpkgs_pu
+    ${version-updater} versions.json nixpkgs
   '';
 in versions // { inherit updater NIX_PATH sources; }
