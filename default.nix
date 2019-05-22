@@ -140,7 +140,7 @@ rec {
   nemo_36 = pkgs.callPackage ./pkgs/nemo/3.6.nix { xios = xios_10; };
   nemo = pkgs.callPackage ./pkgs/nemo { inherit xios; };
 
-  netcdf = pkgs.callPackage ./pkgs/netcdf { };
+  netcdf = pkgs.callPackage ./pkgs/netcdf { inherit compilers_line; };
 
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
 
