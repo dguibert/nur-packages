@@ -3,8 +3,8 @@
     "owner": "dguibert",
     "repo": "nixpkgs",
     "branch": "pu",
-    "rev": "5b7a160b15ea3ee7bd1d70f186c8d65335334540",
-    "sha256": "0x3v2725j337g0n387pi4pza1zwfkg4ibi11y8yv2608q6xg1k32"
+    "rev": "bfabcf89a47e48177385850ee8c4f2499e9bb04c",
+    "sha256": "176wwsfyfzkp9arrsmdjsydvhlf5mp581053ckdcsmhybdqfwkl6"
   },
   "nixpkgs": "/home/dguibert/code/nixpkgs"
 }

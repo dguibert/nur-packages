@@ -4,7 +4,6 @@
 }:
 
 let
-  gcc = if stdenv.cc.isGNU then stdenv.cc.cc else stdenv.cc.cc.gcc;
   self = stdenv.mkDerivation ({
     name = "clang-${version}";
 
@@ -41,6 +40,9 @@ let
       sed -i '1s,^,find_package(Sphinx REQUIRED)\n,' docs/CMakeLists.txt
     '' + stdenv.lib.optionalString stdenv.hostPlatform.isMusl ''
       sed -i -e 's/lgcc_s/lgcc_eh/' lib/Driver/ToolChains/*.cpp
+    '' + stdenv.lib.optionalString stdenv.hostPlatform.isDarwin ''
+      substituteInPlace tools/extra/clangd/CMakeLists.txt \
+        --replace "NOT HAVE_CXX_ATOMICS64_WITHOUT_LIB" FALSE
     '';
 
     outputs = [ "out" "lib" "python" ];
@@ -73,8 +75,8 @@ let
       isClang = true;
       langFortran = true;
       inherit llvm;
-    } // stdenv.lib.optionalAttrs stdenv.targetPlatform.isLinux {
-      inherit gcc;
+    } // stdenv.lib.optionalAttrs (stdenv.targetPlatform.isLinux || (stdenv.cc.isGNU && stdenv.cc.cc ? gcc)) {
+      gcc = if stdenv.cc.isGNU then stdenv.cc.cc else stdenv.cc.cc.gcc;
     };
 
     meta = {

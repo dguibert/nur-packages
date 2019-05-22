@@ -51,7 +51,7 @@ let
     '';
 
     partitions.local = {
-      NodeSet = lib.splitString " " (builtins.readFile (runCommand "nodeset-local" { buildInputs = [ pkgs.nettools ]; } ''
+      nodeset = lib.splitString " " (builtins.readFile (runCommand "nodeset-local" { buildInputs = [ pkgs.nettools ]; } ''
         set -xeufo pipefail
         nodeset=$(hostname)
         echo -n $nodeset > $out

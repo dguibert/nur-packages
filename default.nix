@@ -20,7 +20,12 @@ rec {
   envs = import ./envs { inherit pkgs lib; };
 
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
-  inherit (adapters) optimizePackage withOpenMP optimizedStdEnv;
+  inherit (adapters) optimizePackage
+                     withOpenMP
+		     optimizedStdEnv
+		     customFlags
+		     extraNativeCflags
+		     customFlagsWithinStdEnv;
 
   example-package = pkgs.callPackage ./pkgs/example-package { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
@@ -37,6 +42,23 @@ rec {
   caliper = pkgs.callPackage ./pkgs/caliper {
     inherit dyninst;
   };
+
+  compilers_line = stdenv: mpi: let
+    compiler_id = if (stdenv.cc.isIntel or false) then "intel" else "gnu";
+    mpi_id = if (mpi.isIntel or false) then "intel" else
+             if (mpi != null) then "openmpi" else "none";
+  in {
+      intel = {
+        intel = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
+        openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
+        none = "CC=icc CXX=icpc F77=ifort FC=ifort";
+      };
+      gnu = {
+        openmpi = "CC=${mpi}/bin/mpicc";
+        none = "";
+      };
+    }."${compiler_id}"."${mpi_id}";
+
   cubew = pkgs.callPackage ./pkgs/cubew { };
   cubelib = pkgs.callPackage ./pkgs/cubelib { };
   cubegui = pkgs.callPackage ./pkgs/cubegui { inherit cubelib; };
@@ -52,6 +74,7 @@ rec {
     ./pkgs/dwm/0009-pineentry-as-float.patch
   ];};
 
+  fetchannex = pkgs.callPackage ./pkgs/build-support/fetchannex { git-annex = gitAndTools.git-annex; };
   gitAndTools = pkgs.gitAndTools // {
     git-credential-password-store = pkgs.callPackage ./pkgs/git-credential-password-store { };
   };
@@ -115,7 +138,13 @@ rec {
   muster = pkgs.callPackage ./pkgs/muster { };
   nemo_36 = pkgs.callPackage ./pkgs/nemo/3.6.nix { xios = xios_10; };
   nemo = pkgs.callPackage ./pkgs/nemo { };
+
+  netcdf = pkgs.callPackage ./pkgs/netcdf { };
+
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
+
+  openmpi = builtins.trace "openmpi" (pkgs.callPackage ./pkgs/openmpi { });
+
   ravel = pkgs.callPackage ./pkgs/ravel {
     inherit otf2;
     inherit muster;

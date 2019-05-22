@@ -14,4 +14,6 @@
   pulseaudio = true;
   # trace: warning: 'nixpkgs.virtualbox.enableExtensionPack' has no effect, please use 'virtualisation.virtualbox.host.enableExtensionPack'
   virtualbox.host.enableExtensionPack = true;
+
+  firefox.enableBrowserpass = true;
 }

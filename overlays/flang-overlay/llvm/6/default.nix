@@ -20,7 +20,7 @@ let
       owner = "flang-compiler";
       repo = "flang";
       rev = "master";
-      sha256 = "114ld89vm4w7mmkmhbyls8jsjqizr2jayxpixwlqyr1m9gqnsjqb";
+      sha256 = "0akl3aqs1f97xm0kryfim4gsfknwpp9avqqgs5n6x18jrdg11k3k";
     };
 
     libraries  = let
@@ -30,7 +30,9 @@ let
         });
     tools = let
       callPackage = newScope (tools // { inherit stdenv cmake libxml2 python isl release_version version flang_src; });
-      mkExtraBuildCommands = cc: ''
+      mkExtraBuildCommands = cc: flang: ''
+        ${pkgs.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -L${tools.libpgmath}/lib -Wl,-rpath ${flang}/lib -Wl,-rpath ${tools.libpgmath}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
+
         rsrc="$out/resource-root"
         mkdir "$rsrc"
         ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
@@ -70,13 +72,14 @@ let
           inherit (libraries) openmp;
         };
         flang = wrapCCWith rec {
+          name = "flang";
           cc = tools.clang-unwrapped;
           extraPackages = [
             libstdcxxHook
             libraries.compiler-rt
             tools.flang-unwrapped
           ];
-          extraBuildCommands = mkExtraBuildCommands cc;
+          extraBuildCommands = mkExtraBuildCommands cc tools.flang-unwrapped;
         };
         llvm = callPackage ./llvm.nix { };
         clang = if stdenv.cc.isGNU then tools.libstdcxxClang else tools.libcxxClang;
@@ -86,7 +89,7 @@ let
             libstdcxxHook
             libraries.compiler-rt
           ];
-          extraBuildCommands = mkExtraBuildCommands cc;
+          extraBuildCommands = mkExtraBuildCommands cc null;
         };
 
         libcxxClang = wrapCCWith rec {
@@ -96,7 +99,7 @@ let
             libraries.libcxxabi
             libraries.compiler-rt
           ];
-          extraBuildCommands = mkExtraBuildCommands cc;
+          extraBuildCommands = mkExtraBuildCommands cc null;
         };
 
       });
