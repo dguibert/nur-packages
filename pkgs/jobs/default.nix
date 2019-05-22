@@ -176,15 +176,15 @@ with pkgs; let
     };
     inherit (scheduler) runJob;
 
-    job1 = runJob { name="test";
-      options = default_sbatch_genji // {
-        nodes="1";
-      };
-      script = ''
-        ${figlet}/bin/figlet "srun"
-        export TIME="hostname timing : %e elapsed %U user %S system - %M Kbytes memory max. %W swapped times"
-        /usr/bin/time /usr/bin/srun /usr/bin/sleep 60
-      '';
-    };
+    #job1 = runJob { name="test";
+    #  options = default_sbatch_genji // {
+    #    nodes="1";
+    #  };
+    #  script = ''
+    #    ${figlet}/bin/figlet "srun"
+    #    export TIME="hostname timing : %e elapsed %U user %S system - %M Kbytes memory max. %W swapped times"
+    #    /usr/bin/time /usr/bin/srun /usr/bin/sleep 60
+    #  '';
+    #};
   });
 in jobs
