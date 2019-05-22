@@ -1,7 +1,7 @@
 { stdenv, fetchurl, fetchpatch, gfortran, perl, libnl
 , rdma-core, zlib, numactl, libevent, hwloc
 , openucx ? null
-, libfabric
+, libfabric ? null
 
 # Enable the Sun Grid Engine bindings
 , enableSGE ? false
