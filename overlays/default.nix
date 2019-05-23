@@ -6,6 +6,7 @@
   flang = import ./flang-overlay;
   qemu-user = import ./qemu-user.nix;
   intel-compilers = import ./intel-compilers-overlay;
+  arm = import ./arm-overlay;
   pgi = import ./pgi-overlay;
 
   nix-home-nfs-bguibertd          = import ./nix-store-overlay.nix "/home_nfs/bguibertd/nix";
