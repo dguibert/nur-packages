@@ -43,7 +43,6 @@ self = stdenv.mkDerivation rec {
     echo "${stdenv.lib.concatStringsSep "+" components_}"
     ${stdenv.lib.concatMapStringsSep "\n" extract components_}
 
-    ls -R .
     mv ${preinstDir}/* .
     rm -rf opt
     set +xv

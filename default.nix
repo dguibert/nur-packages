@@ -17,7 +17,7 @@ rec {
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  envs = if (builtins.pathExists ./envs/.decrypted) then import ./envs { inherit pkgs lib; } else {};
+  envs = if (builtins.pathExists ./envs/.decrypted) then import ./envs { } else {};
 
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
   inherit (adapters) optimizePackage

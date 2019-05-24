@@ -6,7 +6,8 @@ let
       , comp_url, comp_sha256 ? ""
       , mpi_url, mpi_sha256 ? ""
       , redist_url, redist_sha256 ? ""
-      , gcc ? super.gcc7
+      , gcc ? pkgs.gcc7
+      , pkgs ? super
       }:
       let
       wrapCCWith = { cc
@@ -14,14 +15,14 @@ let
           # Others should instead delegate to the next stage's choice with
           # `targetPackages.stdenv.cc.bintools`. This one is different just to
           # provide the default choice, avoiding infinite recursion.
-          bintools ? if super.targetPlatform.isDarwin then super.darwin.binutils else super.binutils
-        , libc ? bintools.libc
+          bintools ? if pkgs.targetPlatform.isDarwin then pkgs.darwin.binutils else pkgs.binutils
+        , libc ? bintools.libc or pkgs.stdenv.cc.libc
         , ...
         } @ extraArgs:
-          super.callPackage ./build-support/cc-wrapper (let self = {
-        nativeTools = super.targetPlatform == super.hostPlatform && super.stdenv.cc.nativeTools or false;
-        nativeLibc = super.targetPlatform == super.hostPlatform && super.stdenv.cc.nativeLibc or false;
-        nativePrefix = super.stdenv.cc.nativePrefix or "";
+          pkgs.callPackage ./build-support/cc-wrapper (let self = {
+        nativeTools = pkgs.targetPlatform == pkgs.hostPlatform && pkgs.stdenv.cc.nativeTools or false;
+        nativeLibc = pkgs.targetPlatform == pkgs.hostPlatform && pkgs.stdenv.cc.nativeLibc or false;
+        nativePrefix = pkgs.stdenv.cc.nativePrefix or "";
         noLibc = !self.nativeLibc && (self.libc == null);
 
         isGNU = cc.isGNU or false;
@@ -33,16 +34,16 @@ let
 
 
     in (if (comp_url != null) then rec {
-      redist = self.callPackage ./redist.nix { inherit version; url=redist_url; sha256=redist_sha256; };
-      unwrapped = self.callPackage ./compiler.nix { inherit version gcc; url=comp_url; sha256=comp_sha256; };
+      redist = pkgs.callPackage ./redist.nix { inherit version; url=redist_url; sha256=redist_sha256; };
+      unwrapped = pkgs.callPackage ./compiler.nix { inherit version gcc; url=comp_url; sha256=comp_sha256; };
 
       compilers = wrapCCWith {
         cc = unwrapped;
-        extraPackages = [ redist super.which super.binutils unwrapped ];
+        extraPackages = [ redist pkgs.which pkgs.binutils unwrapped ];
       };
 
       /* Return a modified stdenv that uses Intel compilers */
-      stdenv = let stdenv_=super.overrideCC super.stdenv compilers; in stdenv_ // {
+      stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
         mkDerivation = args: stdenv_.mkDerivation (args // {
           postFixup = "${args.postFixup or ""}" + ''
           set -x
@@ -55,7 +56,7 @@ let
         });
       };
     } else {}) // {
-      mpi = if (mpi_url!=null) then super.callPackage ./mpi.nix { inherit version; url=mpi_url; sha256=mpi_sha256;} else null;
+      mpi = if (mpi_url!=null) then pkgs.callPackage ./mpi.nix { inherit version; url=mpi_url; sha256=mpi_sha256;} else null;
     };
 
 in {
@@ -95,13 +96,13 @@ in {
     #  mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d6";
     # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12534/parallel_studio_xe_2017_update6.tgz
     # http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13709/parallel_studio_xe_2017_update8.tgz
-    intelPackages_2017_4_239 = intelPackages {
-      version = "2017.4.239";
+    intelPackages_2017_5_239 = intelPackages {
+      version = "2017.5.239";
       comp_url = null;
       redist_url = null;
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
       mpi_sha256 = "02si091w8gvq7nsclngiz1ckqjy9hcf4g2apnisvrs6whk94h42s";
-      gcc = super.gcc7;
+      pkgs = super;
     };
     intelPackages_2017_7_259 = intelPackages {
       version = "2017.7.259";
@@ -110,7 +111,7 @@ in {
       redist_url = "https://software.intel.com/sites/default/files/managed/e1/e4/l_comp_lib_2017.7.259_comp.for_redist.tgz";
       redist_sha256 = "06wq03l257ywklywrs6qnx7zqmx0m8f3xfqa5l8a10w9axbh8s39";
       mpi_url = null;
-      gcc = super.gcc7;
+      pkgs = super;
     };
     intelPackages_2017 = self.intelPackages_2017_7_259;
 
