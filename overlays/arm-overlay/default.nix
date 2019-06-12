@@ -22,15 +22,19 @@ let
   } // extraArgs; in self);
 
   armPackages = { version, sha256 }: rec {
-    unwrapped = super.callPackage ./arm-compiler-for-hpc {
+    inherit (super.callPackage ./arm-compiler-for-hpc {
       inherit version sha256;
-    };
+    })
+      unwrapped
+      armpl
+    ;
     arm = wrapCCWith rec {
       cc = unwrapped;
       extraPackages = [
       ];
       #extraBuildCommands = mkExtraBuildCommands cc;
     };
+    stdenv = super.overrideCC super.stdenv arm;
   };
 
 in
