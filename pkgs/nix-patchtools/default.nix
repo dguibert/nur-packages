@@ -2,14 +2,13 @@
 
 stdenv.mkDerivation {
   name = "autopatchelf";
-  src = /home/dguibert/code/nix-patchtools;
-  #src = fetchFromGitHub {
-  #  owner = "svanderburg";
-  #  repo = "nix-patchtools";
-  #  rev = "b6fe3f8dfe39502b1511bee101890eaa19196808";
-  #  sha256 = "0bq0dwcyd1zfgnw9gd04s14x5zf5d60c0svmf74snds996y6k9pi";
-
-  #};
+  #src = /home/dguibert/code/nix-patchtools;
+  src = fetchFromGitHub {
+    owner = "dguibert";
+    repo = "nix-patchtools";
+    rev = "dg/aarch64";
+    sha256 = "sha256:0yff6fj0jv1d6kmrq4div1z8xxvgiqfndhfcqr9snw1h1mkr4yva";
+  };
   buildCommand = ''
     mkdir -p $out/bin
     cp $src/autopatchelf $out/bin/autopatchelf
