@@ -53,7 +53,9 @@ let
 
   pkgs = import nixpkgs (
     (builtins.removeAttrs args ["versions" "nixpkgs" ]) // {
-      overlays =  [ otherPackageSets ] ++ (args.overlays or []);
+      overlays =  [ otherPackageSets
+        (import ./overlay.nix)
+      ] ++ (args.overlays or []);
     });
 
 in pkgs
