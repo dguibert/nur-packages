@@ -163,6 +163,11 @@ stdenv.mkDerivation {
         ln -s ${targetPrefix}clang $out/bin/${targetPrefix}cc
         export named_cc=${targetPrefix}clang
         export named_cxx=${targetPrefix}clang++
+      elif [ -e $ccPath/armclang ]; then
+        wrap ${targetPrefix}armclang ${./cc-wrapper.sh} $ccPath/armclang
+        ln -s ${targetPrefix}armclang $out/bin/${targetPrefix}cc
+        export named_cc=${targetPrefix}armclang
+        export named_cxx=${targetPrefix}armclang++
       fi
 
       if [ -e $ccPath/${targetPrefix}g++ ]; then
@@ -171,6 +176,9 @@ stdenv.mkDerivation {
       elif [ -e $ccPath/clang++ ]; then
         wrap ${targetPrefix}clang++ ${./cc-wrapper.sh} $ccPath/clang++
         ln -s ${targetPrefix}clang++ $out/bin/${targetPrefix}c++
+      elif [ -e $ccPath/armclang++ ]; then
+        wrap ${targetPrefix}armclang++ ${./cc-wrapper.sh} $ccPath/armclang++
+        ln -s ${targetPrefix}armclang++ $out/bin/${targetPrefix}c++
       fi
 
       if [ -e $ccPath/cpp ]; then
@@ -187,6 +195,9 @@ stdenv.mkDerivation {
       fi
       if [ -e $ccPath/${targetPrefix}flang ]; then
         wrap flang ${./cc-wrapper.sh} $ccPath/flang
+        export named_fc=${targetPrefix}flang
+      elif [ -e $ccPath/${targetPrefix}armflang ]; then
+        wrap armflang ${./cc-wrapper.sh} $ccPath/armflang
         export named_fc=${targetPrefix}flang
       fi
     ''
