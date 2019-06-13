@@ -88,7 +88,10 @@ rec {
   };
 
   hpcg = pkgs.callPackage ./pkgs/hpcg { };
-  hpl = pkgs.callPackage ./pkgs/hpl { };
+  inherit (pkgs.callPackage ./pkgs/hpl { })
+    hpl_netlib_2_3
+    hpl_cuda_ompi_volta_pascal_kepler_3_14_19
+  ;
 
   lmod = pkgs.callPackage ./pkgs/lmod {
       inherit (pkgs.luaPackages) luafilesystem;
