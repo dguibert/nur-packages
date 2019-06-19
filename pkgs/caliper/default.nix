@@ -56,12 +56,12 @@ let
 in
 
 stdenv.mkDerivation {
-  name = "caliper-1.7.0-24-g0c24886";
+  name = "caliper-2.0.1";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
-    rev = "0c24886";
-    sha256 = "0vj0fnk981bagg73m83m39axpy00dxxdx9hjc79znadfpvwf7lp2";
+    rev = "refs/tags/v2.0.1";
+    sha256 = "sha256:1ihn8lkyc0vipnlz93g7n0av120bvs5skpg7bhzw2p9nwm2i705h";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ];
   nativeBuildInputs = [ cmake python git ];
@@ -79,10 +79,10 @@ stdenv.mkDerivation {
     "-DWITH_CALLPATH=ON"
     "-DWITH_LIBPFM=ON"
     "-DWITH_MPI=ON"
-    "-DWITH_MPIT=ON"
+    #"-DWITH_MPIT=ON"
     "-DWITH_PAPI=ON"
     "-DWITH_SAMPLER=ON"
-    "-DWITH_DYNINST=ON"
+    #"-DWITH_DYNINST=ON"
     "-DBUILD_DOCS=ON"
 
     ];
