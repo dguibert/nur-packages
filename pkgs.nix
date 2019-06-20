@@ -47,10 +47,6 @@ let
     extend = f: self.appendOverlays [f];
   };
 
-  glibc_2_26 = self: super: {
-    glibc = super.callPackage ./pkgs/glibc/2.26 { };
-  };
-
   pkgs = import nixpkgs (
     (builtins.removeAttrs args ["versions" "nixpkgs" ]) // {
       overlays =  [ otherPackageSets
