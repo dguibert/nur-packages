@@ -1,0 +1,5 @@
+* annex.largefiles=(largerthan=0kb)
+.gitignore annex.largefiles=nothing
+.gitattributes annex.largefiles=nothing
+/Makefile annex.largefiles=nothing
+
