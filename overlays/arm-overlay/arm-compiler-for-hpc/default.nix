@@ -31,8 +31,8 @@ let
     name = "arm-compiler-for-hpc-${version}";
     src = fetchannex {
       url = "https://developer.arm.com/products/software-development-tools/compilers";
-      file = "ARM-Compiler-for-HPC.${version}_RHEL_7_aarch64.tar";
-      name = "ARM-Compiler-for-HPC.${version}_RHEL_7_aarch64.tar";
+      file = "Arm-Compiler-for-HPC.${version}_RHEL_7_aarch64.tar";
+      name = "Arm-Compiler-for-HPC.${version}_RHEL_7_aarch64.tar";
       inherit sha256;
     };
     dontPatchELF = true;

@@ -43,4 +43,12 @@ in
     version="19.0";
     sha256 ="1c8843c6fd24ea7bfb8b4847da73201caaff79a1b8ad89692a88d29da0c5684e";
   };
+  armPackages_191 = armPackages {
+    version="19.1";
+    sha256 ="0hps82y7ga19n38n2fkbp4jm21fgbxx3ydqdnh0rfiwmxhvya07a";
+  };
+  armPackages_192 = armPackages {
+    version="19.2";
+    sha256 ="1zdn7dq05c7fjnh1wfgxkd5znrxy0g3h0kpyn3gar6n2qdl0j22v";
+  };
 }
