@@ -35,6 +35,7 @@ let
                /*benchPrintEnvironmentHook*/
              ] ++ buildInputs;
              outputs = [ "out" ] ++ lib.optional (scratch !=null) "scratch";
+             impureEnvVars = [ "KRB5CCNAME" ];
       } ''
       failureHooks+=(_benchFail)
       _benchFail() {
@@ -54,8 +55,11 @@ let
       echo 'scancel $(squeue -o %i -h -n '$job_basename')'
       trap "cancel" USR1 INT TERM
 
+      /usr/bin/env | /usr/bin/sort
+
       id=$(/usr/bin/sbatch --job-name=$job_basename --parsable --wait -o $out/job ${job})
-      /usr/bin/scontrol show JobId=$id
+      id=$(echo $id | awk '{ print $NF }')
+      /usr/bin/scontrol show JobId=$id || true
       echo "job $id has run"
       cat $out/job
 
