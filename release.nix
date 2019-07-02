@@ -45,27 +45,27 @@ let pkgs = import nixpkgs {
 in {
 
   nix = pkgs.nix;
-  aoccPackages_121 = pkgs.aoccPackages_121;
-  aoccPackages_130 = pkgs.aoccPackages_130;
-  aoccPackages_131 = pkgs.aoccPackages_131;
+  #aoccPackages_121 = pkgs.aoccPackages_121;
+  #aoccPackages_130 = pkgs.aoccPackages_130;
+  #aoccPackages_131 = pkgs.aoccPackages_131;
 
-  flangPackages_5 = pkgs.flangPackages_5;
-  flangPackages_6 = pkgs.flangPackages_6;
-  flangPackages_7 = pkgs.flangPackages_7;
+  #flangPackages_5 = pkgs.flangPackages_5;
+  #flangPackages_6 = pkgs.flangPackages_6;
+  #flangPackages_7 = pkgs.flangPackages_7;
 
-  pgiPackages_1810 = pkgs.pgiPackages_1810;
+  #pgiPackages_1810 = pkgs.pgiPackages_1810;
 
-  intelPackages_2018_3_222 = pkgs.intelPackages_2018_3_222;
-  intelPackages_2018_5_274 = pkgs.intelPackages_2018_5_274;
-  intelPackages_2019_0_117 = pkgs.intelPackages_2019_0_117;
-  intelPackages_2019_1_144 = pkgs.intelPackages_2019_1_144;
-  intelPackages_2019_2_187 = pkgs.intelPackages_2019_2_187;
+  #intelPackages_2018_3_222 = pkgs.intelPackages_2018_3_222;
+  #intelPackages_2018_5_274 = pkgs.intelPackages_2018_5_274;
+  #intelPackages_2019_0_117 = pkgs.intelPackages_2019_0_117;
+  #intelPackages_2019_1_144 = pkgs.intelPackages_2019_1_144;
+  #intelPackages_2019_2_187 = pkgs.intelPackages_2019_2_187;
 
   #armPackages_190 = pkgs.armPackages_190;
 
   helloIntel = pkgs.helloIntel;
   miniapp-ping-pongIntel = pkgs.miniapp-ping-pongIntel;
-  jobs = pkgs.jobs;
+  #jobs = pkgs.jobs;
 
   nix_binary_tarball = with pkgs; let
     nix_root = pkgs.nix_root or "/nix";
@@ -134,12 +134,12 @@ in {
           $(cat ${installerClosureInfo}/store-paths)
       '';
 
-  nix_env = with pkgs; mkEnv { name="nix";
-    buildInputs = [
-      nix
-    ];
-    inherit (versions) NIX_PATH;
-  };
+  #nix_env = with pkgs; mkEnv { name="nix";
+  #  buildInputs = [
+  #    nix
+  #  ];
+  #  inherit (versions) NIX_PATH;
+  #};
   cluster_env = with pkgs; mkEnv {
     name = "cluster";
     buildInputs = [
@@ -166,6 +166,6 @@ in {
     ];
   };
 
-  hello_opt = pkgs.withOpenMP (pkgs.optimizePackage pkgs.hello);
-  hello_stdopt = pkgs.hello.override { stdenv = pkgs.optimizedStdEnv pkgs.stdenv;};
+  #hello_opt = pkgs.withOpenMP (pkgs.optimizePackage pkgs.hello);
+  #hello_stdopt = pkgs.hello.override { stdenv = pkgs.optimizedStdEnv pkgs.stdenv;};
 }
