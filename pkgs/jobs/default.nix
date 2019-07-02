@@ -1,8 +1,20 @@
 { pkgs
 , stream
 , date ? "20181216"
-, admin_scripts_dir
+, admin_scripts_dir ? null
 , scheduler
+, default_sbatch ? {
+      job-name="bash";
+      nodes="1";
+      #partition=scheduler_slurm.partitions.SKL-20c_edr-ib2_192gb_2666.name;
+      time="00:03:00";
+      exclusive=true;
+      verbose=true;
+      no-requeue=true;
+      #ntasks-per-node="8";
+      #cpus-per-task="5";
+      #threads-per-core="1";
+    }
 }:
 with pkgs; let
 
@@ -20,15 +32,19 @@ with pkgs; let
       (partition: lib.genAttrs scheduler.partitions."${partition}".nodeset
         (node:
           (scheduler.runJob { name="node-check-${node}-${date}";
-             options = default_sbatch_genji // {
-               #partition="${partitions.${partition}.name}";
-               partition="all"; # to get the same check across partitions
+             options = default_sbatch // {
+               partition="${scheduler.partitions.${partition}.name}";
+               #partition="all"; # to get the same check across partitions
                nodelist="${node}";
                time="00:03:00";
                exclusive=true;
                #ntasks="1";
              };
-             buildInputs = [ envs._intel19._avx512.stream time ];
+             #buildInputs = [ envs._intel19._avx512.stream time ];
+             buildInputs = [
+               #(envs.stream.override { flags = "-DSTREAM_ARRAY_SIZE=80000000 -DNTIMES=200 -fopenmp"; })
+               envs._gcc8._openmp.stream
+               time ];
              script = ''
                ${figlet}/bin/figlet "Node Check"
                set -xuef -o pipefail
@@ -47,36 +63,36 @@ with pkgs; let
                  exists_=false
                  echo -e "$CONF_FILE does not exist ... $WARNED"
                fi
-               echo -e "############################################################
-               # CPU check
-               ############################################################"
-               cpu_type=$(/usr/bin/lscpu | grep "^Model name:" | awk -F: '{print $2 }')
-               cpu_type=$(echo -e $cpu_type)
-               if $exists_; then
-                 CPU_TYPE=$( cat $CONF_FILE | grep CPU_TYPE | awk -F: '{print $2 }' )
-                 if [ "$CPU_TYPE" != "$cpu_type" ]; then
-                   echo -e "Cpu type intended: "$CPU_TYPE" != "$cpu_type" ... $FAILED"
-                 else
-                   echo -e "Cpu type: $cpu_type ... $PASSED"
-                 fi
-               else
-                 echo -e "Cpu type: $cpu_type ... $INFO"
-               fi
+               #echo -e "############################################################
+               ## CPU check
+               #############################################################"
+               #cpu_type=$(/usr/bin/lscpu | grep "^Model name:" | awk -F: '{print $2 }')
+               #cpu_type=$(echo -e $cpu_type)
+               #if $exists_; then
+               #  CPU_TYPE=$( cat $CONF_FILE | grep CPU_TYPE | awk -F: '{print $2 }' )
+               #  if [ "$CPU_TYPE" != "$cpu_type" ]; then
+               #    echo -e "Cpu type intended: "$CPU_TYPE" != "$cpu_type" ... $FAILED"
+               #  else
+               #    echo -e "Cpu type: $cpu_type ... $PASSED"
+               #  fi
+               #else
+               #  echo -e "Cpu type: $cpu_type ... $INFO"
+               #fi
 
-               #### CPU FREQUENCY
-               cpu_freq=$(/usr/bin/lscpu | grep "^CPU MHz:"| awk -F: '{print $2 }')
-               cpu_freq=$(echo -e $cpu_freq)
-               if $exists_; then
-                 CPU_FREQ=$( cat $CONF_FILE | grep "^CPU_FREQ" | awk -F: '{print $2 }' )
-                 var=$(awk 'BEGIN{ print "'$cpu_freq'" != "'$CPU_FREQ'" }')
-                 if [ $var -eq 1 ]; then
-                   echo -e "Cpu frequency intended: "$CPU_FREQ" != "$cpu_freq" ... $FAILED"
-                 else
-                   echo -e "Cpu frequency: $cpu_freq MHz ... $PASSED"
-                 fi
-               else
-                 echo -e "Cpu frequency: $cpu_freq MHz ... $INFO"
-               fi
+               ##### CPU FREQUENCY
+               #cpu_freq=$(/usr/bin/lscpu | grep "^CPU MHz:"| awk -F: '{print $2 }')
+               #cpu_freq=$(echo -e $cpu_freq)
+               #if $exists_; then
+               #  CPU_FREQ=$( cat $CONF_FILE | grep "^CPU_FREQ" | awk -F: '{print $2 }' )
+               #  var=$(awk 'BEGIN{ print "'$cpu_freq'" != "'$CPU_FREQ'" }')
+               #  if [ $var -eq 1 ]; then
+               #    echo -e "Cpu frequency intended: "$CPU_FREQ" != "$cpu_freq" ... $FAILED"
+               #  else
+               #    echo -e "Cpu frequency: $cpu_freq MHz ... $PASSED"
+               #  fi
+               #else
+               #  echo -e "Cpu frequency: $cpu_freq MHz ... $INFO"
+               #fi
 
 
                ### NB LOGICAL CORE
@@ -97,6 +113,7 @@ with pkgs; let
                fi
 
 
+               ${lib.optionalString (admin_scripts_dir != null) ''
                echo -e "############################################################
                # Memory check
                ############################################################"
@@ -134,11 +151,14 @@ with pkgs; let
                else
                  echo -e "Memory size ($dimm_size * $dimm_nb): $sum Go ... $INFO"
                fi
+               ''}
 
                echo -e "############################################################
                # Benchmarks check
                ############################################################"
                ##STREAM
+               export OMP_NUM_THREADS=1
+               for OMP_NUM_THREADS in 1 64 128; do
                a=$( stream_c |grep Triad: )
                comp=$( echo -e $a | awk '{ print $2 }' )
                if $exists_; then
@@ -152,6 +172,7 @@ with pkgs; let
                else
                  echo -e "STREAM: $comp MB/s ... $INFO"
                fi
+               done
 
              '';}
              )
@@ -162,22 +183,10 @@ with pkgs; let
     #  }
     #'';
 
-    default_sbatch_genji = {
-      job-name="bash";
-      nodes="1";
-      partition=scheduler_slurm.partitions.SKL-20c_edr-ib2_192gb_2666.name;
-      time="00:03:00";
-      exclusive=true;
-      verbose=true;
-      no-requeue=true;
-      #ntasks-per-node="8";
-      #cpus-per-task="5";
-      #threads-per-core="1";
-    };
     inherit (scheduler) runJob;
 
     #job1 = runJob { name="test";
-    #  options = default_sbatch_genji // {
+    #  options = default_sbatch // {
     #    nodes="1";
     #  };
     #  script = ''
