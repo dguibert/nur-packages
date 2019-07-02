@@ -4,6 +4,9 @@ let
    (import ./default.nix).nix-home-nfs-robin-ib-bguibertd
    (self: super: {
      _toolchain = builtins.trace "toolchain: ${super._toolchain}.genji" ("${super._toolchain}.genji");
+     p11-kit = super.p11-kit.overrideAttrs (attrs: {
+       doCheck = false;
+     });
      go_bootstrap = super.go_bootstrap.overrideAttrs (attrs: {
        doCheck = false;
        installPhase = ''
