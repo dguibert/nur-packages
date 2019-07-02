@@ -1,6 +1,6 @@
 { stdenv
 , gfortran ? null
-, flags ? "-DSTREAM_ARRAY_SIZE=80000000 -DNTIMES=200"
+, flags ? "-O3 -DSTREAM_ARRAY_SIZE=80000000 -DNTIMES=200"
 }:
 
 stdenv.mkDerivation {
