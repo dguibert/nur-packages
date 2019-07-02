@@ -88,7 +88,10 @@ rec {
   };
 
   hpcg = pkgs.callPackage ./pkgs/hpcg { };
-  inherit (pkgs.callPackage ./pkgs/hpl { })
+  inherit (pkgs.callPackage ./pkgs/hpl {
+    inherit fetchannex;
+    inherit nix-patchtools;
+  })
     hpl_netlib_2_3
     hpl_cuda_ompi_volta_pascal_kepler_3_14_19
   ;
