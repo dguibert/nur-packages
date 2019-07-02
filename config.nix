@@ -4,7 +4,7 @@
   permittedInsecurePackages = [
     "oraclejdk-10.0.2"
   ];
-  psxe.licenseFile = ~/admin/nixops/secrets/pxse2019.1019.lic;
+  psxe.licenseFile = <secrets/pxse2019.1019.lic>;
 
   # Package ‘oraclejre-8u191’ in /home/dguibert/code/nixpkgs/pkgs/development/compilers/oraclejdk/jdk-linux-base.nix:71 has an unfree license (‘unfree’), refusing to evaluate.
   oraclejdk.accept_license = true;
