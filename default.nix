@@ -159,7 +159,7 @@ rec {
     ./pkgs/st/0001-theme-from-base16-c_header.patch
     #./pkgs/st/0002-Update-base-patch-to-0.8.1.patch
     ./pkgs/st/0003-Show-bold-not-as-bright.patch
-    (pkgs.fetchpatch { url="https://st.suckless.org/patches/clipboard/st-clipboard-20180309-c5ba9c0.diff"; sha256="1f7fgzvbiikdm98icmh34abjha361nvf6a9r7lq38lhnwlyw12a9"; })
+    (pkgs.fetchpatch { url="https://st.suckless.org/patches/clipboard/st-clipboard-20180309-c5ba9c0.diff"; sha256="sha256:1gsqgasc5spklrk7575m7jlxcii072wf03qn9znqwh1ibsy9lnr2"; })
   ];};
   xios_10 = pkgs.callPackage ./pkgs/xios/1.0.nix { };
   xios = pkgs.callPackage ./pkgs/xios { };
