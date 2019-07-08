@@ -129,7 +129,7 @@ in {
     intelPackages_2018_2_199 = intelPackages {
       version = "2018.2.199";
       comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12718/parallel_studio_xe_2018_update2_professional_edition.tgz";
-      comp_sha256 = "";
+      comp_sha256 = "00lf287g8nffzb5pidzwg3y2k9bdzfk19spssi0p8s1czclpnmzw";
       redist_url = "l_comp_lib_2018.2.199_comp.for_redist.tgz";
       redist_sha256 = "6d9e5383f81296edf702351826f1bc618cd8ca0cc7a692d272a922516e997604";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12748/l_mpi_2018.2.199.tgz";
@@ -207,8 +207,8 @@ in {
       version = "2019.4.227";
       comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/parallel_studio_xe_2019_update4_composer_edition.tgz";
       comp_sha256 = "0n7wjq789v7z0rqmymb4ly54yiixshjlyrz80x0pjpz2zn6zlmpw";
-      mpi_url = null;
-      mpi_sha256 = "";
+      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15553/l_mpi_2019.4.243.tgz";
+      mpi_sha256 = "233a8660b92ecffd89fedd09f408da6ee140f97338c293146c9c080a154c5fcd";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/l_comp_lib_2019.4.227_comp.for_redist.tgz";
       redist_sha256="0f3lz0carshqi4nfpmdmi4kmndgml6prh9frf820sdg31w7khcbl";
       gcc = super.gcc7;
