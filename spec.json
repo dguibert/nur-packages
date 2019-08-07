@@ -1,0 +1,16 @@
+{
+  "enabled": 1,
+  "hidden": false,
+  "description": "nur-packages",
+  "nixexprinput": "src",
+  "nixexprpath": "jobsets.nix",
+  "checkinterval": 300,
+  "schedulingshares": 100,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 3,
+  "inputs": {
+    "src": { "type": "git", "value": "git://github.com/dguibert/nur-packages.git dg/hydra", "emailresponsible": false },
+    "nixpkgs": { "type": "git", "value": "git://github.com/dguibert/nixpkgs.git pu", "emailresponsible": false }
+  }
+}
