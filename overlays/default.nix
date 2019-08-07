@@ -13,6 +13,7 @@
   nix-home-nfs-robin-ib-bguibertd = import ./nix-store-overlay.nix "/home_nfs_robin_ib/bguibertd/nix";
   nix-scratch-gpfs-bguibertd      = import ./nix-store-overlay.nix "/scratch_gpfs/bguibertd/nix";
   #nix-ccc-guibertd                = import ./nix-store-overlay.nix "/ccc/home/cont003/bull/guibertd/nix";
+  #nix-ccc-guibertd                = import ./nix-store-overlay.nix "/ccc/scratch/cont003/bull/guibertd/nix";
   nix-ccc-guibertd                = import ./nix-store-overlay.nix "/ccc/dsku/nfs-server/user/cont003/bull/guibertd/nix";
 }
 
