@@ -78,6 +78,10 @@ rec {
   # throw "use gitAndTools.hub instead"
   gitAndTools = (removeAttrs pkgs.gitAndTools ["hubUnstable"]) // {
     git-credential-password-store = pkgs.callPackage ./pkgs/git-credential-password-store { };
+    git-crypt = pkgs.gitAndTools.git-crypt.overrideAttrs (attrs: {
+      # https://github.com/AGWA/git-crypt/issues/105
+      patches = (attrs.patches or []) ++ [ ./pkgs/git-crypt-support-worktree-simple-version-patch.txt ];
+    });
   };
 
   jobs = pkgs.callPackage ./pkgs/jobs {
