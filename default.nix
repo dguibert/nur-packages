@@ -9,7 +9,7 @@
 { versions ? import ./versions.nix
 , nixpkgs ? { outPath = versions.nixpkgs; revCount = 123456; shortRev = "gfedcba"; }
 , pkgs ? import nixpkgs {}
-, isHydra ? false
+, isHydra ? pkgs.isHydra or false
 }:
 
 rec {

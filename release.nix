@@ -34,6 +34,7 @@ let pkgs = import nixpkgs {
     inherit localSystem config;
     overlays = with import ./overlays;
     [
+      (_: _: { inherit isHydra; })
       default
       aocc
       flang
