@@ -32,6 +32,9 @@ let
      go_1_11 = super.go_1_11.overrideAttrs (attrs: {
        doCheck = false;
      });
+     libuv = super.libuv.overrideAttrs (attrs: {
+       doCheck = false;
+     });
      slurm = super.slurm_17_11_5;
 
      python = super.python.override {

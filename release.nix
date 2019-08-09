@@ -4,11 +4,11 @@
 , # The system packages will be built on. See the manual for the
   # subtle division of labor between these two `*System`s and the three
   # `*Platform`s.
-  localSystem ? { system = builtins.currentSystem; }
+  localSystem ? { inherit system; } #system = builtins.currentSystem; }
 
 , # These are needed only because nix's `--arg` command-line logic doesn't work
   # with unnamed parameters allowed by ...
-  system ? localSystem.system
+  system ? builtins.currentSystem #localSystem.system
 , platform ? localSystem.platform
 , # The system packages will ultimately be run on.
   crossSystem ? localSystem
@@ -27,6 +27,7 @@
   # list it returns.
   stdenvStages ? null #import ../stdenv
 
+, isHydra ? false
 } @ args:
 
 let pkgs = import nixpkgs {
@@ -43,6 +44,8 @@ let pkgs = import nixpkgs {
     ] ++ overlays;
   };
 in {
+
+  #ci = (import ./ci.nix { inherit pkgs; }).buildOutputs;
 
   nix = pkgs.nix;
   #aoccPackages_121 = pkgs.aoccPackages_121;
@@ -109,8 +112,9 @@ in {
           #         implementation, even though it is "useless"
           # SC2116: Allow ROOT_HOME=$(echo ~root) for resolving
           #         root's home directory
+	  # SC2034:
           shellcheck --external-sources \
-            --exclude SC1091,SC2002,SC2116 $TMPDIR/install-multi-user
+            --exclude SC1091,SC2002,SC2116,SC2034 $TMPDIR/install-multi-user
         fi
 
         chmod +x $TMPDIR/install
@@ -134,12 +138,12 @@ in {
           $(cat ${installerClosureInfo}/store-paths)
       '';
 
-  #nix_env = with pkgs; mkEnv { name="nix";
-  #  buildInputs = [
-  #    nix
-  #  ];
-  #  inherit (versions) NIX_PATH;
-  #};
+  nix_env = with pkgs; mkEnv { name="nix";
+    buildInputs = [
+      nix
+    ];
+    #inherit (versions) NIX_PATH;
+  };
   cluster_env = with pkgs; mkEnv {
     name = "cluster";
     buildInputs = [
