@@ -94,6 +94,31 @@ let
        };
      };
 
+     fetchannex = { file ? builtins.baseNameOf url
+                  , repo ? "${builtins.getEnv "HOME"}/nur-packages/downloads"
+                  , name ? builtins.baseNameOf url
+                  , recursiveHash ? false
+                  , sha256
+                  , url
+     }: super.requireFile {
+       inherit name sha256 url;
+       hashMode = if recursiveHash then "recursive" else "flat";
+       message = ''
+        Unfortunately, we cannot download file ${name} automatically.
+        either:
+          - go to ${url} to download it yourself
+          - get it to the git annexed repo ${repo}
+
+        and add it to the Nix store
+          nix-store --add-fixed sha256 ${repo}/${name}
+
+       '';
+     };
+     patchelf = super.patchelf.overrideAttrs ( attrs: {
+       configureFlags = "--with-page-size=65536";
+     });
+#     gcc = super.gcc8;
+
    })
  ]);
 in overlay self super
