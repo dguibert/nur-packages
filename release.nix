@@ -4,11 +4,11 @@
 , # The system packages will be built on. See the manual for the
   # subtle division of labor between these two `*System`s and the three
   # `*Platform`s.
-  localSystem ? { system = builtins.currentSystem; }
+  localSystem ? { inherit system; } #system = builtins.currentSystem; }
 
 , # These are needed only because nix's `--arg` command-line logic doesn't work
   # with unnamed parameters allowed by ...
-  system ? localSystem.system
+  system ? builtins.currentSystem #localSystem.system
 , platform ? localSystem.platform
 , # The system packages will ultimately be run on.
   crossSystem ? localSystem
@@ -45,7 +45,7 @@ let pkgs = import nixpkgs {
   };
 in {
 
-  ci = (import ./ci.nix { inherit pkgs; }).buildPkgs;
+  #ci = (import ./ci.nix { inherit pkgs; }).buildOutputs;
 
   nix = pkgs.nix;
   #aoccPackages_121 = pkgs.aoccPackages_121;
@@ -142,7 +142,7 @@ in {
     buildInputs = [
       nix
     ];
-    inherit (versions) NIX_PATH;
+    #inherit (versions) NIX_PATH;
   };
   cluster_env = with pkgs; mkEnv {
     name = "cluster";
