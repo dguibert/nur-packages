@@ -1,6 +1,6 @@
 {
-  "_nixpkgs": "/home/dguibert/code/nixpkgs",
-  "nixpkgs": {
+  "nixpkgs": "/home/dguibert/code/nixpkgs",
+  "_nixpkgs": {
     "owner": "dguibert",
     "repo": "nixpkgs",
     "branch": "pu",

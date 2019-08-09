@@ -8,7 +8,7 @@
 , url
 }:
 
-if isHydra then
+/*if isHydra then
 runCommand name ({
   nativeBuildInputs = [ git git-annex ];
 
@@ -29,4 +29,4 @@ runCommand name ({
     fi
 )
 ''
-else fetchurl { inherit name recursiveHash sha256 url; }
+else*/ fetchurl { inherit name recursiveHash sha256 url; }
