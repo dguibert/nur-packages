@@ -19,8 +19,7 @@
             "inputs": {
                 "src": { "type": "git", "value": "git://github.com/dguibert/nur-packages.git master", "emailresponsible": false },
                 "nixpkgs": { "type": "git", "value": "git://github.com/dguibert/nixpkgs.git pu", "emailresponsible": false },
-                "secrets": { "type": "path", "value": "/var/lib/hydra/secrets", "emailresponsible": false },
-                "isHydra": { "type": "boolean", "value": "true", "emailresponsible": false }
+                "secrets": { "type": "path", "value": "/var/lib/hydra/secrets", "emailresponsible": false }
             }
         },
         "pu": {
@@ -33,12 +32,11 @@
             "schedulingshares": 100,
             "enableemail": false,
             "emailoverride": "",
-            "keepnr": 2,
+            "keepnr": 3,
             "inputs": {
                 "src": { "type": "git", "value": "git://github.com/dguibert/nur-packages.git pu", "emailresponsible": false },
                 "nixpkgs": { "type": "git", "value": "git://github.com/dguibert/nixpkgs.git pu", "emailresponsible": false },
-                "secrets": { "type": "path", "value": "/var/lib/hydra/secrets", "emailresponsible": false },
-                "isHydra": { "type": "boolean", "value": "true", "emailresponsible": false }
+                "secrets": { "type": "path", "value": "/var/lib/hydra/secrets", "emailresponsible": false }
             }
         }
     }

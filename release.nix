@@ -1,6 +1,5 @@
 { versions ? import ./versions.nix
 , src ? builtins.fetchGit ./.
-, secrets ? null
 , nixpkgs ? { outPath = versions.nixpkgs; revCount = 123456; shortRev = "gfedcba"; }
 , # The system packages will be built on. See the manual for the
   # subtle division of labor between these two `*System`s and the three
@@ -27,15 +26,12 @@
   # environment. See below for the arguments given to that function, the type of
   # list it returns.
   stdenvStages ? null #import ../stdenv
-
-, isHydra ? false
 } @ args:
 
 let pkgs = import nixpkgs {
     inherit localSystem config;
     overlays = with import ./overlays;
     [
-      (_: _: { inherit isHydra; })
       default
       aocc
       flang

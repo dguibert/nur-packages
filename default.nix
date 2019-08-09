@@ -9,7 +9,7 @@
 { versions ? import ./versions.nix
 , nixpkgs ? { outPath = versions.nixpkgs; revCount = 123456; shortRev = "gfedcba"; }
 , pkgs ? import nixpkgs {}
-, isHydra ? pkgs.isHydra or false
+, isHydra ? true
 }:
 
 rec {
@@ -75,7 +75,7 @@ rec {
     ./pkgs/dwm/0009-pineentry-as-float.patch
   ];};
 
-  fetchannex = pkgs.callPackage ./pkgs/build-support/fetchannex { git-annex = gitAndTools.git-annex; };
+  fetchannex = pkgs.callPackage ./pkgs/build-support/fetchannex { git-annex = gitAndTools.git-annex; inherit isHydra; };
   # throw "use gitAndTools.hub instead"
   gitAndTools = (removeAttrs pkgs.gitAndTools ["hubUnstable"]) // {
     git-credential-password-store = pkgs.callPackage ./pkgs/git-credential-password-store { };
