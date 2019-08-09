@@ -109,8 +109,9 @@ in {
           #         implementation, even though it is "useless"
           # SC2116: Allow ROOT_HOME=$(echo ~root) for resolving
           #         root's home directory
+	  # SC2034:
           shellcheck --external-sources \
-            --exclude SC1091,SC2002,SC2116 $TMPDIR/install-multi-user
+            --exclude SC1091,SC2002,SC2116,SC2034 $TMPDIR/install-multi-user
         fi
 
         chmod +x $TMPDIR/install
