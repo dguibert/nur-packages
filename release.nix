@@ -137,12 +137,12 @@ in {
           $(cat ${installerClosureInfo}/store-paths)
       '';
 
-  #nix_env = with pkgs; mkEnv { name="nix";
-  #  buildInputs = [
-  #    nix
-  #  ];
-  #  inherit (versions) NIX_PATH;
-  #};
+  nix_env = with pkgs; mkEnv { name="nix";
+    buildInputs = [
+      nix
+    ];
+    inherit (versions) NIX_PATH;
+  };
   cluster_env = with pkgs; mkEnv {
     name = "cluster";
     buildInputs = [
