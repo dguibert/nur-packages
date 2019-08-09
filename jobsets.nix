@@ -35,7 +35,7 @@
             "inputs": {
                 "src": { "type": "git", "value": "git://github.com/dguibert/nur-packages.git pu", "emailresponsible": false },
                 "nixpkgs": { "type": "git", "value": "git://github.com/dguibert/nixpkgs.git pu", "emailresponsible": false },
-                "secrets": { "type": "string", "value": "/var/lib/hydra/secrets", "emailresponsible": false }
+                "secrets": { "type": "path", "value": "/var/lib/hydra/secrets", "emailresponsible": false }
             }
         }
     }
