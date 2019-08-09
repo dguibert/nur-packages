@@ -44,6 +44,8 @@ let pkgs = import nixpkgs {
   };
 in {
 
+  ci = (import ./ci.nix { inherit pkgs; }).buildPkgs;
+
   nix = pkgs.nix;
   #aoccPackages_121 = pkgs.aoccPackages_121;
   #aoccPackages_130 = pkgs.aoccPackages_130;
