@@ -27,6 +27,7 @@
   # list it returns.
   stdenvStages ? null #import ../stdenv
 
+, isHydra ? false
 } @ args:
 
 let pkgs = import nixpkgs {
