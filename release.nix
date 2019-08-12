@@ -14,7 +14,7 @@
   crossSystem ? localSystem
 
 , # Allow a configuration attribute set to be passed in as an argument.
-  config ? import ./config.nix
+  config ? import "${src}/config.nix"
 
 , # List of overlays layers used to extend Nixpkgs.
   overlays ? []
@@ -26,13 +26,11 @@
   # environment. See below for the arguments given to that function, the type of
   # list it returns.
   stdenvStages ? null #import ../stdenv
-
-, isHydra ? false
 } @ args:
 
 let pkgs = import nixpkgs {
     inherit localSystem config;
-    overlays = with import ./overlays;
+    overlays = with import "${src}/overlays";
     [
       default
       aocc
@@ -67,7 +65,7 @@ in {
   #armPackages_190 = pkgs.armPackages_190;
 
   helloIntel = pkgs.helloIntel;
-  miniapp-ping-pongIntel = pkgs.miniapp-ping-pongIntel;
+  #miniapp-ping-pongIntel = pkgs.miniapp-ping-pongIntel;
   #jobs = pkgs.jobs;
 
   nix_binary_tarball = with pkgs; let
