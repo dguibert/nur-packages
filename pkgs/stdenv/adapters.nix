@@ -26,12 +26,10 @@ rec {
       ,ldflags ? ""
     }:
     pkg: pkg.overrideAttrs (attrs: {
-    preConfigure = ''
-      export CFLAGS="$CFLAGS ${flags} ${cflags}"
-      export FFLAGS="$FFLAGS ${flags} ${fflags}"
-      export FCFLAGS="$FCFLAGS ${flags} ${fflags}"
-      export LDFLAGS="$LDFLAGS ${flags} ${ldflags}"
-    '' + "${attrs.preConfigure or ""}";
+      CFLAGS = (attrs.CFLAGS or "") + " ${flags} ${cflags}";
+      FFLAGS = (attrs.FFLAGS or "") + " ${flags} ${cflags}";
+      FCFLAGS = (attrs.FCFLAGS or "") + " ${flags} ${cflags}";
+      LDFLAGS = (attrs.LDFLAGS or "") + " ${flags} ${cflags}";
   });
 
   customFlagsWithinStdEnv =
@@ -41,13 +39,10 @@ rec {
       ,ldflags ? ""
     }:
     stdenv: stdenv // {mkDerivation = args: stdenv.mkDerivation (args // {
-      phases = [ "preConfigure" ] ++ (args.phases or []);
-      preConfigure = ''
-        export CFLAGS="$CFLAGS ${flags} ${cflags}"
-        export FFLAGS="$FFLAGS ${flags} ${fflags}"
-        export FCFLAGS="$FCFLAGS ${flags} ${fflags}"
-        export LDFLAGS="$LDFLAGS ${flags} ${ldflags}"
-      '' + "${args.preConfigure or ""}";
+      CFLAGS = (args.CFLAGS or "") + " ${flags} ${cflags}";
+      FFLAGS = (args.FFLAGS or "") + " ${flags} ${cflags}";
+      FCFLAGS = (args.FCFLAGS or "") + " ${flags} ${cflags}";
+      LDFLAGS = (args.LDFLAGS or "") + " ${flags} ${cflags}";
     });
   };
 

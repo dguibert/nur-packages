@@ -97,6 +97,7 @@ rec {
     inherit nix-patchtools;
   })
     hpl_netlib_2_3
+    hpl_mkl_netlib_2_3
     hpl_cuda_ompi_volta_pascal_kepler_3_14_19
   ;
 
