@@ -185,15 +185,50 @@ with pkgs; let
 
     inherit (scheduler) runJob;
 
-    #job1 = runJob { name="test";
-    #  options = default_sbatch // {
-    #    nodes="1";
-    #  };
-    #  script = ''
-    #    ${figlet}/bin/figlet "srun"
-    #    export TIME="hostname timing : %e elapsed %U user %S system - %M Kbytes memory max. %W swapped times"
-    #    /usr/bin/time /usr/bin/srun /usr/bin/sleep 60
-    #  '';
-    #};
+    mkJob = { name
+            , job ? jobs.scheduler.job_template name options script
+            , script ? ""
+            , options ? default_sbatch
+            , buildInputs ? []
+            , jobInputs ? []
+            , scratch ? null
+            , checks ? a: j: {}
+           }@args: rec {
+      inherit name;
+      submit = runJob (builtins.removeAttrs args ["jobInputs" "buildInputs" "checks"] // {
+        buildInputs = buildInputs ++ (map (value: value.submit) jobInputs);
+      });
+
+      drvPath = submit.drvPath;
+
+      # TJQ=$(cat $FILE \
+      #     | jq -rM ".[\"$PROJECT\"].rev = \"$REV\"" \
+      #     | jq -rM ".[\"$PROJECT\"].sha256 = \"$SHA256\""
+      #     )
+      check = checks args submit;
+    };
+
+    mkCheck = name: args: script: pkgs.lib.importJSON (
+      runJob (builtins.removeAttrs args ["jobInputs" "checks" "script" ] // {
+        inherit name script;
+      }) + "/json");
+
+
+    job1 = runJob { name="test";
+      options = default_sbatch // {
+        partition=scheduler_slurm.partitions.SKL-20c_edr-ib2_192gb_2666.name;
+        nodes="1";
+      };
+      script = ''
+        ${figlet}/bin/figlet "srun"
+        export TIME="hostname timing : %e elapsed %U user %S system - %M Kbytes memory max. %W swapped times"
+        ls /
+        ls /usr
+        ls /usr/bin
+        sleep 30
+        ${file}/bin/file /usr/bin/time
+        /usr/bin/time /usr/bin/srun /usr/bin/sleep 60
+      '';
+    };
   });
 in jobs

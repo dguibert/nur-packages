@@ -26,12 +26,15 @@ let
              , options ? {}
              , buildInputs ? []
              , scratch ? null
-             }: let
+             , ...
+             }@args: let
       in runCommand name {
              buildInputs = [
                /*benchPrintEnvironmentHook*/
              ] ++ buildInputs;
-             outputs = [ "out" ] ++ lib.optional (scratch !=null) "scratch";
+             hashChangingValue = args.hashChangingValue or null;
+             outputs = [ "out" ]
+               ++ lib.optional (scratch !=null) "scratch";
       } ''
       failureHooks+=(_benchFail)
       _benchFail() {
