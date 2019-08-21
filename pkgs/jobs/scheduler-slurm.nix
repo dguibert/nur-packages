@@ -5,70 +5,10 @@
 with pkgs;
 
 let
-  define_job_basename_sh = name: ''job_out=$(basename $out); job_basename=${name}-''${job_out:0:12}'';
   scheduler_sbatch = rec {
-    job_template = name: options: script: writeScript "${name}.sbatch" ''
-      #!${stdenv.shell}
-      ${lib.concatMapStrings (n: if lib.isBool options.${n} then
-           lib.optionalString options.${n} "#SBATCH --${n}\n"
-      else "#SBATCH --${n}=${options.${n}}\n") (lib.attrNames options)}
-
-      source ${stdenvNoCC}/setup
-      set -ue -o pipefail
-      runHook jobSetup
-      set -x
-      ${script}
-      set +x
-      runHook jobDone
-      echo 'done'
-    '';
-
-    runJob = { name
-             , job ? job_template name options script
-             , script ? ""
-             , options ? {}
-             , buildInputs ? []
-             , scratch ? null
-             }: let
-      in runCommand name {
-             buildInputs = [
-               /*benchPrintEnvironmentHook*/
-             ] ++ buildInputs;
-             outputs = [ "out" ] ++ lib.optional (scratch !=null) "scratch";
-             impureEnvVars = [ "KRB5CCNAME" ];
-      } ''
-      failureHooks+=(_benchFail)
-      _benchFail() {
-        cat $out/job
-      }
-      set -xuef -o pipefail
-      mkdir $out
-      ${define_job_basename_sh name}
-      ${lib.optionalString (scratch !=null) ''
-        echo "${scratch}/$job_basename" > $scratch
-        scratch_=$(cat $scratch)
-        mkdir -p $scratch_; cd $scratch_
-      ''}
-      cancel() {
-        scancel $(squeue -o %i -h -n $job_basename)
-      }
-      echo 'scancel $(squeue -o %i -h -n '$job_basename')'
-      trap "cancel" USR1 INT TERM
-
-      /usr/bin/env | /usr/bin/sort
-
-      id=$(/usr/bin/sbatch --job-name=$job_basename --parsable --wait -o $out/job ${job})
-      id=$(echo $id | awk '{ print $NF }')
-      /usr/bin/scontrol show JobId=$id || true
-      echo "job $id has run"
-      cat $out/job
-
-      set +x
-    '';
-
     # https://gist.github.com/giovtorres/8c0d97b4049534ab82b5
     scontrol_show = keyword: condition: let
-        json_file="${date}-${keyword}.json";
+        json_file="${keyword}.json";
         scontrol_show_py = writeScript "scontrol-show.py" ''
           #!${python}/bin/python
           import sys
@@ -76,6 +16,7 @@ let
           from operator import itemgetter
 
           import time
+          import argparse
           import pyslurm
           import json
 
@@ -96,6 +37,9 @@ let
                   print("\t{0:<20} : {1}".format(part_key, valStr))
                 print('{0:*^80}'.format(""))
 
+          parser = argparse.ArgumentParser()
+          parser.add_argument("${keyword}", nargs="*", help="show ${keyword}")
+          args = parser.parse_args()
 
           try:
             ${keyword} = pyslurm.${keyword}()
@@ -104,11 +48,15 @@ let
             print("${keyword} error - {0}".format(e.args[0]))
             exit(1)
           else:
+            if args.${keyword}:
+                all_ = { "%s" % args.${keyword}[0]: all_.get(args.${keyword}[0]) }
             if len(all_) > 0:
               print(json.dumps(all_, sort_keys=True))
               #display(all_)
         '';
-      in runCommand "${json_file}" { buildInputs = [ coreutils jq pythonPackages.pyslurm ]; } ''
+      in runCommand "${json_file}" { buildInputs = [ coreutils jq pythonPackages.pyslurm ];
+        #hashChangingValue = builtins.currentTime;
+          } ''
       set -xeufo pipefail
       ${scontrol_show_py} | jq '.' |sed -e 's@\\u001b\[D@ @g' > $out
       set +x
@@ -123,7 +71,7 @@ let
           name = p;
           nodeset_ = lib.splitString " " (builtins.readFile (runCommand "nodeset-${p}" {} ''
             set -xeufo pipefail
-            nodeset=$(/usr/bin/nodeset -e -S' ' -O '%s' ${p_.nodes})
+            nodeset=$(${pythonPackages.clustershell}/bin/nodeset -e -S' ' -O '%s' ${p_.nodes})
             echo -n $nodeset > $out
             set +x
           ''));

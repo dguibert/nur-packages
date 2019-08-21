@@ -15,13 +15,16 @@
       #cpus-per-task="5";
       #threads-per-core="1";
     }
+, stdenvNoCC
+, lib
+, writeScript
+, runCommand
 }:
 with pkgs; let
 
   jobs = recurseIntoAttrs (rec {
     bench-helpers = import ./bench-helpers.nix { inherit pkgs; };
 
-    scheduler_local = import ./scheduler-local.nix { inherit pkgs date; };
     scheduler_slurm = import ./scheduler-slurm.nix { inherit pkgs date; };
 
     inherit scheduler;
@@ -183,35 +186,48 @@ with pkgs; let
     #  }
     #'';
 
-    inherit (scheduler) runJob;
-
-    mkJob = { name
-            , job ? jobs.scheduler.job_template name options script
-            , script ? ""
-            , options ? default_sbatch
-            , buildInputs ? []
-            , jobInputs ? []
-            , scratch ? null
-            , checks ? a: j: {}
-           }@args: rec {
-      inherit name;
-      submit = runJob (builtins.removeAttrs args ["jobInputs" "buildInputs" "checks"] // {
-        buildInputs = buildInputs ++ (map (value: value.submit) jobInputs);
-      });
-
-      drvPath = submit.drvPath;
-
-      # TJQ=$(cat $FILE \
-      #     | jq -rM ".[\"$PROJECT\"].rev = \"$REV\"" \
-      #     | jq -rM ".[\"$PROJECT\"].sha256 = \"$SHA256\""
-      #     )
-      check = checks args submit;
+    # http://sandervanderburg.blogspot.com/2018/09/creating-nix-build-function.html
+    shJob = import ./sh-job.nix { inherit stdenvNoCC lib writeScript runCommand; };
+    sbatchJob = import ./sbatch-job.nix { inherit stdenvNoCC lib writeScript runCommand;
+      scontrol_show = scheduler_slurm.scontrol_show;
     };
 
-    mkCheck = name: args: script: pkgs.lib.importJSON (
-      runJob (builtins.removeAttrs args ["jobInputs" "checks" "script" ] // {
-        inherit name script;
-      }) + "/json");
+    mkJob = makeOverridable ({
+        name
+      , jobImpl ? shJob
+      , script ? ""
+      , options ? {} # to pass to jobImpl
+      , checks ? j: {}
+      , jobInputs ? []
+      , ...
+      }@args: let
+        jobFormalArgs = builtins.functionArgs jobImpl;
+        jobArgs = builtins.intersectAttrs jobFormalArgs args;
+        job = jobImpl (jobArgs // { buildInputs = (jobArgs.buildInputs or []) ++ (map (value: value.submit) jobInputs); } // builtins.trace extraArgs extraArgs);
+        extraArgs = removeAttrs args (["jobImpl" "checks"]
+                  ++ builtins.attrNames jobArgs);
+      in {
+        submit = job;
+        drvPath = job.drvPath;
+        check = checks job;
+    });
+
+    mkCheck = name: job: script: mkCheck' { inherit job name script; };
+    mkCheck' = {
+        name
+      , job
+      , jobImpl ? shJob
+      , script ? ""
+      , options ? {} # to pass to jobImpl
+      , buildInputs ? [ jq ]
+      , ...
+      }@args: let
+        jobFormalArgs = builtins.functionArgs jobImpl;
+        jobArgs = builtins.intersectAttrs jobFormalArgs args;
+        check = jobImpl (jobArgs // { inherit buildInputs; /* ensure that builtInputs is added */ });
+        extraArgs = removeAttrs args (["jobImpl"]
+                  ++ builtins.attrNames jobArgs);
+      in lib.importJSON (check.out + "/json");
 
 
     job1 = runJob { name="test";
