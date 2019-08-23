@@ -154,7 +154,7 @@ rec {
 
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
 
-  openmpi = builtins.trace "openmpi" (pkgs.callPackage ./pkgs/openmpi { });
+  openmpi = builtins.trace "openmpi" (pkgs.callPackage ./pkgs/openmpi { enableSlurm=true; });
 
   ravel = pkgs.callPackage ./pkgs/ravel {
     inherit otf2;

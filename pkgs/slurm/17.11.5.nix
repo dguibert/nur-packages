@@ -46,6 +46,7 @@ stdenv.mkDerivation rec {
       "--with-hwloc=${hwloc.dev}"
       "--with-freeipmi=${freeipmi}"
       "--sysconfdir=/etc/slurm"
+      "--with-pmix"
     ] ++ (optional (gtk2 == null)  "--disable-gtktest")
       ++ (optional enableX11 "--with-libssh2=${libssh2.dev}");
 
