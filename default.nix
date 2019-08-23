@@ -125,6 +125,7 @@ rec {
     mpi = null;
     inherit compilers_line;
   };
+  hpcbind = pkgs.callPackage ./pkgs/hpcbind { };
 
   mkEnv = { name ? "env"
           , buildInputs ? []
