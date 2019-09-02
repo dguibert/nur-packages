@@ -1,6 +1,6 @@
 {
-  "_nixpkgs": "/home/dguibert/nur-packages/nixpkgs",
-  "nixpkgs": {
+  "nixpkgs": "/home/dguibert/nur-packages/nixpkgs",
+  "_nixpkgs": {
     "owner": "dguibert",
     "repo": "nixpkgs",
     "branch": "pu-work",
