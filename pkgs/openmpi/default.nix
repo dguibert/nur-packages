@@ -45,11 +45,12 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ perl ];
 
-  configureFlags = with stdenv; [ "--disable-mca-dso" ]
+  configureFlags = with stdenv; [ "--disable-mca-dso" "--with-cma" ]
     ++ lib.optional isLinux  "--with-libnl=${libnl.dev}"
     ++ lib.optional enableSGE "--with-sge"
     ++ lib.optional enableSlurm "--with-pmi=${slurm.dev} --with-pmi-libdir=${slurm}/lib"
     ++ lib.optional enablePrefix "--enable-mpirun-prefix-by-default"
+    ++ lib.optional (openucx != null) "--enable-mca-no-build=btl-uct"
     ##++ [ "--enable-mpi1-compatibility" ] # to avoid porting libraries (https://www.open-mpi.org/faq/?category=mpi-removed)
     ;
 

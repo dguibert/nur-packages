@@ -45,6 +45,10 @@ let
       /* Return a modified stdenv that uses Intel compilers */
       stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
         mkDerivation = args: stdenv_.mkDerivation (args // {
+          CC="icc";
+          FC="ifort";
+          CXX="icpc";
+          F77="ifort";
           postFixup = "${args.postFixup or ""}" + ''
           set -x
           storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
