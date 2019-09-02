@@ -1,0 +1,10 @@
+{
+    "inputs": {
+        "nixpkgs": {
+            "inputs": {},
+            "narHash": "sha256-TrLhI3xPkTTznE9gcMHhkHirGNN7N02zM4DxJ/U3WRs=",
+            "uri": "github:edolstra/nixpkgs/24bf27fc215e8300877dfa1c426b9966bbfbd150"
+        }
+    },
+    "version": 2
+}
