@@ -9,9 +9,10 @@
   };
 
   outputs = { self, nixpkgs }: let
-    pkgs = import ./pkgs.nix {
+    pkgs = import ../../pkgs.nix {
       inherit nixpkgs;
       localSystem = { system = "x86_64-linux"; };# FIXME hard coded for now
+      overlays = [ (import ../../overlays/local-inti.nix) ];
     };
     in rec {
 
@@ -30,7 +31,7 @@
     ##
     ## - devShell: A derivation that defines the shell environment used by nix dev-shell if no specific attribute is given. If it does not exist, then nix dev-shell will use defaultPackage.
     devShell = with pkgs; mkEnv {
-      name = "nix";
+      name = "nix-genji";
       buildInputs = [ nixFlakes jq ];
     };
     ## -
