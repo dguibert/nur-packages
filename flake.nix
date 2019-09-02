@@ -35,10 +35,13 @@
     };
     ## -
     ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
+    nixosModules = {
+      qemu-user = import ./modules/qemu-user.nix;
+    };
     lib = pkgs.lib;
     #builders
     #htmlDocs
     #legacyPackages
-    overlays = pkgs.overlays;
+    overlays.default = import ./overlay.nix;
   };
 }

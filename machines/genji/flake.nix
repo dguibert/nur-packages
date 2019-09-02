@@ -12,7 +12,7 @@
     pkgs = import ../../pkgs.nix {
       inherit nixpkgs;
       localSystem = { system = "x86_64-linux"; };# FIXME hard coded for now
-      overlays = [ (import ../../overlays/local-inti.nix) ];
+      overlays = [ (import ../../overlays/local-genji.nix) ];
     };
     in rec {
 
@@ -23,6 +23,7 @@
     };
 
     ## - defaultPackage: A derivation used as a default by most nix commands if no attribute is specified. For example, nix run dwarffs uses the defaultPackage attribute of the dwarffs flake.
+    defaultPackage = packages.hello;
     ##
     ## - checks: A non-nested set of derivations built by the nix flake check command, and by Hydra if a flake does not have a hydraJobs attribute.
     checks.hello = packages.hello;
@@ -32,7 +33,12 @@
     ## - devShell: A derivation that defines the shell environment used by nix dev-shell if no specific attribute is given. If it does not exist, then nix dev-shell will use defaultPackage.
     devShell = with pkgs; mkEnv {
       name = "nix-genji";
-      buildInputs = [ nixFlakes jq ];
+      buildInputs = [ nixFlakes jq bashInteractive ];
+      shellHook = ''
+        unset NIX_STORE
+	export XDG_CACHE_HOME=$HOME/.cache/nix-genji
+	#export SHELL=${bashInteractive}/bin/bash
+      '';
     };
     ## -
     ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
