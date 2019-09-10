@@ -1,10 +1,10 @@
 {
-  "nixpkgs": "/home/dguibert/nur-packages/nixpkgs",
-  "_nixpkgs": {
+  "_nixpkgs": "/home/dguibert/code/nixpkgs",
+  "nixpkgs": {
     "owner": "dguibert",
     "repo": "nixpkgs",
-    "branch": "pu-work",
-    "rev": "46e788d9d21cbb5f0b287edd9d52126155da9ad2",
-    "sha256": "0cbbxcbx3l827f1v0apa27mfk621mnxrn1idfysaqhx95hsw72bx"
+    "branch": "pu",
+    "rev": "b526602075d4b1bb3c8ab0f1267e440154111e14",
+    "sha256": "0z0m8ijwcc9naqnc0nkvhm1chl5ciqv1v1rk825qnb5vk5h8gc2s"
   }
 }
