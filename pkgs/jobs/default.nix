@@ -26,7 +26,7 @@ with pkgs; let
 
     scheduler_slurm = import ./scheduler-slurm.nix { inherit pkgs date; };
 
-    vnc = import ./vnc.nix { inherit pkgs; };
+    vnc = import ./vnc.nix { inherit pkgs mkJob; };
 
     #node_check = lib.genAttrs (lib.mapAttrsToList (n: v: n) scheduler.partitions)
     #  (partition: lib.genAttrs scheduler.partitions."${partition}".nodeset
