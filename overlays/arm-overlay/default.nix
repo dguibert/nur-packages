@@ -51,4 +51,8 @@ in
     version="19.2";
     sha256 ="1zdn7dq05c7fjnh1wfgxkd5znrxy0g3h0kpyn3gar6n2qdl0j22v";
   };
+  armPackages_193 = armPackages {
+    version="19.3";
+    sha256 ="c21ba30180e173fd505998526f73df1e18b48c74d1249162ee0a9a101125b0d8";
+  };
 }
