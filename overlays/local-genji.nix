@@ -58,7 +58,7 @@ let
      };
      jobs = super.jobs.override {
        admin_scripts_dir = "/home_nfs/script/admin";
-       scheduler = super.jobs.scheduler_slurm;
+       #scheduler = super.jobs.scheduler_slurm;
      };
      fetchannex = { file ? builtins.baseNameOf url
                   , repo ? "${builtins.getEnv "HOME"}/nur-packages/downloads"

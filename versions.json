@@ -1,5 +1,6 @@
 {
-  "nixpkgs": "/home/dguibert/code/nixpkgs",
+  "nixpkgs": "/home/dguibert/nur-packages-genji/nixpkgs",
+  "__nixpkgs": "/home/dguibert/code/nixpkgs",
   "_nixpkgs": {
     "owner": "dguibert",
     "repo": "nixpkgs",
