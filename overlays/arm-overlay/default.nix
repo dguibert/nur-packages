@@ -34,7 +34,15 @@ let
       ];
       #extraBuildCommands = mkExtraBuildCommands cc;
     };
-    stdenv = super.overrideCC super.stdenv arm;
+    stdenv = let stdenv' = super.overrideCC super.stdenv arm; in
+      stdenv' // {
+        mkDerivation = args: stdenv'.mkDerivation (args // {
+          ALLINEA_LICENCE_FILE="/ccc/products/ccc_users_env/etc/allinea/Licence.arm";
+          impureEnvVars = (args.impureEnvVars or []) ++ [
+            "ALLINEA_LICENCE_FILE"
+          ];
+        });
+      };
   };
 
 in
