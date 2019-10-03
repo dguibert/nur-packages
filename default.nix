@@ -161,6 +161,7 @@ rec {
     inherit otf2;
     inherit muster;
   };
+  slurm_17_02_11 = pkgs.callPackage ./pkgs/slurm/17.02.11.nix { gtk2 = null; };
   slurm_17_11_5 = pkgs.callPackage ./pkgs/slurm/17.11.5.nix { gtk2 = null; };
   st = pkgs.st.override {patches = [
     ./pkgs/st/0001-theme-from-base16-c_header.patch
