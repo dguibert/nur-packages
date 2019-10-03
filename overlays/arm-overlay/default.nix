@@ -21,7 +21,18 @@ let
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-  armPackages = { version, sha256 }: rec {
+  armPackages = { version, sha256, release_version, llvmPackages }: let
+    mkExtraBuildCommands = cc: flang: ''
+      ${super.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -Wl,-rpath ${flang}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
+      rsrc="$out/resource-root"
+      mkdir "$rsrc"
+      ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
+      ln -s "${cc}/lib" "$rsrc/lib"
+      echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
+    '' + super.stdenv.lib.optionalString super.stdenv.targetPlatform.isLinux ''
+      echo "--gcc-toolchain=${llvmPackages.tools.clang-unwrapped.gcc} -B${llvmPackages.tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
+    '';
+    in rec {
     inherit (super.callPackage ./arm-compiler-for-hpc {
       inherit version sha256;
     })
@@ -32,9 +43,17 @@ let
       cc = unwrapped;
       extraPackages = [
       ];
-      #extraBuildCommands = mkExtraBuildCommands cc;
+      extraBuildCommands = mkExtraBuildCommands cc cc;
     };
-    stdenv = super.overrideCC super.stdenv arm;
+    stdenv = let stdenv' = super.overrideCC super.stdenv arm; in
+      stdenv' // {
+        mkDerivation = args: stdenv'.mkDerivation (args // {
+          ALLINEA_LICENCE_FILE="/ccc/products/ccc_users_env/etc/allinea/Licence.arm";
+          impureEnvVars = (args.impureEnvVars or []) ++ [
+            "ALLINEA_LICENCE_FILE"
+          ];
+        });
+      };
   };
 
 in
@@ -42,13 +61,25 @@ in
   armPackages_190 = armPackages {
     version="19.0";
     sha256 ="1c8843c6fd24ea7bfb8b4847da73201caaff79a1b8ad89692a88d29da0c5684e";
+    release_version = "7.1.0";
+    llvmPackages = super.llvmPackages_7;
   };
   armPackages_191 = armPackages {
     version="19.1";
     sha256 ="0hps82y7ga19n38n2fkbp4jm21fgbxx3ydqdnh0rfiwmxhvya07a";
+    release_version = "7.1.0";
+    llvmPackages = super.llvmPackages_7;
   };
   armPackages_192 = armPackages {
     version="19.2";
     sha256 ="1zdn7dq05c7fjnh1wfgxkd5znrxy0g3h0kpyn3gar6n2qdl0j22v";
+    release_version = "7.1.0";
+    llvmPackages = super.llvmPackages_7;
+  };
+  armPackages_193 = armPackages {
+    version="19.3";
+    sha256 ="c21ba30180e173fd505998526f73df1e18b48c74d1249162ee0a9a101125b0d8";
+    release_version = "7.1.0";
+    llvmPackages = super.llvmPackages_7;
   };
 }

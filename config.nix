@@ -3,6 +3,7 @@
 {
   permittedInsecurePackages = [
     "oraclejdk-10.0.2"
+    "webkitgtk-2.4.11"
   ];
   psxe.licenseFile = <secrets/pxse2019.1019.lic>;
 
