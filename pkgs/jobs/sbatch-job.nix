@@ -37,6 +37,7 @@ in builtins.trace extraArgs
   failureHooks+=(_benchFail)
   _benchFail() {
     cat $out/job
+    exit 0
   }
   set -xuef -o pipefail
   mkdir $out

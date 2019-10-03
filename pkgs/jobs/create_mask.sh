@@ -69,12 +69,12 @@ diviseur $(( socket_per_node*cores_per_socket*threads_per_core )) | while read P
     MASK_CPU+="0x$(bc <<< "obase=16;$bin"),"
   done
   MASK_CPU=${MASK_CPU%%,} # remove last ,
-  SRUN_OPTIONS=--cpu_bind=mask_cpu:$MASK_CPU
+  SRUN_OPTIONS=--cpu_bind=mask_cpu:$MASK_CPU,verbose
 
   echo "if [  \$OMP_NUM_THREADS == $OMP_NUM_THREADS ]; then"
   echo "  echo OMP_NUM_THREADS=$OMP_NUM_THREADS and PPN=$PPN "
   echo "  export S_LAUNCHER_OPTIONS=\"$SRUN_OPTIONS\""
-  echo "#  for Intel MPI"
-  echo "#  export I_MPI_PIN_DOMAIN=[$MASK_CPU]"
+  echo "# for Intel MPI"
+  echo "  export I_MPI_PIN_DOMAIN=[$MASK_CPU]"
   echo "fi"
 done
