@@ -1,0 +1,10 @@
+{
+    "inputs": {
+        "nixpkgs": {
+            "inputs": {},
+            "narHash": "sha256-Ca1oxCmsZCLAfNwPPL2pyebLMEZ//S5M8E8hP1GIWTo=",
+            "uri": "github:dguibert/nixpkgs/6096dbccb259594c393feac63ed2d813e9cb1dfd"
+        }
+    },
+    "version": 2
+}

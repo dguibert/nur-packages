@@ -86,9 +86,7 @@ rec {
 
   jobs = pkgs.callPackage ./pkgs/jobs {
     inherit stream;
-    #scheduler = jobs.scheduler_slurm;
     admin_scripts_dir = "";
-    scheduler = jobs.scheduler_local;
   };
 
   hpcg = pkgs.callPackage ./pkgs/hpcg { };
