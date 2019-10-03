@@ -1,6 +1,6 @@
 # see jobs/default.nix
 { pkgs
-, date ? "20181210"
+, date ? "20181211"
 }:
 with pkgs;
 
@@ -55,9 +55,10 @@ let
               #display(all_)
         '';
       in runCommand "${json_file}" { buildInputs = [ coreutils jq pythonPackages.pyslurm ];
-        #hashChangingValue = builtins.currentTime;
+        hashChangingValue = builtins.currentTime;
           } ''
       set -xeufo pipefail
+      ${scontrol_show_py} | jq '.[] | .name'
       ${scontrol_show_py} | jq '.' |sed -e 's@\\u001b\[D@ @g' > $out
       set +x
     '';
