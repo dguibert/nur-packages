@@ -1,11 +1,11 @@
 {
-  "nixpkgs": "/home/dguibert/nur-packages-genji/nixpkgs",
+  "_nixpkgs": "/home/dguibert/nur-packages-genji/nixpkgs",
   "__nixpkgs": "/home/dguibert/code/nixpkgs",
-  "_nixpkgs": {
+  "nixpkgs": {
     "owner": "dguibert",
     "repo": "nixpkgs",
-    "branch": "pu",
-    "rev": "d7ac1aa619b9615e2ea987782d6e0822c9a24c8c",
-    "sha256": "182dyg5g3k805nsdv062lqkwa2zr49r9jb75gma7diqypzr73mx5"
+    "branch": "pu-work",
+    "rev": "8ec42058f3f3ac2973acc8043c5827fc4485fe1c",
+    "sha256": "0wf87rngsnlyv08hcgjnwddbid7kqfln6nvbyrh8gw99vc61jdmg"
   }
 }
