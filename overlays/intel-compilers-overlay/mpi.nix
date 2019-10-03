@@ -6,6 +6,8 @@
 , version ? "2019.1.144"
 , url
 , sha256
+, libfabric
+, rdma-core
 }:
 
 let
@@ -70,7 +72,7 @@ self = stdenv.mkDerivation rec {
         ;;
       "application/x-sharedlib"|"application/x-pie-executable")
         echo "Patching library: $f"
-        patchelf --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../../libfabric/lib $f || true
+        patchelf --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../../libfabric/lib:\ORIGIN/..:${libfabric}/lib:${rdma-core}/lib $f || true
         ;;
       *)
         echo "$f ($type) not patched"

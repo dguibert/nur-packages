@@ -4,7 +4,7 @@ let
     intelPackages =
       { version
       , comp_url, comp_sha256 ? ""
-      , mpi_url, mpi_sha256 ? ""
+      , mpi_url, mpi_sha256 ? "", mpi_version ? version
       , redist_url, redist_sha256 ? ""
       , gcc ? pkgs.gcc7
       , pkgs ? super
@@ -32,36 +32,38 @@ let
         inherit cc bintools libc;
       } // extraArgs; in self);
 
+      self = with self; (if (comp_url != null) then {
+        redist = pkgs.callPackage ./redist.nix { inherit version; url=redist_url; sha256=redist_sha256; };
+        unwrapped = pkgs.callPackage ./compiler.nix { inherit version gcc; url=comp_url; sha256=comp_sha256; };
 
-    in (if (comp_url != null) then rec {
-      redist = pkgs.callPackage ./redist.nix { inherit version; url=redist_url; sha256=redist_sha256; };
-      unwrapped = pkgs.callPackage ./compiler.nix { inherit version gcc; url=comp_url; sha256=comp_sha256; };
+        mkl = pkgs.callPackage ./mkl.nix { inherit version gcc redist mpi; url=comp_url; sha256=comp_sha256; };
 
-      compilers = wrapCCWith {
-        cc = unwrapped;
-        extraPackages = [ redist pkgs.which pkgs.binutils unwrapped ];
+        compilers = wrapCCWith {
+          cc = unwrapped;
+          extraPackages = [ redist pkgs.which pkgs.binutils unwrapped ];
+        };
+
+        /* Return a modified stdenv that uses Intel compilers */
+        stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
+          mkDerivation = args: stdenv_.mkDerivation (args // {
+            CC="icc";
+            FC="ifort";
+            CXX="icpc";
+            F77="ifort";
+            postFixup = "${args.postFixup or ""}" + ''
+            set -x
+            storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
+            find $out -not -type d -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+            storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
+            find $out -not -type d -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+            set +x
+            '';
+          });
+        };
+      } else {}) // {
+        mpi = if (mpi_url!=null) then pkgs.callPackage ./mpi.nix { version = mpi_version; url=mpi_url; sha256=mpi_sha256;} else null;
       };
-
-      /* Return a modified stdenv that uses Intel compilers */
-      stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
-        mkDerivation = args: stdenv_.mkDerivation (args // {
-          CC="icc";
-          FC="ifort";
-          CXX="icpc";
-          F77="ifort";
-          postFixup = "${args.postFixup or ""}" + ''
-          set -x
-          storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-          find $out -not -type d -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-          storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-          find $out -not -type d -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-          set +x
-          '';
-        });
-      };
-    } else {}) // {
-      mpi = if (mpi_url!=null) then pkgs.callPackage ./mpi.nix { inherit version; url=mpi_url; sha256=mpi_sha256;} else null;
-    };
+    in self;
 
 in {
     # https://software.intel.com/en-us/articles/intel-compiler-and-composer-update-version-numbers-to-compiler-version-number-mapping
@@ -211,6 +213,7 @@ in {
       version = "2019.4.227";
       comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/parallel_studio_xe_2019_update4_composer_edition.tgz";
       comp_sha256 = "0n7wjq789v7z0rqmymb4ly54yiixshjlyrz80x0pjpz2zn6zlmpw";
+      mpi_version="2019.4.243";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15553/l_mpi_2019.4.243.tgz";
       mpi_sha256 = "233a8660b92ecffd89fedd09f408da6ee140f97338c293146c9c080a154c5fcd";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/l_comp_lib_2019.4.227_comp.for_redist.tgz";
