@@ -26,6 +26,7 @@ let
   inherit (import versions.nixpkgs {}) writeScript;
 
   version-updater = writeScript "version-updater.sh" ''
+    #!/usr/bin/env bash
     #! /usr/bin/env nix-shell
     #! nix-shell -i bash
     #! nix-shell -p curl jq nix git nix-prefetch-scripts
