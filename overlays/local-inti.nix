@@ -33,12 +33,18 @@ let
      libjpeg_turbo = super.libjpeg_turbo.overrideAttrs (attrs: {
        doCheck = false;
      });
+     coreutils = super.coreutils.overrideAttrs (attrs: {
+       doCheck = false;
+     });
      libuv = super.libuv.overrideAttrs (attrs: {
        doCheck = false;
      });
      e2fsprogs = super.e2fsprogs.overrideAttrs (attrs: {
        doCheck = false;
      });
+     #nix = super.nix.override {
+     #  src = /home/dguibert/code/nix;
+     #};
      #slurm = (super.slurm.override { enableX11=false; }).overrideAttrs (attrs: rec {
      #  name = "slurm-${version}";
      #  version = "16.05.11.1";

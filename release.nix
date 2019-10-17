@@ -139,6 +139,7 @@ in {
   nix_env = with pkgs; mkEnv { name="nix";
     buildInputs = [
       nix
+      jq gitFull nix-prefetch-scripts
     ];
     #inherit (versions) NIX_PATH;
   };

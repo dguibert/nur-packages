@@ -198,7 +198,7 @@ stdenv.mkDerivation {
         export named_fc=${targetPrefix}flang
       elif [ -e $ccPath/${targetPrefix}armflang ]; then
         wrap armflang ${./cc-wrapper.sh} $ccPath/armflang
-        export named_fc=${targetPrefix}flang
+        export named_fc=${targetPrefix}armflang
       fi
     ''
 

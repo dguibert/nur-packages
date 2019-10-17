@@ -63,9 +63,16 @@ in
   };
 
   aoccPackages_131 = aoccPackages {
-    release_version = "9.0.0";
+    release_version = "8.0.0";
     llvmPackages = super.llvmPackages_8;
     version="1.3.1";
     sha256 ="1nbzbw1jal4b8nzk0hj3zwalxna34f50j1v5l2aj2yp6aijla20s";
+  };
+
+  aoccPackages_200 = aoccPackages {
+    release_version = "8.0.0";
+    llvmPackages = super.llvmPackages_8;
+    version="2.0.0";
+    sha256 ="15syknz09hjdp4qnrzrbizfxxcvsg55i7417wvb417x3cis73z19";
   };
 }
