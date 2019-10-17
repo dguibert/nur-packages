@@ -157,6 +157,8 @@ rec {
 
   openmpi = builtins.trace "openmpi" (pkgs.callPackage ./pkgs/openmpi { enableSlurm=true; });
 
+  osu-micro-benchmarks = pkgs.callPackage ./pkgs/osu-micro-benchmarks { };
+
   ravel = pkgs.callPackage ./pkgs/ravel {
     inherit otf2;
     inherit muster;
