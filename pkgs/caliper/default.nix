@@ -39,13 +39,6 @@
 ## nvprof	WITH_NVPROF=On. Set CUPTI installation dir in CUPTI_PREFIX.
 ## vtune	WITH_VTUNE=On. Set Intel ITT API installation dir in ITT_PREFIX.
 let
-  gotcha = fetchgit {
-    url = "https://github.com/LLNL/gotcha.git";
-    rev = "refs/tags/1.0.2";
-    sha256 = "0p6x751cpmzkv9w51w1r1ifli1s7jjr2rxzmbpaxbi51damq3yf8";
-    leaveDotGit = true;
-  };
-
   googletest = fetchgit {
     url = "https://github.com/google/googletest.git";
     rev = "release-1.8.0";
@@ -56,20 +49,17 @@ let
 in
 
 stdenv.mkDerivation {
-  name = "caliper-2.0.1";
+  name = "caliper-2.1.1";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
-    rev = "refs/tags/v2.0.1";
-    sha256 = "sha256:1ihn8lkyc0vipnlz93g7n0av120bvs5skpg7bhzw2p9nwm2i705h";
+    rev = "refs/tags/v2.1.1";
+    sha256 = "sha256-76iSBrea3MU7aK9Vd9IDcYgRB1k2uTNKBNhVpDXHPjU=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ];
   nativeBuildInputs = [ cmake python git ];
 
   preConfigure = ''
-    sed -i -e 's@GIT_REPOSITORY    "https://github.com/LLNL/gotcha.git"@GIT_REPOSITORY    "${gotcha}"@' ext/gotcha/gotcha-download_CMakeLists.txt.in
-    sed -i -e 's@GIT_TAG           "1.0.2"@GIT_TAG "HEAD"@' ext/gotcha/gotcha-download_CMakeLists.txt.in
-
     sed -i -e 's@GIT_REPOSITORY    "https://github.com/google/googletest.git"@GIT_REPOSITORY    "${googletest}"@' ext/googletest/googletest-download_CMakeLists.txt.in
     sed -i -e 's@GIT_TAG           "release-1.8.0"@GIT_TAG "HEAD"@' ext/googletest/googletest-download_CMakeLists.txt.in
   '';
