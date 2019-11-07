@@ -155,7 +155,7 @@ rec {
 
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
 
-  inherit (pkgs.callPackage ./pkgs/openmpi { enableSlurm=true; inherit lib;})
+  inherit (pkgs.callPackage ./pkgs/openmpi { enableSlurm=true; inherit lib; openmpi=pkgs.openmpi; })
     openmpi
     openmpi_4_0_2
   ;
