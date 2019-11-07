@@ -40,6 +40,21 @@ in rec {
         ++ (optional enableX11 "--with-libssh2=${libssh2.dev}");
   });
 
+  slurm_17_11_5 = slurm'.overrideAttrs (oldAttrs: rec {
+    version = "17.11.5";
+
+    # N.B. We use github release tags instead of https://www.schedmd.com/downloads.php
+    # because the latter does not keep older releases.
+    src = fetchFromGitHub {
+      owner = "SchedMD";
+      repo = "slurm";
+      # The release tags use - instead of .
+      rev = "slurm-${builtins.replaceStrings ["."] ["-"] version}";
+      sha256 = "04fcrk18f6akbjbkaf60j900bl7vh4xfj54bwp1308r0znkpdpv6";
+    };
+
+  });
+
   slurm_17_11_9_1 = slurm'.overrideAttrs (oldAttrs: rec {
     version = "17.11.9.1";
 
