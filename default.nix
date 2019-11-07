@@ -22,10 +22,10 @@ rec {
   adapters = import ./pkgs/stdenv/adapters.nix pkgs;
   inherit (adapters) optimizePackage
                      withOpenMP
-		     optimizedStdEnv
-		     customFlags
-		     extraNativeCflags
-		     customFlagsWithinStdEnv;
+                     optimizedStdEnv
+                     customFlags
+                     extraNativeCflags
+                     customFlagsWithinStdEnv;
 
   example-package = pkgs.callPackage ./pkgs/example-package { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
@@ -155,7 +155,10 @@ rec {
 
   nix-patchtools = pkgs.callPackage ./pkgs/nix-patchtools { };
 
-  openmpi = builtins.trace "openmpi" (pkgs.callPackage ./pkgs/openmpi { enableSlurm=true; });
+  inherit (pkgs.callPackage ./pkgs/openmpi { enableSlurm=true; inherit lib;})
+    openmpi
+    openmpi_4_0_2
+  ;
 
   osu-micro-benchmarks = pkgs.callPackage ./pkgs/osu-micro-benchmarks { };
 
