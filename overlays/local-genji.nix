@@ -32,6 +32,9 @@ let
      go_1_11 = super.go_1_11.overrideAttrs (attrs: {
        doCheck = false;
      });
+     go_1_13 = super.go_1_13.overrideAttrs (attrs: {
+       doCheck = false;
+     });
      libuv = super.libuv.overrideAttrs (attrs: {
        doCheck = false;
      });
