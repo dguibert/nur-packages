@@ -60,5 +60,10 @@ in
     mpi_version = "3.1.3";
     sha256 ="13pngkq16w5n3g2578335qbvv3jk0f5vc96n8zrdc7bmvbaf1vi3";
   };
+  pgiPackages_1910 = pgiPackages {
+    version="2019-1910";
+    mpi_version = "3.1.3";
+    sha256 ="0g90ryl0nhrjci0jb2z8lis4dx8nksm3mxkmr0xzwrham0xvg7dc";
+  };
 }
 
