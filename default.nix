@@ -162,48 +162,56 @@ rec {
 
   osu-micro-benchmarks = pkgs.callPackage ./pkgs/osu-micro-benchmarks { };
 
-  python = pkgs.python.override {
-    packageOverrides = python-self: python-super: with python-self; {
-      pyslurm = lib.upgradeOverride python-super.pyslurm (oldAttrs: rec {
-        name = "${oldAttrs.pname}-${version}";
-        version = "19-05-0";
-      });
+  # https://github.com/NixOS/nixpkgs/issues/44426
+  python27 = pkgs.python27.override { packageOverrides = pythonOverrides; };
+  python35 = pkgs.python35.override { packageOverrides = pythonOverrides; };
+  python36 = pkgs.python36.override { packageOverrides = pythonOverrides; };
+  python37 = pkgs.python37.override { packageOverrides = pythonOverrides; };
+  python38 = pkgs.python38.override { packageOverrides = pythonOverrides; };
 
-      pyslurm_17_02_0 = (python-super.pyslurm.override { slurm=slurm_17_02_11; }).overrideAttrs (oldAttrs: rec {
-        name = "${oldAttrs.pname}-${version}";
-        version = "17.02.0";
+  pythonOverrides = python-self: python-super: with python-self; {
+    pyslurm = lib.upgradeOverride python-super.pyslurm (oldAttrs: rec {
+      name = "${oldAttrs.pname}-${version}";
+      version = "19-05-0";
+    });
 
-        patches = [];
+    pyslurm_17_02_0 = (python-super.pyslurm.override { slurm=slurm_17_02_11; }).overrideAttrs (oldAttrs: rec {
+      name = "${oldAttrs.pname}-${version}";
+      version = "17.02.0";
 
-        preConfigure = ''
-          sed -i -e 's@__max_slurm_hex_version__ = "0x11020a"@__max_slurm_hex_version__ = "0x11020b"@' setup.py
-        '';
+      patches = [];
 
-        src = pkgs.fetchFromGitHub {
-          repo = "pyslurm";
-          owner = "PySlurm";
-          # The release tags use - instead of .
-          rev = "refs/heads/17.02.0";
-          sha256 = "sha256:1b5xaq0w4rkax8y7rnw35fapxwn739i21dgb9609hg01z9b6n1ka";
-        };
+      preConfigure = ''
+        sed -i -e 's@__max_slurm_hex_version__ = "0x11020a"@__max_slurm_hex_version__ = "0x11020b"@' setup.py
+      '';
 
-      });
-      pyslurm_17_11_12 = (python-super.pyslurm.override { slurm=slurm_17_11_9_1;}).overrideAttrs (oldAttrs: rec {
-        name = "${oldAttrs.pname}-${version}";
-        version = "17.11.12";
+      src = pkgs.fetchFromGitHub {
+        repo = "pyslurm";
+        owner = "PySlurm";
+        # The release tags use - instead of .
+        rev = "refs/heads/17.02.0";
+        sha256 = "sha256:1b5xaq0w4rkax8y7rnw35fapxwn739i21dgb9609hg01z9b6n1ka";
+      };
 
-        patches = [];
+    });
+    pyslurm_17_11_12 = (python-super.pyslurm.override { slurm=slurm_17_11_9_1;}).overrideAttrs (oldAttrs: rec {
+      name = "${oldAttrs.pname}-${version}";
+      version = "17.11.12";
 
-        src = super.fetchFromGitHub {
-          repo = "pyslurm";
-          owner = "PySlurm";
-          # The release tags use - instead of .
-          rev = "${builtins.replaceStrings ["."] ["-"] version}";
-          sha256 = "01xdx2v3w8i3bilyfkk50f786fq60938ikqp2ls2kf3j218xyxmz";
-        };
+      patches = [];
 
-      });
-    };
+      src = super.fetchFromGitHub {
+        repo = "pyslurm";
+        owner = "PySlurm";
+        # The release tags use - instead of .
+        rev = "${builtins.replaceStrings ["."] ["-"] version}";
+        sha256 = "01xdx2v3w8i3bilyfkk50f786fq60938ikqp2ls2kf3j218xyxmz";
+      };
+
+    });
+    mpi4py = builtins.trace "mpi4py without check" python-super.mpi4py.overrideAttrs (oldAttrs: {
+      doCheck = false;
+    });
   };
 
   ravel = pkgs.callPackage ./pkgs/ravel {

@@ -1,7 +1,6 @@
 self: super:
 let
   overlay = (super.lib.composeOverlays [
-   (import ./default.nix).nix-ccc-guibertd
    (self: super: {
      _toolchain = builtins.trace "toolchain: ${super._toolchain}.inti" ("${super._toolchain}.inti");
      aws-sdk-cpp = super.aws-sdk-cpp.overrideAttrs (attrs: {
@@ -61,10 +60,10 @@ let
      #});
      slurm = super.slurm_17_11_5;
 
-     python = super.python.override {
-       packageOverrides = python-self: python-super: {
-         pyslurm = python-super.pyslurm_17_11_12.override { slurm=self.slurm; };
-     };
+     pythonOverrides = super.lib.composeOverlays (python-self: python-super: {
+       pyslurm = python-super.pyslurm_17_11_12.override { slurm=self.slurm; };
+     }) (super.pythonOverrides or (_:_: {}));
+
 
      jobs = super.jobs.override {
        admin_scripts_dir = null; #"/home_nfs/script/admin";
@@ -111,5 +110,6 @@ let
 #     gcc = super.gcc8;
 
    })
+   (import ./default.nix).nix-ccc-guibertd
  ]);
 in overlay self super

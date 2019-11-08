@@ -1,7 +1,6 @@
 self: super:
 let
   overlay = (super.lib.composeOverlays [
-   (import ./default.nix).nix-home-nfs-robin-ib-bguibertd
    (self: super: {
      _toolchain = builtins.trace "toolchain: ${super._toolchain}.genji" ("${super._toolchain}.genji");
      p11-kit = super.p11-kit.overrideAttrs (attrs: {
@@ -40,11 +39,10 @@ let
      });
      slurm = super.slurm_17_11_5;
 
-     python = super.python.override {
-       packageOverrides = python-self: python-super: {
-         pyslurm = python-super.pyslurm_17_11_12.override { slurm=self.slurm; };
-       };
-     };
+     pythonOverrides = super.lib.composeOverlays (python-self: python-super: {
+       pyslurm = python-super.pyslurm_17_11_12.override { slurm=self.slurm; };
+     }) (super.pythonOverrides or (_:_: {}));
+
      jobs = super.jobs.override {
        admin_scripts_dir = "/home_nfs/script/admin";
        #scheduler = super.jobs.scheduler_slurm;
@@ -70,5 +68,6 @@ let
        '';
      };
   })
+   (import ./default.nix).nix-home-nfs-robin-ib-bguibertd
   ]);
 in overlay self super
