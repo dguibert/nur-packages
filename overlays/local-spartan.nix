@@ -1,6 +1,8 @@
 self: super:
 let
   overlay = (super.lib.composeOverlays [
+   (import ./local-genji.nix)
+   (import ./default.nix).nix-home-nfs-bguibertd
    (self: super: {
      slurm = super.slurm_17_02_11;
 
@@ -9,7 +11,5 @@ let
      }) (super.pythonOverrides or (_:_: {}));
 
    })
-   (import ./default.nix).nix-home-nfs-bguibertd
-   (import ./local-genji.nix)
   ]);
 in overlay self super
