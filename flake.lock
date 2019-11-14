@@ -10,14 +10,14 @@
                 }
             },
             "narHash": "sha256-8IB1aT7vUcPv/di50R41r/9t8eWwGehY3SLPwBXi+/g=",
-            "originalUrl": "nix",
-            "url": "github:NixOS/nix/8d2eb1ff56ad17fe20e7f42a2e4b9b790640e806"
+            "originalUrl": "/home/dguibert/code/nix",
+            "url": "/home/dguibert/code/nix?ref=HEAD&rev=8d2eb1ff56ad17fe20e7f42a2e4b9b790640e806"
         },
         "nixpkgs": {
             "inputs": {},
-            "narHash": "sha256-6wavfuhsCKr1jSW7tqmSl+kspWlHBeU5mtM+dA9s/c8=",
-            "originalUrl": "github:dguibert/nixpkgs/pu",
-            "url": "github:dguibert/nixpkgs/1e30dc4b2676861435686897f3c999119fd5b7e8"
+            "narHash": "sha256-Rfx+2vg7umDFXxOSF8XK3id1JAv8H0M0dJU41XQ9iXI=",
+            "originalUrl": "/home/dguibert/code/nixpkgs",
+            "url": "/home/dguibert/code/nixpkgs?ref=HEAD&rev=97938ba381e175812534bae95725dd0d4e866578"
         }
     },
     "version": 3

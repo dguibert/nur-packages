@@ -4,7 +4,9 @@
   description = "A flake for building my NUR packages";
 
   inputs = {
-    nixpkgs.uri = "github:dguibert/nixpkgs/pu";
+    #nixpkgs.uri = "github:dguibert/nixpkgs/pu";
+    nixpkgs.uri = "/home/dguibert/code/nixpkgs";
+    nix.uri = "/home/dguibert/code/nix";
   };
 
   outputs = { self, nixpkgs, nix }: let
@@ -28,7 +30,7 @@
 
       devShell.x86_64-linux = with pkgs; mkEnv {
         name = "nix";
-        buildInputs = [ nix jq ];
+        buildInputs = [ pkgs.nix jq ];
       };
 
       ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.

@@ -8,8 +8,6 @@
   outputs = { self, nixpkgs, nix }:
 
     let
-      nix_root = "/nix";
-
       officialRelease = false;
 
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" ];
@@ -20,21 +18,16 @@
       nixpkgsFor = forAllSystems (system:
         import nixpkgs {
           inherit system;
-          overlays = [ self.overlay nix.overlay ];
+          overlays = [ nix.overlay self.overlay overlays.default ];
         }
       );
+
+      overlays = import ../overlays;
 
     in {
 
       # A Nixpkgs overlay that overrides the 'nix'
-      overlay = final: prev: {
-        inherit nix_root;
-        nix = prev.nix.override {
-          storeDir = "${nix_root}/store";
-          stateDir = "${nix_root}/var";
-          confDir = "${nix_root}/etc";
-        };
-      };
+      overlay = import ./nix-overlay.nix;
 
       hydraJobs = {
 
@@ -57,7 +50,8 @@
           let
             #version = nix.src.version;
             version = nix.hydraJobs.tarball.version;
-            installerClosureInfo = closureInfo { rootPaths = [ nix cacert ]; };
+            nix_ = nixpkgsFor.${system}.nix;
+            installerClosureInfo = closureInfo { rootPaths = [ nix_ cacert ]; };
           in
 
           runCommand "nix-binary-tarball-${version}"
@@ -66,21 +60,21 @@
             }
             ''
               set -x
-              tar xf ${nix.hydraJobs.tarball}/tarballs/nix-*.tar.xz
+              tar xf ${nix_.src}/tarballs/nix-*.tar.xz
               cp ${installerClosureInfo}/registration $TMPDIR/reginfo
               substitute nix-${version}/scripts/install-nix-from-closure.sh $TMPDIR/install \
-                --subst-var-by nix ${nix} \
+                --subst-var-by nix ${nix_} \
                 --subst-var-by cacert ${cacert}
-              sed -i -e 's@dest="/nix"@dest="${nix_root}"@' $TMPDIR/install
+              sed -i -e 's@dest="/nix"@dest="${nixStore}"@' $TMPDIR/install
 
               substitute nix-${version}/scripts/install-darwin-multi-user.sh $TMPDIR/install-darwin-multi-user.sh \
-                --subst-var-by nix ${nix} \
+                --subst-var-by nix ${nix_} \
                 --subst-var-by cacert ${cacert}
               substitute nix-${version}/scripts/install-systemd-multi-user.sh $TMPDIR/install-systemd-multi-user.sh \
-                --subst-var-by nix ${nix} \
+                --subst-var-by nix ${nix_} \
                 --subst-var-by cacert ${cacert}
               substitute nix-${version}/scripts/install-multi-user.sh $TMPDIR/install-multi-user \
-                --subst-var-by nix ${nix} \
+                --subst-var-by nix ${nix_} \
                 --subst-var-by cacert ${cacert}
 
               if type -p shellcheck; then
@@ -140,7 +134,7 @@
                   [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" ]
                 } \
                 --replace '@nixVersion@' ${nix.src.version}
-                --replace 'dest="/nix" 'dest="${nix_root}'
+                --replace 'dest="/nix" 'dest="${nixStore}'
 
               echo "file installer $out/install" >> $out/nix-support/hydra-build-products
             '';
@@ -289,30 +283,39 @@
 
       defaultPackage = forAllSystems (system: self.packages.${system}.nix);
 
-      devShell = forAllSystems (system:
-        with nixpkgsFor.${system};
-        with commonDeps pkgs;
+      devShell.x86_64-linux = with nixpkgsFor.x86_64-linux; mkEnv rec {
+        name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+        buildInputs = [ nixpkgsFor.x86_64-linux.nix jq ];
+        shellHook = ''
+          export XDG_CACHE_HOME=$HOME/.cache/${name}
+          unset NIX_STORE
+        '';
+      };
 
-        stdenv.mkDerivation {
-          name = "nix";
+      #devShell = forAllSystems (system:
+      #  with nixpkgsFor.${system};
+      #  with commonDeps pkgs;
 
-          buildInputs = buildDeps ++ tarballDeps ++ perlDeps;
+      #  stdenv.mkDerivation {
+      #    name = "nix";
 
-          inherit configureFlags;
+      #    buildInputs = buildDeps ++ tarballDeps ++ perlDeps;
 
-          enableParallelBuilding = true;
+      #    inherit configureFlags;
 
-          installFlags = "sysconfdir=$(out)/etc";
+      #    enableParallelBuilding = true;
 
-          shellHook =
-            ''
-              export prefix=$(pwd)/inst
-              configureFlags+=" --prefix=$prefix"
-              PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$PKG_CONFIG_PATH
-              PATH=$prefix/bin:$PATH
-              unset PYTHONPATH
-            '';
-        });
+      #    installFlags = "sysconfdir=$(out)/etc";
+
+      #    shellHook =
+      #      ''
+      #        export prefix=$(pwd)/inst
+      #        configureFlags+=" --prefix=$prefix"
+      #        PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$PKG_CONFIG_PATH
+      #        PATH=$prefix/bin:$PATH
+      #        unset PYTHONPATH
+      #      '';
+      #  });
 
   };
 }
