@@ -149,7 +149,8 @@ rec {
   must = pkgs.callPackage ./pkgs/must { inherit dyninst; };
   muster = pkgs.callPackage ./pkgs/muster { };
   nemo_36 = pkgs.callPackage ./pkgs/nemo/3.6.nix { xios = xios_10; };
-  nemo = pkgs.callPackage ./pkgs/nemo { inherit xios; };
+  inherit (pkgs.callPackage ./pkgs/nemo { /*inherit xios;*/ })
+  nemo nemo_r10798;
 
   netcdf = pkgs.callPackage ./pkgs/netcdf { inherit compilers_line; };
 
