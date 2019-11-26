@@ -39,9 +39,12 @@ let
      });
      slurm = super.slurm_17_11_5;
 
-     pythonOverrides = super.lib.composeOverlays (python-self: python-super: {
-       pyslurm = python-super.pyslurm_17_11_12.override { slurm=self.slurm; };
-     }) (super.pythonOverrides or (_:_: {}));
+     pythonOverrides = super.lib.composeOverlays [
+       (super.pythonOverrides or (_:_: {}))
+       (python-self: python-super: {
+         pyslurm = python-super.pyslurm_17_11_12.override { slurm=self.slurm; };
+       })
+     ];
 
      jobs = super.jobs.override {
        admin_scripts_dir = "/home_nfs/script/admin";

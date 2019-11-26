@@ -6,10 +6,12 @@ let
    (self: super: {
      slurm = super.slurm_17_02_11;
 
-     pythonOverrides = super.lib.composeOverlays (python-self: python-super: {
-       pyslurm = python-super.pyslurm_17_02_0.override { slurm=self.slurm; };
-     }) (super.pythonOverrides or (_:_: {}));
-
+     pythonOverrides = super.lib.composeOverlays [
+       (super.pythonOverrides or (_:_: {}))
+       (python-self: python-super: {
+         pyslurm = python-super.pyslurm_17_02_0.override { slurm=self.slurm; };
+       })
+     ];
    })
   ]);
 in overlay self super
