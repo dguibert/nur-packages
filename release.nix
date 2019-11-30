@@ -68,7 +68,7 @@ in {
   #miniapp-ping-pongIntel = pkgs.miniapp-ping-pongIntel;
   #jobs = pkgs.jobs;
 
-  nix_binary_tarball = with pkgs; let
+  binaryTarball = with pkgs; let
     nix_root = pkgs.nix_root or "/nix";
     nix_ = pkgs.nix;
     version = nix_.version;
