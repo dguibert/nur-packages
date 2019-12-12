@@ -4,9 +4,8 @@
   description = "A flake for building my NUR packages";
 
   inputs = {
-    #nixpkgs.uri = "github:dguibert/nixpkgs/pu";
-    nixpkgs.uri = "/home/dguibert/code/nixpkgs";
-    nix.uri = "/home/dguibert/code/nix";
+    nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
+    nix.uri              = "github:dguibert/nix/pu";
   };
 
   outputs = { self, nixpkgs, nix }: let
