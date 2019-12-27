@@ -236,6 +236,17 @@ in {
 
     stdenvIntel = self.intelPackages_2019.stdenv;
 
+    intelPackages_2020_0_166 = intelPackages {
+      version = "2020.0.166";
+      comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16226/parallel_studio_xe_2020_professional_edition.tgz";
+      comp_sha256 = "1b0mdxn3108454rxqca7z4dxkvqkrzf2mcc7rgchx9cds8cav378";
+      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15838/l_mpi_2019.6.166.tgz";
+      mpi_sha256="0vnd32pws5kxyxkrbbbqbajx4mcfj51ld2wvbsg3mj8p26gyd6qi";
+      redist_url="https://software.intel.com/sites/default/files/managed/8a/61/l_comp_lib_2020.0.166_comp.for_redist.tgz";
+      redist_sha256="0l7k1hs9f0fwwf8r8syva7ysq7744r85v5sld708bkp0kwwdswah";
+      gcc = super.gcc7;
+    };
+
     helloIntel = super.hello.override { stdenv = self.stdenvIntel; };
     miniapp-ping-pongIntel = super.miniapp-ping-pong.override { stdenv = self.stdenvIntel;
       caliper = super.caliper.override { stdenv = self.stdenvIntel;
