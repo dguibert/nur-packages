@@ -42,7 +42,6 @@
           overlays =  [
             overlays.default
             nix.overlay
-            my-nix-overlay
             self.overlay
           ];
           config.allowUnfree = true;
@@ -51,7 +50,6 @@
 
 
     overlays = import ../../overlays;
-    my-nix-overlay = import ../../nix/nix-overlay.nix;
 
   in rec {
     overlay = final: prev: {
