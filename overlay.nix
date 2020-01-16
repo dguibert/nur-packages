@@ -21,6 +21,9 @@ final: prev: {
     inherit (final) cubew;
     inherit (final) cubelib;
   };
+
+  libffi_3_2 = final.callPackage ./pkgs/libffi/3.2.nix { };
+
   caliper = final.callPackage ./pkgs/caliper {
     inherit (final) dyninst;
   };

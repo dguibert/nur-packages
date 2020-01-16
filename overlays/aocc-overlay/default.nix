@@ -21,7 +21,10 @@ let
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-  aoccPackages = { version, sha256, release_version, llvmPackages }: let
+  aoccPackages = { version, sha256, release_version
+                 , llvmPackages ? null
+		 , gcc ? llvmPackages.tools.clang-unwrapped.gcc
+	         }: let
     mkExtraBuildCommands = cc: flang: ''
       ${super.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -Wl,-rpath ${flang}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
       rsrc="$out/resource-root"
@@ -30,7 +33,7 @@ let
       ln -s "${cc}/lib" "$rsrc/lib"
       echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
     '' + super.stdenv.lib.optionalString super.stdenv.targetPlatform.isLinux ''
-      echo "--gcc-toolchain=${llvmPackages.tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
+      echo "--gcc-toolchain=${gcc}" >> $out/nix-support/cc-cflags
     '';
   in rec {
     unwrapped = super.callPackage ./aocc {
@@ -63,16 +66,23 @@ in
   };
 
   aoccPackages_131 = aoccPackages {
-    release_version = "8.0.0";
-    llvmPackages = super.llvmPackages_8;
+    release_version = "9.0.0";
+    llvmPackages = super.llvmPackages_9;
     version="1.3.1";
     sha256 ="1nbzbw1jal4b8nzk0hj3zwalxna34f50j1v5l2aj2yp6aijla20s";
   };
 
   aoccPackages_200 = aoccPackages {
-    release_version = "8.0.0";
-    llvmPackages = super.llvmPackages_8;
+    release_version = "9.0.0";
+    llvmPackages = super.llvmPackages_9;
     version="2.0.0";
     sha256 ="15syknz09hjdp4qnrzrbizfxxcvsg55i7417wvb417x3cis73z19";
+  };
+
+  aoccPackages_210 = aoccPackages {
+    release_version = "9.0.0";
+    gcc = self.gcc9.cc;
+    version="2.1.0";
+    sha256 ="084xgg6xnrjrzl1iyqyrb51f7x2jnmpzdd39ad81dn10db99b405";
   };
 }
