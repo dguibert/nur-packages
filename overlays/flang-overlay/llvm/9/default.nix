@@ -1,6 +1,6 @@
 { lowPrio, newScope, pkgs, stdenv, cmake, libstdcxxHook
 , libxml2, python, isl, fetchurl, overrideCC, wrapCCWith
-, llvmPackages_8
+, llvmPackages_9
 , fetchFromGitHub
 #, buildLlvmTools # tools, but from the previous stage, for cross
 #, targetLlvmLibraries # libraries, but from the next stage, for cross
@@ -25,7 +25,7 @@ let
 
     libraries  = let
         callPackage = newScope (libraries // { inherit stdenv cmake libxml2 python isl release_version version; });
-      in   llvmPackages_8.libraries.extend (s: p: {
+      in   llvmPackages_9.libraries.extend (s: p: {
           openmp = callPackage ./openmp.nix { };
         });
     tools = let
@@ -62,13 +62,13 @@ let
         inherit cc bintools libc;
       } // extraArgs; in self);
 
-    in llvmPackages_8.tools.extend (s: p: {
+    in llvmPackages_9.tools.extend (s: p: {
         clang-unwrapped = callPackage ./clang { };
         libpgmath = callPackage ../libpgmath.nix {
-          stdenv = llvmPackages_8.stdenv;
+          stdenv = llvmPackages_9.stdenv;
         };
         flang-unwrapped = callPackage ../flang.nix {
-          stdenv = llvmPackages_8.stdenv;
+          stdenv = llvmPackages_9.stdenv;
           inherit (libraries) openmp;
         };
         flang = wrapCCWith rec {

@@ -34,7 +34,7 @@ in stdenv.mkDerivation (rec {
     owner = "flang-compiler";
     repo = "llvm";
     rev = "release_70";
-    sha256 = "0xmcn6kkgll1wc58dxq0d4jzsfx3xnwr4i293725b32ivd9q6bxp";
+    sha256 = "sha256-PbftQkjNWqq5mduQU3bpGxYqacp3EtPtZcbbxfn88sc=";
   };
 
   outputs = [ "out" "python" ]
@@ -98,7 +98,7 @@ in stdenv.mkDerivation (rec {
   cmakeFlags = with stdenv; [
     "-DCMAKE_BUILD_TYPE=${if debugVersion then "Debug" else "Release"}"
     "-DLLVM_INSTALL_UTILS=ON"  # Needed by rustc
-    "-DLLVM_BUILD_TESTS=ON"
+    "-DLLVM_BUILD_TESTS=OFF"
     "-DLLVM_ENABLE_FFI=ON"
     "-DLLVM_ENABLE_RTTI=ON"
     "-DLLVM_HOST_TRIPLE=${stdenv.hostPlatform.config}"

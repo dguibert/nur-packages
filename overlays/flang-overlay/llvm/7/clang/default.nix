@@ -11,7 +11,7 @@ let
       owner = "flang-compiler";
       repo = "flang-driver";
       rev = "release_70";
-      sha256 = "1h924p0998wfazszraa62x35bkdaqzyh0fsbwm5w8d8jyxsl515g";
+      sha256 = "sha256-BLkD1eUBYuX7oRApkDJYr676HdT3V2Jx+pWsFoi7+7s=";
     };
     nativeBuildInputs = [ cmake python ]
       ++ stdenv.lib.optional enableManpages python.pkgs.sphinx;

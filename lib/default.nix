@@ -1,6 +1,6 @@
-{ pkgs }:
+{ pkgs ? null, lib ? pkgs.lib }:
 
-with pkgs.lib; pkgs.lib // rec {
+with lib; lib // rec {
   # Add your library functions here
   #
   # hexint = x: hexvals.${toLower x};

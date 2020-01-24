@@ -98,7 +98,7 @@ in stdenv.mkDerivation (rec {
   cmakeFlags = with stdenv; [
     "-DCMAKE_BUILD_TYPE=${if debugVersion then "Debug" else "Release"}"
     "-DLLVM_INSTALL_UTILS=ON"  # Needed by rustc
-    "-DLLVM_BUILD_TESTS=ON"
+    "-DLLVM_BUILD_TESTS=OFF"
     "-DLLVM_ENABLE_FFI=ON"
     "-DLLVM_ENABLE_RTTI=ON"
     "-DLLVM_HOST_TRIPLE=${stdenv.hostPlatform.config}"
@@ -120,7 +120,7 @@ in stdenv.mkDerivation (rec {
     "-DCAN_TARGET_i386=false"
   ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     "-DCMAKE_CROSSCOMPILING=True"
-    "-DLLVM_TABLEGEN=${buildPackages.llvm_7}/bin/llvm-tblgen"
+    "-DLLVM_TABLEGEN=${buildPackages.llvm_8}/bin/llvm-tblgen"
   ];
 
   postBuild = ''
