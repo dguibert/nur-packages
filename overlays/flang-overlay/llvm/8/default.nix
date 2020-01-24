@@ -1,6 +1,6 @@
 { lowPrio, newScope, pkgs, stdenv, cmake, libstdcxxHook
 , libxml2, python, isl, fetchurl, overrideCC, wrapCCWith
-, llvmPackages_7
+, llvmPackages_8
 , fetchFromGitHub
 #, buildLlvmTools # tools, but from the previous stage, for cross
 #, targetLlvmLibraries # libraries, but from the next stage, for cross
@@ -13,7 +13,7 @@
 # forked from pkgs/development/compilers/llvm/6/default.nix
 
 let
-  release_version = "7.0.1";
+  release_version = "8.0.1";
   version = release_version; # differentiating these is important for rc's
 
     flang_src = fetchFromGitHub {
@@ -25,7 +25,7 @@ let
 
     libraries  = let
         callPackage = newScope (libraries // { inherit stdenv cmake libxml2 python isl release_version version; });
-      in   llvmPackages_7.libraries.extend (s: p: {
+      in   llvmPackages_8.libraries.extend (s: p: {
           openmp = callPackage ./openmp.nix { };
         });
     tools = let
@@ -62,13 +62,13 @@ let
         inherit cc bintools libc;
       } // extraArgs; in self);
 
-    in llvmPackages_7.tools.extend (s: p: {
+    in llvmPackages_8.tools.extend (s: p: {
         clang-unwrapped = callPackage ./clang { };
         libpgmath = callPackage ../libpgmath.nix {
-          stdenv = llvmPackages_7.stdenv;
+          stdenv = llvmPackages_8.stdenv;
         };
         flang-unwrapped = callPackage ../flang.nix {
-          stdenv = llvmPackages_7.stdenv;
+          stdenv = llvmPackages_8.stdenv;
           inherit (libraries) openmp;
         };
         flang = wrapCCWith rec {

@@ -21,16 +21,23 @@ let
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-  armPackages = { version, sha256, release_version, llvmPackages }: let
+  armPackages = { version, sha256, release_version
+                , llvmPackages ? null
+                , gcc ? llvmPackages.tools.clang-unwrapped.gcc }: let
     mkExtraBuildCommands = cc: flang: ''
       ${super.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -Wl,-rpath ${flang}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
       rsrc="$out/resource-root"
       mkdir "$rsrc"
+
+      if test ! -e ${cc}/lib/clang/${release_version}; then
+        exit 1
+      fi
+
       ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
       ln -s "${cc}/lib" "$rsrc/lib"
       echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
     '' + super.stdenv.lib.optionalString super.stdenv.targetPlatform.isLinux ''
-      echo "--gcc-toolchain=${llvmPackages.tools.clang-unwrapped.gcc} -B${llvmPackages.tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
+      echo "--gcc-toolchain=${gcc} -B${llvmPackages.tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
     '';
     in rec {
     inherit (super.callPackage ./arm-compiler-for-hpc {
@@ -81,5 +88,11 @@ in
     sha256 ="c21ba30180e173fd505998526f73df1e18b48c74d1249162ee0a9a101125b0d8";
     release_version = "7.1.0";
     llvmPackages = super.llvmPackages_7;
+  };
+  armPackages_200 = armPackages {
+    version="20.0";
+    sha256 ="1kvl6fqc2yv4wwmdxgdwksnxlcz7h5b6jcsjbr466ggrn8b0hd4m";
+    release_version = "9.0.1";
+    llvmPackages = super.llvmPackages_8;
   };
 }

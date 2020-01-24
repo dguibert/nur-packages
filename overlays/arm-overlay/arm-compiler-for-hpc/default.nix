@@ -7,6 +7,7 @@
 , libxml2
 , version
 , sha256
+, lib
 }:
 
 let
@@ -27,12 +28,19 @@ let
     done
   '';
 
+  ext = if lib.versionOlder version "2.0"
+    then "hpc"
+    else "linux";
+  Ext = if lib.versionOlder version "2.0"
+    then "HPC."
+    else "Linux_";
+
   common = { components, extraLibs ? [], ... }@args: stdenv.mkDerivation (rec {
-    name = "arm-compiler-for-hpc-${version}";
+    name = "arm-compiler-for-${ext}-${version}";
     src = fetchannex {
       url = "https://developer.arm.com/products/software-development-tools/compilers";
-      file = "Arm-Compiler-for-HPC.${version}_RHEL_7_aarch64.tar";
-      name = "Arm-Compiler-for-HPC.${version}_RHEL_7_aarch64.tar";
+      file = "Arm-Compiler-for-${Ext}${version}_RHEL_7_aarch64.tar";
+      name = "Arm-Compiler-for-${Ext}${version}_RHEL_7_aarch64.tar";
       inherit sha256;
     };
     dontPatchELF = true;
@@ -55,6 +63,9 @@ let
 
       set -xve
       export build=$PWD
+
+      ls rpms
+
       mkdir $out; cd $out
       ${stdenv.lib.concatMapStringsSep "\n" extract components}
 
@@ -75,13 +86,13 @@ let
 in rec {
   unwrapped = common {
     components = [
-      "arm-hpc-compiler-${version}_Generic-AArch64_RHEL-7_aarch64-linux-*"
+      "arm-${ext}-compiler-${version}_Generic-AArch64_RHEL-7_aarch64-linux-*"
     ];
   };
   armpl = common {
     name = "armpl-${version}";
     components = [
-      "armpl-${version}.0_Generic-AArch64_RHEL-7_arm-hpc-compiler_${version}_aarch64-linux-*"
+      "armpl-${version}.0_Generic-AArch64_RHEL-7_arm-${ext}-compiler_${version}_aarch64-linux-*"
     ];
     extraLibs = [ unwrapped ];
     postFixup = ''

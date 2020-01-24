@@ -41,7 +41,7 @@ in rec {
   });
 
   slurm_17_11_5 = slurm'.overrideAttrs (oldAttrs: rec {
-    version = "17.11.5";
+    version = "17.11.5.1";
 
     # N.B. We use github release tags instead of https://www.schedmd.com/downloads.php
     # because the latter does not keep older releases.
@@ -50,8 +50,15 @@ in rec {
       repo = "slurm";
       # The release tags use - instead of .
       rev = "slurm-${builtins.replaceStrings ["."] ["-"] version}";
-      sha256 = "04fcrk18f6akbjbkaf60j900bl7vh4xfj54bwp1308r0znkpdpv6";
+      sha256 = "sha256:0h1kp6z3k6lyldf8pky8iarpkmqpb856pndfvg7i4x7yad49q893";
     };
+    buildInputs = with oldAttrs.buildInputs; [
+      curl python munge perl pam openssl zlib
+      libmysqlclient ncurses gtk2 lz4
+      lua numactl readline freeipmi
+      pmix
+    ] ++ stdenv.lib.optionals enableX11 [ libssh2 xorg.xauth ];
+
 
   });
 

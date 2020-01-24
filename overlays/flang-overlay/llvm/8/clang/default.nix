@@ -10,8 +10,8 @@ let
     src = fetchFromGitHub {
       owner = "flang-compiler";
       repo = "flang-driver";
-      rev = "release_70";
-      sha256 = "sha256-BLkD1eUBYuX7oRApkDJYr676HdT3V2Jx+pWsFoi7+7s=";
+      rev = "release_80";
+      sha256 = "sha256-m+oGudVAoQeQtIOO0gcmKyTYPtPiaxtPcXe69KMV1WM=";
     };
     nativeBuildInputs = [ cmake python ]
       ++ stdenv.lib.optional enableManpages python.pkgs.sphinx;

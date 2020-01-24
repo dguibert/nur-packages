@@ -15,7 +15,9 @@
 , debugVersion ? false
 , enableManpages ? false
 , enableSharedLibraries ? true
-, enablePFM ? !stdenv.isDarwin
+, enablePFM ? !(stdenv.isDarwin
+  || stdenv.isAarch64 # broken for Ampere eMAG 8180 (c2.large.arm on Packet) #56245
+)
 , enablePolly ? false
 }:
 
@@ -28,43 +30,27 @@ let
     concatStringsSep "." (take 1 (splitString "." release_version));
 
 in stdenv.mkDerivation (rec {
-  name = "llvm-${version}";
+  pname = "llvm";
+  inherit version;
+
 
   src = fetchFromGitHub {
     owner = "flang-compiler";
     repo = "llvm";
-    rev = "release_70";
-    sha256 = "sha256-PbftQkjNWqq5mduQU3bpGxYqacp3EtPtZcbbxfn88sc=";
+    rev = "release_90";
+    sha256 = "sha256-ga1tfCSQVtnOBFA1/a9PZpSYeHVD5O0WL7P2QhZlpBg=";
   };
 
   outputs = [ "out" "python" ]
     ++ optional enableSharedLibraries "lib";
 
   nativeBuildInputs = [ cmake python ]
-    ++ optional enableManpages python.pkgs.sphinx;
+    ++ optionals enableManpages [ python.pkgs.sphinx python.pkgs.recommonmark ];
 
   buildInputs = [ libxml2 libffi ]
     ++ optional enablePFM libpfm; # exegesis
 
   propagatedBuildInputs = [ ncurses zlib ];
-
-  patches = [
-    # https://bugs.llvm.org/show_bug.cgi?id=39427
-    # https://github.com/NixOS/nixpkgs/issues/54370
-    #(fetchpatch {
-    #  url = "https://github.com/llvm-mirror/llvm/commit/57567def148f387153a8149fb590bd39b1b006a1.patch";
-    #  sha256 = "1w1xg5pxpc6cals1nf5j5k4p6qi8lcrpvn0paxc86m415i79xmcg";
-    #})
-    ## backport, fix building rust crates with lto
-    #(fetchpatch {
-    #  url = "https://github.com/llvm-mirror/llvm/commit/da1fb72bb305d6bc1f3899d541414146934bf80f.patch";
-    #  sha256 = "0p81gkhc1xhcx0hmnkwyhrn8x8l8fd24xgaj1whni29yga466dwc";
-    #})
-    #(fetchpatch {
-    #  url = "https://github.com/llvm-mirror/llvm/commit/cc1f2a595ead516812a6c50398f0f3480ebe031f.patch";
-    #  sha256 = "0k6k1p5yisgwx417a67s7sr9930rqh1n0zv5jvply8vjjy4b3kf8";
-    #})
-  ];
 
   postPatch = optionalString stdenv.isDarwin ''
     substituteInPlace cmake/modules/AddLLVM.cmake \
@@ -80,13 +66,36 @@ in stdenv.mkDerivation (rec {
     substituteInPlace unittests/Support/CMakeLists.txt \
       --replace "Path.cpp" ""
     rm unittests/Support/Path.cpp
+
+    substituteInPlace unittests/IR/CMakeLists.txt \
+      --replace "MetadataTest.cpp" ""
+    rm unittests/IR/MetadataTest.cpp
   '' + optionalString stdenv.hostPlatform.isMusl ''
     patch -p1 -i ${../TLI-musl.patch}
     substituteInPlace unittests/Support/CMakeLists.txt \
       --replace "add_subdirectory(DynamicLibrary)" ""
     rm unittests/Support/DynamicLibrary/DynamicLibraryTest.cpp
+    # valgrind unhappy with musl or glibc, but fails w/musl only
+    rm test/CodeGen/AArch64/wineh4.mir
+  '' + optionalString stdenv.hostPlatform.isAarch32 ''
+    # skip failing X86 test cases on 32-bit ARM
+    rm test/DebugInfo/X86/convert-debugloc.ll
+    rm test/DebugInfo/X86/convert-inlined.ll
+    rm test/DebugInfo/X86/convert-linked.ll
+    rm test/tools/dsymutil/X86/op-convert.test
+  '' + optionalString (stdenv.hostPlatform.system == "armv6l-linux") ''
+    # Seems to require certain floating point hardware (NEON?)
+    rm test/ExecutionEngine/frem.ll
   '' + ''
     patchShebangs test/BugPoint/compile-custom.ll.py
+
+    # Fix test so that no extra locale files are needed
+    substituteInPlace test/tools/llvm-ar/mri-utf8.test \
+      --replace en_US.UTF-8 C.UTF-8
+
+    # Fix x86 gold test on non-x86 platforms
+    # (similar fix made to others in this directory previously, FWIW)
+    patch -p1 -i  ${./fix-test-on-non-x86-like-others.patch}
   '';
 
   # hacky fix: created binaries need to be run before installation
@@ -103,7 +112,6 @@ in stdenv.mkDerivation (rec {
     "-DLLVM_ENABLE_RTTI=ON"
     "-DLLVM_HOST_TRIPLE=${stdenv.hostPlatform.config}"
     "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
-    "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
     "-DLLVM_ENABLE_DUMP=ON"
   ] ++ optionals enableSharedLibraries [
     "-DLLVM_LINK_LLVM_DYLIB=ON"
@@ -120,7 +128,7 @@ in stdenv.mkDerivation (rec {
     "-DCAN_TARGET_i386=false"
   ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     "-DCMAKE_CROSSCOMPILING=True"
-    "-DLLVM_TABLEGEN=${buildPackages.llvm_7}/bin/llvm-tblgen"
+    "-DLLVM_TABLEGEN=${buildPackages.llvm_9}/bin/llvm-tblgen"
   ];
 
   postBuild = ''
@@ -154,8 +162,6 @@ in stdenv.mkDerivation (rec {
 
   enableParallelBuilding = true;
 
-  passthru.src = src;
-
   meta = {
     description = "Collection of modular and reusable compiler and toolchain technologies";
     homepage    = http://llvm.org/;
@@ -164,7 +170,7 @@ in stdenv.mkDerivation (rec {
     platforms   = stdenv.lib.platforms.all;
   };
 } // stdenv.lib.optionalAttrs enableManpages {
-  name = "llvm-manpages-${version}";
+  pname = "llvm-manpages";
 
   buildPhase = ''
     make docs-llvm-man

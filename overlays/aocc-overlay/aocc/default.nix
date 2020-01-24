@@ -6,7 +6,7 @@
 , version
 , sha256
 , lib
-, libffi
+, libffi_3_2
 , elfutils
 }:
 
@@ -20,6 +20,7 @@ stdenv.mkDerivation {
     inherit sha256;
   };
   dontStrip = true;
+  dontPatchELF = true;
 
   buildInputs = [ nix-patchtools ];
   libs = stdenv.lib.makeLibraryPath ([
@@ -32,7 +33,7 @@ stdenv.mkDerivation {
     libxml2
     #"${placeholder "out"}/lib"
   ] ++ lib.optionals (lib.versionAtLeast version "2.0.0") [
-   libffi
+   libffi_3_2
    elfutils
   ]);
   installPhase = ''
@@ -45,6 +46,7 @@ stdenv.mkDerivation {
     ln -s ${ncurses.out}/lib/libncursesw.so.6 $out/lib/libtinfo.so.5
 
     export libs=$libs:$out/lib
+    echo "LIBS: $libs"
     autopatchelf $out
   '';
   passthru = {

@@ -1,17 +1,19 @@
 { stdenv, fetchFromGitHub, cmake, libxml2, llvm, version, python
 , fixDarwinDylibNames
 , enableManpages ? false
+, enablePolly ? false # TODO: get this info from llvm (passthru?)
 }:
 
 let
   self = stdenv.mkDerivation ({
-    name = "clang-${version}";
+    pname = "clang";
+    inherit version;
 
     src = fetchFromGitHub {
       owner = "flang-compiler";
       repo = "flang-driver";
-      rev = "release_70";
-      sha256 = "sha256-BLkD1eUBYuX7oRApkDJYr676HdT3V2Jx+pWsFoi7+7s=";
+      rev = "release_90";
+      sha256 = "sha256-sYgZojeGOH78dcycaVEpfZuBrOY6LUQQyN8Y/2m9E/0=";
     };
     nativeBuildInputs = [ cmake python ]
       ++ stdenv.lib.optional enableManpages python.pkgs.sphinx;
@@ -21,15 +23,23 @@ let
 
     cmakeFlags = [
       "-DCMAKE_CXX_FLAGS=-std=c++11"
+      "-DCLANGD_BUILD_XPC=OFF"
     ] ++ stdenv.lib.optionals enableManpages [
       "-DCLANG_INCLUDE_DOCS=ON"
       "-DLLVM_ENABLE_SPHINX=ON"
       "-DSPHINX_OUTPUT_MAN=ON"
       "-DSPHINX_OUTPUT_HTML=OFF"
       "-DSPHINX_WARNINGS_AS_ERRORS=OFF"
+    ] ++ stdenv.lib.optionals enablePolly [
+      "-DWITH_POLLY=ON"
+      "-DLINK_POLLY_INTO_TOOLS=ON"
     ];
 
-    patches = [ ./purity.patch ];
+    patches = [
+      ./purity.patch
+      # https://reviews.llvm.org/D51899
+      ./compiler-rt-baremetal.patch
+    ];
 
     postPatch = ''
       sed -i -e 's/DriverArgs.hasArg(options::OPT_nostdlibinc)/true/' \
@@ -57,8 +67,10 @@ let
 
       # Move libclang to 'lib' output
       moveToOutput "lib/libclang.*" "$lib"
+      moveToOutput "lib/libclang-cpp.*" "$lib"
       substituteInPlace $out/lib/cmake/clang/ClangTargets-release.cmake \
-          --replace "\''${_IMPORT_PREFIX}/lib/libclang." "$lib/lib/libclang."
+          --replace "\''${_IMPORT_PREFIX}/lib/libclang." "$lib/lib/libclang." \
+          --replace "\''${_IMPORT_PREFIX}/lib/libclang-cpp." "$lib/lib/libclang-cpp."
 
       mkdir -p $python/bin $python/share/clang/
       mv $out/bin/{git-clang-format,scan-view} $python/bin
@@ -86,7 +98,7 @@ let
       platforms   = stdenv.lib.platforms.all;
     };
   } // stdenv.lib.optionalAttrs enableManpages {
-    name = "clang-manpages-${version}";
+    pname = "clang-manpages";
 
     buildPhase = ''
       make docs-clang-man
