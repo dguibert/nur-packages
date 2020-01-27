@@ -247,6 +247,8 @@ in {
       gcc = super.gcc7;
     };
 
+    intelPackages_2020 = self.intelPackages_2020_0_166;
+
     helloIntel = super.hello.override { stdenv = self.stdenvIntel; };
     miniapp-ping-pongIntel = super.miniapp-ping-pong.override { stdenv = self.stdenvIntel;
       caliper = super.caliper.override { stdenv = self.stdenvIntel;

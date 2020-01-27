@@ -1,4 +1,4 @@
-{
+rec {
   default = import ../overlay.nix;
   local = self: super: if (builtins.pathExists ./local.nix) then (import (./local.nix)) self super else {};
 
@@ -8,6 +8,14 @@
   intel-compilers = import ./intel-compilers-overlay;
   arm = import ./arm-overlay;
   pgi = import ./pgi-overlay;
+
+  defaults = [ default
+    aocc
+    flang
+    intel-compilers
+    arm
+    pgi
+  ];
 
   nix-home-nfs-bguibertd          = import ./nix-store-overlay.nix "/home_nfs/bguibertd/nix";
   nix-home-nfs-robin-ib-bguibertd = import ./nix-store-overlay.nix "/home_nfs_robin_ib/bguibertd/nix";
