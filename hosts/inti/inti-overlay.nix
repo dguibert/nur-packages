@@ -1,7 +1,18 @@
 final: prev: {
   nixStore = "/ccc/scratch/cont003/bull/guibertd/nix";
+  nix = prev.nix.overrideAttrs (o: {
+    patches = (o.patches or []) ++ [
+      ../../pkgs/nix-dont-remove-lustre-xattr.patch
+      ../../pkgs/nix-unshare.patch
+    ];
+    #doInstallCheck = false; # error: cannot figure out user name
+  });
   aws-sdk-cpp = prev.aws-sdk-cpp.overrideAttrs (attrs: {
     doCheck = false;
+  });
+  git = prev.git.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
   });
   boehmgc = prev.boehmgc.overrideAttrs (attrs: {
     doCheck = false;
