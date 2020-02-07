@@ -2,9 +2,9 @@
     "inputs": {
         "NUR": {
             "inputs": {},
-            "narHash": "sha256-V6oYATKRDMA5VNdSmR39L4/CbTPra3BkixTy0xIyGU0=",
+            "narHash": "sha256-28YWbgnl7zA0gfqmFBTmFHkD4tDkp59ab0OLPAxtPUk=",
             "originalUrl": "github:nix-community/NUR",
-            "url": "github:nix-community/NUR/84b5d84fa2b42d37af7934df4e3e9331212f6a24"
+            "url": "github:nix-community/NUR/c8f8da51920515b942a6720b04b1f0d29da41736"
         },
         "base16-nix": {
             "inputs": {},
@@ -30,38 +30,38 @@
                     "inputs": {
                         "nixpkgs": {
                             "inputs": {},
-                            "narHash": "sha256-HkMF+s/yqNOOxqZGp+rscaC8LPtOGc50nEAjLFsnJpg=",
+                            "narHash": "sha256-BCE+f3Wxv6k04wNnh8On3CaM+2YBIfi5h/1vlZY1JR8=",
                             "originalUrl": "nixpkgs/release-19.09",
-                            "url": "github:edolstra/nixpkgs/e7223c602152ee4544b05157fc9d88a3feed22c2"
+                            "url": "github:edolstra/nixpkgs/a0c944ab93dc380cc2c5590e00d2c0925ee855e9"
                         }
                     },
-                    "narHash": "sha256-e0IoqNhJP2jB12O/eea89E1FJ1xb0pISQ3hlROvxWPE=",
+                    "narHash": "sha256-Axhas6uySMqevQrjdLaIfFQZgyCueBngzUV7CEYhbWI=",
                     "originalUrl": "nix",
-                    "url": "github:NixOS/nix/62f712c8aedc08d6478ce9b380a2cf317d7e4d3a"
+                    "url": "github:NixOS/nix/d2032edb2f86e955a8a7724a27c0c3225f386500"
                 },
                 "nixpkgs": {
                     "inputs": {},
-                    "narHash": "sha256-HkMF+s/yqNOOxqZGp+rscaC8LPtOGc50nEAjLFsnJpg=",
+                    "narHash": "sha256-BCE+f3Wxv6k04wNnh8On3CaM+2YBIfi5h/1vlZY1JR8=",
                     "originalUrl": "nixpkgs/release-19.09",
-                    "url": "github:edolstra/nixpkgs/e7223c602152ee4544b05157fc9d88a3feed22c2"
+                    "url": "github:edolstra/nixpkgs/a0c944ab93dc380cc2c5590e00d2c0925ee855e9"
                 }
             },
-            "narHash": "sha256-WxRTGN+v0XNnGWaVnvDyaKXvPVjHUbA+2Rg5bSfyV2w=",
+            "narHash": "sha256-I9Xt/qUv06hDdXyXXZCFn58mJrMcHtzF7OXuKic5Bec=",
             "originalUrl": "github:dguibert/hydra/pu",
-            "url": "github:dguibert/hydra/3be37bf9a6893598c9007f03758ddaf81ea38b3d"
+            "url": "github:dguibert/hydra/362f67a304e68285c0398974675e56ef57eaae6d"
         },
         "nix": {
             "inputs": {
                 "nixpkgs": {
                     "inputs": {},
-                    "narHash": "sha256-HkMF+s/yqNOOxqZGp+rscaC8LPtOGc50nEAjLFsnJpg=",
+                    "narHash": "sha256-BCE+f3Wxv6k04wNnh8On3CaM+2YBIfi5h/1vlZY1JR8=",
                     "originalUrl": "nixpkgs/release-19.09",
-                    "url": "github:edolstra/nixpkgs/e7223c602152ee4544b05157fc9d88a3feed22c2"
+                    "url": "github:edolstra/nixpkgs/a0c944ab93dc380cc2c5590e00d2c0925ee855e9"
                 }
             },
-            "narHash": "sha256-fM/hn2yYCEBTSHW01DfpmDm89cNR5mmd1Io4ueI2sZY=",
+            "narHash": "sha256-uDpjHAIVNq4J3WlkoHCyHDTOqxGgcvLL/dJxHx0+6AA=",
             "originalUrl": "github:dguibert/nix/pu",
-            "url": "github:dguibert/nix/8fb2d95346f9d135e36bae7793d8749b6dd48e30"
+            "url": "github:dguibert/nix/2c123fff39655c172bb1c55607a5f0a3ad708ff6"
         },
         "nixops": {
             "inputs": {
@@ -79,9 +79,9 @@
                 },
                 "nixpkgs": {
                     "inputs": {},
-                    "narHash": "sha256-HkMF+s/yqNOOxqZGp+rscaC8LPtOGc50nEAjLFsnJpg=",
+                    "narHash": "sha256-BCE+f3Wxv6k04wNnh8On3CaM+2YBIfi5h/1vlZY1JR8=",
                     "originalUrl": "nixpkgs/release-19.09",
-                    "url": "github:edolstra/nixpkgs/e7223c602152ee4544b05157fc9d88a3feed22c2"
+                    "url": "github:edolstra/nixpkgs/a0c944ab93dc380cc2c5590e00d2c0925ee855e9"
                 }
             },
             "narHash": "sha256-G0cFhg8wQ7pHzkKl8uUYhDRBvFKzfMqSFbj2cymnLGA=",
@@ -90,9 +90,9 @@
         },
         "nixpkgs": {
             "inputs": {},
-            "narHash": "sha256-bZD22y0W/N5LC4JV7gbU5GxtFWDr6llENZ9uQLO4Xz8=",
+            "narHash": "sha256-OTuT0BU686gHJa4c2SwZjh6GXVYkAZJGMfXaLomydI0=",
             "originalUrl": "github:dguibert/nixpkgs/pu",
-            "url": "github:dguibert/nixpkgs/7c6096beb632fe0879342f7bedf72fc0f1729a41"
+            "url": "github:dguibert/nixpkgs/e123f3742e3b0ec2ccddbc59b0a0e7761937b43b"
         },
         "nur_dguibert": {
             "inputs": {
@@ -100,31 +100,31 @@
                     "inputs": {
                         "nixpkgs": {
                             "inputs": {},
-                            "narHash": "sha256-HkMF+s/yqNOOxqZGp+rscaC8LPtOGc50nEAjLFsnJpg=",
+                            "narHash": "sha256-BCE+f3Wxv6k04wNnh8On3CaM+2YBIfi5h/1vlZY1JR8=",
                             "originalUrl": "nixpkgs/release-19.09",
-                            "url": "github:edolstra/nixpkgs/e7223c602152ee4544b05157fc9d88a3feed22c2"
+                            "url": "github:edolstra/nixpkgs/a0c944ab93dc380cc2c5590e00d2c0925ee855e9"
                         }
                     },
-                    "narHash": "sha256-fM/hn2yYCEBTSHW01DfpmDm89cNR5mmd1Io4ueI2sZY=",
+                    "narHash": "sha256-uDpjHAIVNq4J3WlkoHCyHDTOqxGgcvLL/dJxHx0+6AA=",
                     "originalUrl": "github:dguibert/nix/pu",
-                    "url": "github:dguibert/nix/8fb2d95346f9d135e36bae7793d8749b6dd48e30"
+                    "url": "github:dguibert/nix/2c123fff39655c172bb1c55607a5f0a3ad708ff6"
                 },
                 "nixpkgs": {
                     "inputs": {},
-                    "narHash": "sha256-bZD22y0W/N5LC4JV7gbU5GxtFWDr6llENZ9uQLO4Xz8=",
+                    "narHash": "sha256-OTuT0BU686gHJa4c2SwZjh6GXVYkAZJGMfXaLomydI0=",
                     "originalUrl": "github:dguibert/nixpkgs/pu",
-                    "url": "github:dguibert/nixpkgs/7c6096beb632fe0879342f7bedf72fc0f1729a41"
+                    "url": "github:dguibert/nixpkgs/e123f3742e3b0ec2ccddbc59b0a0e7761937b43b"
                 }
             },
-            "narHash": "sha256-+J6/HIBXE+KI6BLd7r8Ezd204+CinAtfcO5a48sACXI=",
+            "narHash": "sha256-u5qx66iP+T8lltcR1Sd5MmLS7+vB+ECTVaRVO+jbKdA=",
             "originalUrl": "github:dguibert/nur-packages/dg-remote-urls",
-            "url": "github:dguibert/nur-packages/e45d86723129c5382a91eaedf1c53d52686ad7c0"
+            "url": "github:dguibert/nur-packages/a2c383c50fb5de0ece965e3c8c23d5a4eac818c4"
         },
         "terranix": {
             "inputs": {},
-            "narHash": "sha256-2mj/TXyOYdd0j/6FZ756uR7DAbxEonjn9zMQDrEeAak=",
+            "narHash": "sha256-vjsw70eNH2r7QxsFvF2qmhbl3CrQgiFLWLpwHaFcObs=",
             "originalUrl": "github:mrVanDalo/terranix",
-            "url": "github:mrVanDalo/terranix/6f486c594b91409c1a7084b9952dc43bca0f7bb3"
+            "url": "github:mrVanDalo/terranix/e387612dd7386a1950d88ec1ba6bde92010d3591"
         }
     },
     "version": 3
