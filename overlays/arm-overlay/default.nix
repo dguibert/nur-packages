@@ -95,4 +95,6 @@ in
     release_version = "9.0.1";
     llvmPackages = super.llvmPackages_8;
   };
+
+  armie_192 = (self.callPackage ./arm-instruction-emulator {}).armie;
 }
