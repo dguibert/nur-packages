@@ -71,7 +71,7 @@
     };
 
     packages = forAllSystems (system: {
-      inherit (nixpkgsFor.${system}) nix git;
+      inherit (nixpkgsFor.${system}) nix git getpwuid;
     });
 
     defaultPackage = forAllSystems (system: self.packages.${system}.nix);

@@ -1,4 +1,11 @@
-final: prev: {
+final: prev: with final; let
+	tryUpstream = drv: attrs: (drv.overrideAttrs attrs).overrideAttrs (o: {
+	  isBroken = isBroken drv;
+	});
+    #if (builtins.tryEval (isBroken drv)).success
+    #then (isBroken drv) # should fail and use our override
+    #else drv.overrideAttrs attrs;
+in {
   nixStore = "/ccc/scratch/cont003/bull/guibertd/nix";
   nix = prev.nix.overrideAttrs (o: {
     patches = (o.patches or []) ++ [
@@ -7,14 +14,37 @@ final: prev: {
     ];
     #doInstallCheck = false; # error: cannot figure out user name
   });
-  aws-sdk-cpp = prev.aws-sdk-cpp.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  git = prev.git.overrideAttrs (attrs: {
+  #stdenv = prev.stdenv // {
+  #  mkDerivation = args: let
+  #      name = args.pname or args.name;
+  #    in prev.stdenv.mkDerivation (args // {
+  #    LD_LIBRARY_PATH = "${prev.sssd}/lib"; # infinite recursion
+  #  });
+  #};
+  getpwuid = stdenv.mkDerivation {
+    name = "getpwuid-0.0";
+    LD_LIBRARY_PATH = "${sssd}/lib";
+    src = writeText "getpwuid.py" ''
+      import os
+      import pwd
+
+      results = pwd.getpwuid( os.getuid() )
+      print( results )
+    '';
+    buildPhase = ''
+      ${python}/bin/python ${src} | tee $out
+    '';
+  };
+  aws-sdk-cpp = tryUpstream prev.aws-sdk-cpp
+    (attrs: {
+          doCheck = false;
+    });
+
+  git = tryUpstream prev.git (attrs: {
     doCheck = false;
     doInstallCheck=false;
   });
-  boehmgc = prev.boehmgc.overrideAttrs (attrs: {
+  boehmgc = tryUpstream prev.boehmgc (attrs: {
     doCheck = false;
   });
   go_1_10 = prev.go_1_10.overrideAttrs (attrs: {
@@ -43,7 +73,7 @@ final: prev: {
   coreutils = prev.coreutils.overrideAttrs (attrs: {
     doCheck = false;
   });
-  libuv = prev.libuv.overrideAttrs (attrs: {
+  libuv = tryUpstream prev.libuv (attrs: {
     doCheck = false;
   });
   e2fsprogs = prev.e2fsprogs.overrideAttrs (attrs: {
