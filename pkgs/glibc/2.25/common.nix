@@ -19,7 +19,7 @@
 
 let
   version = "2.25";
-  patchSuffix = "-49";
+  patchSuffix = "-145";
   sha256 = "067bd9bb3390e79aa45911537d13c3721f1d9d3769931a30c2681bfee66f23a0";
 in
 
@@ -41,7 +41,7 @@ stdenv.mkDerivation ({
           glibc-2.25-49-gbc5ace67fe
           $ git show --reverse glibc-2.25..release/2.25/master | gzip -n -9 --rsyncable - > 2.25-49.patch.gz
       */
-      ./2.25-49.patch.gz
+      ./2.25-145.patch.gz
 
       /* Have rpcgen(1) look for cpp(1) in $PATH.  */
       ./rpcgen-path.patch
@@ -59,6 +59,9 @@ stdenv.mkDerivation ({
          "/bin:/usr/bin", which is inappropriate on NixOS machines. This
          patch extends the search path by "/run/current-system/sw/bin". */
       ./fix_path_attribute_in_getconf.patch
+
+      ./0007-strftime-multiple-stmts.patch
+      ./0009-utmp-nonstring.patch
     ]
     ++ lib.optional stdenv.isx86_64 ./fix-x64-abi.patch;
 
@@ -81,6 +84,13 @@ stdenv.mkDerivation ({
       cat ${./glibc-remove-datetime-from-nscd.patch} \
         | sed "s,@out@,$out," | patch -p1
     '';
+
+  NIX_CFLAGS_COMPILE = [
+    "-Wno-error=stringop-overflow"
+    "-Wno-error=stringop-truncation"
+    "-Wno-error=restrict"
+    "-Wno-error=format-truncation"
+  ];
 
   configureFlags =
     [ "-C"
