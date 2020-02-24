@@ -111,6 +111,8 @@ final: prev: {
   };
   hpcbind = final.callPackage ./pkgs/hpcbind { };
 
+  maqao = final.callPackage ./pkgs/maqao { };
+
   mkEnv = { name ? "env"
           , buildInputs ? []
           , ...
