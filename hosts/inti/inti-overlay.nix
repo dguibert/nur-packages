@@ -1,7 +1,7 @@
 final: prev: with final; let
-	tryUpstream = drv: attrs: (drv.overrideAttrs attrs).overrideAttrs (o: {
-	  isBroken = isBroken drv;
-	});
+    tryUpstream = drv: attrs: (drv.overrideAttrs attrs).overrideAttrs (o: {
+      isBroken = isBroken drv;
+    });
     #if (builtins.tryEval (isBroken drv)).success
     #then (isBroken drv) # should fail and use our override
     #else drv.overrideAttrs attrs;
@@ -12,6 +12,7 @@ in {
       ../../pkgs/nix-dont-remove-lustre-xattr.patch
       ../../pkgs/nix-unshare.patch
     ];
+    LD_LIBRARY_PATH = "${prev.sssd}/lib";
     #doInstallCheck = false; # error: cannot figure out user name
   });
   #stdenv = prev.stdenv // {
@@ -21,7 +22,7 @@ in {
   #    LD_LIBRARY_PATH = "${prev.sssd}/lib"; # infinite recursion
   #  });
   #};
-  getpwuid = stdenv.mkDerivation {
+  getpwuid = stdenv.mkDerivation rec {
     name = "getpwuid-0.0";
     LD_LIBRARY_PATH = "${sssd}/lib";
     src = writeText "getpwuid.py" ''
@@ -31,76 +32,41 @@ in {
       results = pwd.getpwuid( os.getuid() )
       print( results )
     '';
+    phases = [ "buildPhase" ];
     buildPhase = ''
       ${python}/bin/python ${src} | tee $out
     '';
   };
-  aws-sdk-cpp = tryUpstream prev.aws-sdk-cpp
-    (attrs: {
-          doCheck = false;
-    });
+  #aws-sdk-cpp = tryUpstream prev.aws-sdk-cpp
+  #  (attrs: {
+  #        doCheck = false;
+  #  });
 
-  git = tryUpstream prev.git (attrs: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
-  boehmgc = tryUpstream prev.boehmgc (attrs: {
-    doCheck = false;
-  });
-  go_1_10 = prev.go_1_10.overrideAttrs (attrs: {
-    doCheck = false;
-    installPhase = ''
-      mkdir -p "$out/bin"
-      export GOROOT="$(pwd)/"
-      export GOBIN="$out/bin"
-      export PATH="$GOBIN:$PATH"
-      cd ./src
-      ./make.bash
-    '';
-  });
-  go_1_11 = prev.go_1_11.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  jemalloc = prev.jemalloc.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  jemalloc450 = prev.jemalloc450.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  libjpeg_turbo = prev.libjpeg_turbo.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  coreutils = prev.coreutils.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  libuv = tryUpstream prev.libuv (attrs: {
-    doCheck = false;
-  });
-  e2fsprogs = prev.e2fsprogs.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  #nix = prev.nix.override {
-  #  src = /home/dguibert/code/nix;
-  #};
-  #slurm = (prev.slurm.override { enableX11=false; }).overrideAttrs (attrs: rec {
-  #  name = "slurm-${version}";
-  #  version = "16.05.11.1";
-
-  #  # N.B. We use github release tags instead of https://www.schedmd.com/downloads.php
-  #  # because the latter does not keep older releases.
-  #  src = prev.fetchFromGitHub {
-  #    owner = "SchedMD";
-  #    repo = "slurm";
-  #    # The release tags use - instead of .
-  #    rev = "${builtins.replaceStrings ["."] ["-"] name}";
-  #    sha256 = "sha256:1l264fc12il7d1c1a8prd20kx68g4brzk3x2c3xsqw0ff1rwlmhh";
-  #  };
+  #p11-kit = tryUpstream prev.p11-kit (attrs: {
+  #  enableParallelBuilding = false;
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
+  #boehmgc = tryUpstream prev.boehmgc (attrs: {
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
+  #git = tryUpstream prev.git (attrs: {
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
+  #libuv = tryUpstream prev.libuv (attrs: {
+  #  doCheck = false;
   #});
   slurm = prev.slurm_17_11_5;
 
   pythonOverrides = prev.lib.composeOverlays [
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
+      hypothesis = python-super.hypothesis.overrideAttrs (attrs: {
+        doCheck = false;
+      	doInstallCheck=false;
+      });
       pyslurm = python-super.pyslurm_17_11_12.override { slurm=final.slurm; };
     })
   ];

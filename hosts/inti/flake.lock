@@ -2,14 +2,14 @@
   "inputs": {
     "NUR": {
       "info": {
-        "lastModified": 1581579949,
-        "narHash": "sha256-yR/QaAlcoRgJPCq62yFkfx9oKNQoASPdttpWETzzKwQ="
+        "lastModified": 1582296333,
+        "narHash": "sha256-kFQ/0EwxRQOTgQnNzWSTTzKf5Rp8IXP/wKa7yxGdppI="
       },
       "inputs": {},
       "locked": {
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "09233f88f0a274ff476c862eee63e9f2b6ab49e8",
+        "rev": "ab4e151dc8dd4a96aec576b35983a4df33f53d0c",
         "type": "github"
       },
       "original": {
@@ -75,38 +75,40 @@
     },
     "hydra": {
       "info": {
-        "lastModified": 1580894023,
-        "narHash": "sha256-I9Xt/qUv06hDdXyXXZCFn58mJrMcHtzF7OXuKic5Bec="
+        "lastModified": 1582293729,
+        "narHash": "sha256-zTwonN9y++EDTzhAst+Z2pD0Mnwkx1qOcYpIPwW2rzU="
       },
       "inputs": {
         "nix": {
           "info": {
-            "lastModified": 1580749449,
-            "narHash": "sha256-wEPYfs8ULx0dK6R4hrsXC/r8omxJLc86OhQg39eCo0c="
+            "lastModified": 1582125169,
+            "narHash": "sha256-rgoyhvUVM78gLkvviTA/9f6esC7ZJtnDLt1hzAaq2Ds="
           },
           "inputs": {
             "nixpkgs": {
               "info": {
-                "narHash": "sha256-V4jz8Hbt+mZkXhH+3KmUQcRGETOFd8mVPhgQlS4Lu5E="
+                "lastModified": 1581425439,
+                "narHash": "sha256-iJrx4S+h7W1531m4eP7CJM4kXmzX3ypDlSip5brEywI="
               },
               "inputs": {},
               "locked": {
-                "owner": "edolstra",
+                "owner": "dguibert",
                 "repo": "nixpkgs",
-                "rev": "dd45a16733f4469a0dded6ad0bf9a662ea39bdea",
+                "rev": "b2d91180290491f37da8ffc806a81a61610340ed",
                 "type": "github"
               },
               "original": {
-                "id": "nixpkgs",
-                "ref": "release-19.09",
-                "type": "indirect"
+                "owner": "dguibert",
+                "ref": "pu",
+                "repo": "nixpkgs",
+                "type": "github"
               }
             }
           },
           "locked": {
             "owner": "NixOS",
             "repo": "nix",
-            "rev": "0a4e911cf478d0d38082a8840a5acc8f57d00086",
+            "rev": "4ad5826a182f8eeb4cbc61e27d2128b08050b0d4",
             "type": "github"
           },
           "original": {
@@ -116,14 +118,14 @@
         },
         "nixpkgs": {
           "info": {
-            "lastModified": 1580555706,
-            "narHash": "sha256-ly5Gxl9yZgW2w1F3aDU5bvg34Ct+juUaOg8vue+Mkbo="
+            "lastModified": 1581348815,
+            "narHash": "sha256-ZYGphR59gsdFhtZYDoeuCtULm8ym/qJSHIslih9b1s8="
           },
           "inputs": {},
           "locked": {
             "owner": "edolstra",
             "repo": "nixpkgs",
-            "rev": "43e283790fbe330b723ac44b584824cf6d85c1ee",
+            "rev": "d959778e0934c4c93896d509a65de798909c7cdd",
             "type": "github"
           },
           "original": {
@@ -136,7 +138,7 @@
       "locked": {
         "owner": "dguibert",
         "repo": "hydra",
-        "rev": "362f67a304e68285c0398974675e56ef57eaae6d",
+        "rev": "492c72d62c0a46385bb5a1f93899e24f13545a2a",
         "type": "github"
       },
       "original": {
@@ -148,33 +150,34 @@
     },
     "nix": {
       "info": {
-        "lastModified": 1581269577,
-        "narHash": "sha256-d8TntVF8bNaSrxv5ozPpJeQAPOc0/LQjBTTuKJIXt6U="
+        "lastModified": 1582273724,
+        "narHash": "sha256-MjwYT1sneDeSL4CfuWomsq8GwU7yJ2D79+C3ByVxavY="
       },
       "inputs": {
         "nixpkgs": {
           "info": {
-            "lastModified": 1580555706,
-            "narHash": "sha256-ly5Gxl9yZgW2w1F3aDU5bvg34Ct+juUaOg8vue+Mkbo="
+            "lastModified": 1581425439,
+            "narHash": "sha256-iJrx4S+h7W1531m4eP7CJM4kXmzX3ypDlSip5brEywI="
           },
           "inputs": {},
           "locked": {
-            "owner": "edolstra",
+            "owner": "dguibert",
             "repo": "nixpkgs",
-            "rev": "43e283790fbe330b723ac44b584824cf6d85c1ee",
+            "rev": "b2d91180290491f37da8ffc806a81a61610340ed",
             "type": "github"
           },
           "original": {
-            "id": "nixpkgs",
-            "ref": "release-19.09",
-            "type": "indirect"
+            "owner": "dguibert",
+            "ref": "pu",
+            "repo": "nixpkgs",
+            "type": "github"
           }
         }
       },
       "locked": {
         "owner": "dguibert",
         "repo": "nix",
-        "rev": "1132c8d9ff4032f0a57435ba5f004fb21891d064",
+        "rev": "bff1be2e30c5622d56063e4ddd8b3a7d5e9cfaf0",
         "type": "github"
       },
       "original": {
@@ -226,14 +229,14 @@
         },
         "nixpkgs": {
           "info": {
-            "lastModified": 1581349013,
-            "narHash": "sha256-5obW5UNpu+87ounLp2Y7flGZ6tw3Dp6K3BeMjsfEFlQ="
+            "lastModified": 1581348815,
+            "narHash": "sha256-ZYGphR59gsdFhtZYDoeuCtULm8ym/qJSHIslih9b1s8="
           },
           "inputs": {},
           "locked": {
             "owner": "edolstra",
             "repo": "nixpkgs",
-            "rev": "a1fa9e65cab889c4f45e5966d25e45639fc3381b",
+            "rev": "d959778e0934c4c93896d509a65de798909c7cdd",
             "type": "github"
           },
           "original": {
@@ -258,14 +261,14 @@
     },
     "nixpkgs": {
       "info": {
-        "lastModified": 1581425439,
-        "narHash": "sha256-iJrx4S+h7W1531m4eP7CJM4kXmzX3ypDlSip5brEywI="
+        "lastModified": 1582272126,
+        "narHash": "sha256-cjDAfcmf0aFYMcJ0W4MVzebJ519p0qUaex+452mDR6c="
       },
       "inputs": {},
       "locked": {
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "b2d91180290491f37da8ffc806a81a61610340ed",
+        "rev": "c3ec5da89b61aa85ec969f93c03098fe38ccf427",
         "type": "github"
       },
       "original": {
@@ -283,32 +286,34 @@
       "inputs": {
         "nix": {
           "info": {
-            "lastModified": 1581269577,
-            "narHash": "sha256-d8TntVF8bNaSrxv5ozPpJeQAPOc0/LQjBTTuKJIXt6U="
+            "lastModified": 1582273724,
+            "narHash": "sha256-MjwYT1sneDeSL4CfuWomsq8GwU7yJ2D79+C3ByVxavY="
           },
           "inputs": {
             "nixpkgs": {
               "info": {
-                "narHash": "sha256-ZzR2l1dovxeZ555KXxz7SAXrC72BfaR4BeqvJzRdmwQ="
+                "lastModified": 1581425439,
+                "narHash": "sha256-iJrx4S+h7W1531m4eP7CJM4kXmzX3ypDlSip5brEywI="
               },
               "inputs": {},
               "locked": {
-                "owner": "edolstra",
+                "owner": "dguibert",
                 "repo": "nixpkgs",
-                "rev": "d37927a77e70a2b3408ceaa2e763b6df1f4d941a",
+                "rev": "b2d91180290491f37da8ffc806a81a61610340ed",
                 "type": "github"
               },
               "original": {
-                "id": "nixpkgs",
-                "ref": "release-19.09",
-                "type": "indirect"
+                "owner": "dguibert",
+                "ref": "pu",
+                "repo": "nixpkgs",
+                "type": "github"
               }
             }
           },
           "locked": {
             "owner": "dguibert",
             "repo": "nix",
-            "rev": "1132c8d9ff4032f0a57435ba5f004fb21891d064",
+            "rev": "bff1be2e30c5622d56063e4ddd8b3a7d5e9cfaf0",
             "type": "github"
           },
           "original": {
@@ -320,14 +325,14 @@
         },
         "nixpkgs": {
           "info": {
-            "lastModified": 1581425439,
-            "narHash": "sha256-iJrx4S+h7W1531m4eP7CJM4kXmzX3ypDlSip5brEywI="
+            "lastModified": 1582272126,
+            "narHash": "sha256-cjDAfcmf0aFYMcJ0W4MVzebJ519p0qUaex+452mDR6c="
           },
           "inputs": {},
           "locked": {
             "owner": "dguibert",
             "repo": "nixpkgs",
-            "rev": "b2d91180290491f37da8ffc806a81a61610340ed",
+            "rev": "c3ec5da89b61aa85ec969f93c03098fe38ccf427",
             "type": "github"
           },
           "original": {

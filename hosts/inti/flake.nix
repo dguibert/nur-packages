@@ -10,6 +10,7 @@
     nixops.uri           = "github:dguibert/nixops/pu";
     nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
     nix.uri              = "github:dguibert/nix/pu";
+    nix.inputs.nixpkgs.uri = "github:dguibert/nixpkgs/pu";
     nur_dguibert.uri     = "github:dguibert/nur-packages/dg-remote-urls";
     terranix             = { uri = "github:mrVanDalo/terranix"; flake=false; };
     #"nixos-18.03".uri   = "github:nixos/nixpkgs-channels/nixos-18.03";
@@ -71,7 +72,8 @@
     };
 
     packages = forAllSystems (system: {
-      inherit (nixpkgsFor.${system}) nix git getpwuid;
+      nix = nixpkgsFor.${system}.nix;
+      inherit (nixpkgsFor.${system}) git getpwuid;
     });
 
     defaultPackage = forAllSystems (system: self.packages.${system}.nix);
