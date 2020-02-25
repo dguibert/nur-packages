@@ -193,7 +193,6 @@ with pkgs; let
         name
       , jobImpl ? shJob
       , script ? ""
-      , options ? {} # to pass to jobImpl
       , checks ? j: {}
       , jobInputs ? []
       , ...
@@ -228,17 +227,13 @@ with pkgs; let
 
 
     job1 = mkJob { name="test";
-      options = default_sbatch // {
-        partition=scheduler_slurm.partitions.SKL-20c_edr-ib2_192gb_2666.name;
-        nodes="1";
-      };
       script = ''
         ${figlet}/bin/figlet "srun"
         export TIME="hostname timing : %e elapsed %U user %S system - %M Kbytes memory max. %W swapped times"
         ls /
         ls /usr
         ls /usr/bin
-        sleep 30
+        sleep 2
         ${file}/bin/file /usr/bin/time
         /usr/bin/time /usr/bin/srun /usr/bin/sleep 60
       '';
