@@ -10,6 +10,8 @@
   args_names = builtins.attrNames args;
   options_args = builtins.filter (x: (builtins.match "^sbatch-.*" x) !=null) args_names;
 
+  job_name = if args?sbatch-job-name then args.sbatch-job-name else "$job_basename";
+
   job = writeScript "${name}.sbatch" ''
     #!${stdenvNoCC.shell}
     ${lib.concatMapStrings (n: let
