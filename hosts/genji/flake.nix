@@ -10,6 +10,7 @@
     nixops.uri           = "github:dguibert/nixops/pu";
     nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
     nix.uri              = "github:dguibert/nix/pu";
+    nix.inputs.nixpkgs.uri = "github:dguibert/nixpkgs/pu";
     nur_dguibert.uri     = "github:dguibert/nur-packages/dg-remote-urls";
     terranix             = { uri = "github:mrVanDalo/terranix"; flake=false; };
     #"nixos-18.03".uri   = "github:nixos/nixpkgs-channels/nixos-18.03";
@@ -48,15 +49,10 @@
         }
       );
 
-    lib = import ../../lib { lib=nixpkgs.lib; };
+
     overlays = import ../../overlays;
 
   in rec {
-    #overlay = lib.composeOverlays [
-    #  overlays.default
-    #  nix.overlay
-    #  (import ./genji-overlay.nix)
-    #];
     overlay = import ./genji-overlay.nix;
 
     devShell.x86_64-linux = with nixpkgsFor.x86_64-linux; mkEnv rec {
@@ -75,8 +71,13 @@
       '';
     };
 
-    packages = forAllSystems (system: {
-      inherit (nixpkgsFor.${system}) nix;
+    packages = forAllSystems (system: with nixpkgsFor.${system}; {
+      nix = nixpkgsFor.${system}.nix;
+      job1 = (jobs.job1.override {
+        name = "job1";
+        jobImpl = jobs.sbatchJob;
+        sbatch-job-name = "CEPP";
+      }).submit;
     });
 
     defaultPackage = forAllSystems (system: self.packages.${system}.nix);
