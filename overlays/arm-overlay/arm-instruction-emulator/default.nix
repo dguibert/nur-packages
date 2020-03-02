@@ -11,9 +11,6 @@
 }:
 
 let
-  components_ = [
-  ];
-
   extract = pattern: ''
     for rpm in $(ls $build/rpms/${pattern}); do
       echo "Extracting: $rpm"
