@@ -36,12 +36,13 @@ in builtins.trace extraArgs
          outputs = [ "out" ] ++ lib.optional (scratch !=null) "scratch";
          impureEnvVars = [ "KRB5CCNAME" ];
   }) ''
-  failureHooks+=(_benchFail)
-  _benchFail() {
-    cat $out/job
-    exit 0
-  }
+  #failureHooks+=(_benchFail)
+  #_benchFail() {
+  #  cat $out/job
+  #  exit 0
+  #}
   set -xuef -o pipefail
+  export PATH=$PATH:/usr/bin
   mkdir $out
   ${define_job_basename_sh name}
   ${lib.optionalString (scratch !=null) ''
@@ -49,19 +50,48 @@ in builtins.trace extraArgs
     scratch_=$(cat $scratch)
     mkdir -p $scratch_; cd $scratch_
   ''}
-  cancel() {
-    scancel $(squeue -o %i -h -n $job_basename)
+  # TRAP SIGINT AND SIGTERM OF THIS SCRIPT
+  function control_c {
+      echo -en "\n SIGINT: TERMINATING SLURM JOBID $JOBID AND EXITING \n"
+      scancel $JOBID
+      exit $?
   }
-  echo 'scancel $(squeue -o %i -h -n '$job_basename')'
-  trap "cancel" USR1 INT TERM
+  function control_exit {
+      echo "job $JOBID has run"
+      cat $out/job
+      exit $?
+  }
+  trap control_c SIGINT
+  trap control_c SIGTERM
+  trap control_exit EXIT
 
-  /usr/bin/env | /usr/bin/sort
+  env | sort
 
-  id=$(/usr/bin/sbatch --job-name=$job_basename --parsable --wait -o $out/job ${job})
-  id=$(echo $id | awk '{ print $NF }')
-  /usr/bin/scontrol show JobId=$id || true
-  echo "job $id has run"
-  cat $out/job
+  export JOBID=$(sbatch --job-name=${job_name} --parsable -o $out/job ${job})
+  set +x
 
+  NODE=$(squeue -hj $JOBID -O nodelist )
+  if [[ -z "''${NODE// }" ]]; then
+     echo  " "
+     echo -n "    WAITING FOR RESOURCES TO BECOME AVAILABLE (CTRL-C TO EXIT) ..."
+  fi
+  while [[ -z "''${NODE// }" ]]; do
+     echo -n "."
+     sleep 10
+     NODE=$(squeue -hj $JOBID -O nodelist )
+  done
+
+  # Wait the job to finish
+  echo  " "
+  echo -n "    WAITING THE JOB TO FINISH"
+  STATE="R"
+  while [[ "''${STATE:0:1}" == "R" ]]; do
+     echo -n "."
+     sleep 10
+     STATE=$(squeue -hj $JOBID -O statecompact )
+  done
+  echo  " "
+  set -x
+  scontrol show JobId=$JOBID || true
   set +x
 ''

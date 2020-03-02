@@ -1,45 +1,26 @@
-final: prev: {
+final: prev: with final; let
+    tryUpstream = drv: attrs: (drv.overrideAttrs attrs).overrideAttrs (o: {
+      isBroken = isBroken drv;
+    });
+    #if (builtins.tryEval (isBroken drv)).success
+    #then (isBroken drv) # should fail and use our override
+    #else drv.overrideAttrs attrs;
+in {
   nixStore = "/home_nfs/bguibertd/nix";
 
-  p11-kit = prev.p11-kit.overrideAttrs (attrs: {
+  p11-kit = tryUpstream prev.p11-kit (attrs: {
+    enableParallelBuilding = false;
     doCheck = false;
+    doInstallCheck=false;
   });
-  go_bootstrap = prev.go_bootstrap.overrideAttrs (attrs: {
-    doCheck = false;
-    installPhase = ''
-      mkdir -p "$out/bin"
-      export GOROOT="$(pwd)/"
-      export GOBIN="$out/bin"
-      export PATH="$GOBIN:$PATH"
-      cd ./src
-      ./make.bash
-    '';
-  });
-  go_1_10 = prev.go_1_10.overrideAttrs (attrs: {
-    doCheck = false;
-    installPhase = ''
-      mkdir -p "$out/bin"
-      export GOROOT="$(pwd)/"
-      export GOBIN="$out/bin"
-      export PATH="$GOBIN:$PATH"
-      cd ./src
-      ./make.bash
-    '';
-  });
-  go_1_11 = prev.go_1_11.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  go_1_13 = prev.go_1_13.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-  libuv = builtins.trace "libuv spartan" prev.libuv.overrideAttrs (attrs: {
-    doCheck = false;
-  });
-
   jobs = prev.jobs.override {
     admin_scripts_dir = "/home_nfs/script/admin";
     #scheduler = prev.jobs.scheduler_slurm;
+    mkJob = prev.jobs.mkJob.override {
+      jobImpl = final.jobs.sbatchJob;
+    };
   };
+
   fetchannex = { file ? builtins.baseNameOf url
                , repo ? "${builtins.getEnv "HOME"}/nur-packages/downloads"
                , name ? builtins.baseNameOf url

@@ -2,18 +2,6 @@
 , stream
 , date ? "20181216"
 , admin_scripts_dir ? null
-, default_sbatch ? {
-      job-name="bash";
-      nodes="1";
-      #partition=scheduler_slurm.partitions.SKL-20c_edr-ib2_192gb_2666.name;
-      time="00:03:00";
-      exclusive=true;
-      verbose=true;
-      no-requeue=true;
-      #ntasks-per-node="8";
-      #cpus-per-task="5";
-      #threads-per-core="1";
-    }
 , stdenvNoCC
 , lib
 , writeScript

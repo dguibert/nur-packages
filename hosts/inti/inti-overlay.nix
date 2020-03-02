@@ -77,15 +77,16 @@ in {
     admin_scripts_dir = null; #"/home_nfs/script/admin";
     scheduler = prev.jobs.scheduler_slurm;
 
-    default_sbatch = {
-      job-name="job";
-      nodes="1";
-      account = "cellvt@genci";
-      partition=prev.jobs.scheduler_slurm.partitions.tx2.name;
-      time="00:30:00";
-      exclusive=true;
-      verbose=true;
-      no-requeue=true;
+    mkJob = prev.jobs.mkJob {
+      jobImpl = final.jobs.sbatchJob;
+      sbatch-job-name="job";
+      sbatch-nodes="1";
+      sbatch-account = "cellvt@genci";
+      sbatch-partition=final.jobs.scheduler_slurm.partitions.tx2.name;
+      sbatch-time="00:30:00";
+      sbatch-exclusive=true;
+      sbatch-verbose=true;
+      sbatch-no-requeue=true;
       #ntasks-per-node="8";
       #cpus-per-task="5";
       #threads-per-core="1";

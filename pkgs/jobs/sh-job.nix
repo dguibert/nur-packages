@@ -1,7 +1,6 @@
 { stdenvNoCC, lib, writeScript, runCommand }:
 { name
 , script ? ""
-, options ? {}
 , buildInputs ? []
 , scratch ? null
 , ...
@@ -19,7 +18,7 @@
     runHook jobDone
     echo 'done'
   '';
-  extraArgs = removeAttrs args ["name" "buildInputs" "outputs" "script" "options" "scratch"];
+  extraArgs = removeAttrs args ["name" "buildInputs" "outputs" "script" "scratch"];
 in builtins.trace extraArgs
   runCommand name (extraArgs // {
          inherit buildInputs;

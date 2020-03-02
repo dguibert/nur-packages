@@ -20,9 +20,9 @@ in {
   jobs = prev.jobs.override {
     admin_scripts_dir = "/home_nfs/script/admin";
     #scheduler = prev.jobs.scheduler_slurm;
-  };
-  mkJob = prev.jobs.mkJob.override {
-    jobImpl = final.jobs.sbatchJob;
+    mkJob = prev.jobs.mkJob.override {
+      jobImpl = final.jobs.sbatchJob;
+    };
   };
 
   fetchannex = { file ? builtins.baseNameOf url
