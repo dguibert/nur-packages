@@ -2,19 +2,20 @@
   "inputs": {
     "nix": {
       "info": {
-        "lastModified": 1582127508,
-        "narHash": "sha256-zApv6JURtwXLr0//yhl/DIG7iCShP7vkbWJ96YvVsoA="
+        "lastModified": 1582633168,
+        "narHash": "sha256-XyWVIpQncCUczJplcjwG/WGC1bX92TXIYwifFnej10Y="
       },
       "inputs": {
         "nixpkgs": {
           "info": {
-            "narHash": "sha256-ZzR2l1dovxeZ555KXxz7SAXrC72BfaR4BeqvJzRdmwQ="
+            "lastModified": 1580555706,
+            "narHash": "sha256-ly5Gxl9yZgW2w1F3aDU5bvg34Ct+juUaOg8vue+Mkbo="
           },
           "inputs": {},
           "locked": {
             "owner": "edolstra",
             "repo": "nixpkgs",
-            "rev": "d37927a77e70a2b3408ceaa2e763b6df1f4d941a",
+            "rev": "43e283790fbe330b723ac44b584824cf6d85c1ee",
             "type": "github"
           },
           "original": {
@@ -27,7 +28,7 @@
       "locked": {
         "owner": "dguibert",
         "repo": "nix",
-        "rev": "bc582aad4bbae193d69a4384887fad53154d651e",
+        "rev": "d241c8d345ba4e6d57b8193b3d1519bed97f3cd9",
         "type": "github"
       },
       "original": {
@@ -39,14 +40,14 @@
     },
     "nixpkgs": {
       "info": {
-        "lastModified": 1582272126,
-        "narHash": "sha256-cjDAfcmf0aFYMcJ0W4MVzebJ519p0qUaex+452mDR6c="
+        "lastModified": 1583060693,
+        "narHash": "sha256-ezpVgUwjHY6FnoXWC1ui7C0BtntDRAL+ocNFs0KAI2o="
       },
       "inputs": {},
       "locked": {
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "c3ec5da89b61aa85ec969f93c03098fe38ccf427",
+        "rev": "64ceac66a0b508e71464e49689e96d046099650c",
         "type": "github"
       },
       "original": {
