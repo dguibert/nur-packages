@@ -64,7 +64,6 @@
 
       ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
       nixosModules = {
-        qemu-user = import ./modules/qemu-user.nix;
       };
 
       overlay = overlays.default;
