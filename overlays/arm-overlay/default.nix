@@ -97,4 +97,8 @@ in
   };
 
   armie_192 = (self.callPackage ./arm-instruction-emulator {}).armie;
+  armie_200 = (self.callPackage ./arm-instruction-emulator {
+    version = "20.0";
+    sha256 = "0mabjqf7ixnammxcmqgyssmmxdal8p74gbw390z8lsrvb8hpxb33";
+  }).armie;
 }
