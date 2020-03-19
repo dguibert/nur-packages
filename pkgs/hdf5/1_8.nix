@@ -8,6 +8,7 @@
 , szip ? null
 , mpi ? null
 , enableShared ? true
+, compilers_line
 }:
 
 # cpp and mpi options are mutually exclusive
@@ -50,7 +51,8 @@ stdenv.mkDerivation rec {
     ++ optional (gfortran != null) "--enable-fortran"
     ++ optional fortran2003 "--enable-fortran2003"
     ++ optional (szip != null) "--with-szlib=${szip}"
-    ++ optionals (mpi != null) ["--enable-parallel" "CC=${mpi}/bin/mpicc"]
+    ++ optionals (mpi != null) ["--enable-parallel" /*"CC=${mpi}/bin/mpicc"*/]
+    ++ [ (compilers_line stdenv mpi) ]
     ++ optional enableShared "--enable-shared";
 
   patches = [./bin-mv.patch];

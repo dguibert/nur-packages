@@ -32,7 +32,7 @@ final: prev: {
     compiler_id = if (stdenv.cc.isIntel or false) then "intel" else "gnu";
     mpi_id = if (mpi.isIntel or false) then "intel" else
              if (mpi != null) then "openmpi" else "none";
-  in {
+    line = {
       intel = {
         intel = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
         openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
@@ -43,6 +43,7 @@ final: prev: {
         none = "";
       };
     }."${compiler_id}"."${mpi_id}";
+  in builtins.trace "compilers: ${line}" line;
 
   cubew = final.callPackage ./pkgs/cubew { };
   cubelib = final.callPackage ./pkgs/cubelib { };
@@ -104,6 +105,11 @@ final: prev: {
     ];
   });
 
+  hdf5_1_8 = builtins.trace "hdf5_1_8 from overlay" final.callPackage ./pkgs/hdf5/1_8.nix {
+    gfortran = null;
+    szip = null;
+    mpi = null;
+  };
   hdf5 = final.callPackage ./pkgs/hdf5 {
     gfortran = null;
     szip = null;
@@ -118,7 +124,7 @@ final: prev: {
           , ...
         }@args: let name_=name;
                     args_ = builtins.removeAttrs args [ "name" "buildInputs" "shellHook" ];
-        in prev.stdenv.mkDerivation (rec {
+        in builtins.trace "mkEnv-${name}" prev.stdenv.mkDerivation (rec {
     name = "${name_}-env";
     phases = [ "buildPhase" ];
     postBuild = "ln -s ${env} $out";
