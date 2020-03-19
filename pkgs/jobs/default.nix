@@ -181,20 +181,15 @@ with pkgs; let
         name
       , jobImpl ? shJob
       , script ? ""
-      , checks ? j: {}
-      , jobInputs ? []
       , ...
       }@args: let
         jobFormalArgs = builtins.functionArgs jobImpl;
         jobArgs = builtins.intersectAttrs jobFormalArgs args;
-        job = jobImpl (jobArgs // { buildInputs = (jobArgs.buildInputs or []) ++ (map (value: value.submit) jobInputs); } // builtins.trace extraArgs extraArgs);
         extraArgs = removeAttrs args (["jobImpl" "checks"]
                   ++ builtins.attrNames jobArgs);
-      in {
-        submit = job;
-        drvPath = job.drvPath;
-        check = checks job;
-    });
+      in
+        jobImpl (jobArgs // builtins.trace extraArgs extraArgs)
+    );
 
     mkCheck = name: job: script: mkCheck' { inherit job name script; };
     mkCheck' = {
