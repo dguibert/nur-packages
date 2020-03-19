@@ -8,8 +8,28 @@ final: prev: with final; let
 in {
   nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
 
-  p11-kit = tryUpstream prev.p11-kit (attrs: {
-    enableParallelBuilding = false;
+  nix = prev.nix.overrideAttrs (old: {
+    patches = (old.patches or []) ++ [ ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch ];
+  });
+
+  #p11-kit = tryUpstream prev.p11-kit (attrs: {
+  #  enableParallelBuilding = false;
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
+  #libuv = tryUpstream prev.libuv (attrs: {
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
+  gssdp = tryUpstream prev.gssdp (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  gupnp = tryUpstream prev.gupnp (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  gupnp-igd = tryUpstream prev.gupnp-igd (attrs: {
     doCheck = false;
     doInstallCheck=false;
   });

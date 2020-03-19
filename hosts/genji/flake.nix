@@ -78,6 +78,33 @@
         jobImpl = jobs.sbatchJob;
         sbatch-job-name = "CEPP";
       }).submit;
+      xpra-start = let
+        config = (lib.evalModules {
+          modules =
+            (import "${nixpkgs}/nixos/modules/module-list.nix") ++ [
+            ({ config, pkgs, ... }: {
+              services.xserver.enable = true;
+              services.xserver.display = null;
+              services.xserver.displayManager.xpra.enable = true;
+              services.xserver.displayManager.xpra.bindTcp = null;
+              services.xserver.displayManager.xpra.pulseaudio = true;
+              services.xserver.displayManager.xpra.extraOptions = [
+                "--log-dir=$HOME/.xpra"
+                "--socket-dirs=$HOME/.xpra"
+                "--fake-xinerama=no"
+              ];
+              nixpkgs.system = system;
+              nixpkgs.pkgs = nixpkgsFor.${system};
+            })
+            #<nixpkgs/nixos/modules/services/x11/display-managers/xpra.nix>
+          ];
+        }).config;
+      in writeScript "launch-xpra" ''
+        #!${bash}/bin/bash
+
+        set -x
+        ${config.services.xserver.displayManager.job.execCmd}
+      '';
     });
 
     defaultPackage = forAllSystems (system: self.packages.${system}.nix);
