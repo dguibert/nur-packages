@@ -1,7 +1,6 @@
 { stdenv, fetchurl, fetchpatch, gfortran, perl, libnl
 , rdma-core, zlib, numactl, libevent, hwloc, pkgsTargetTarget
-, openucx
-, libfabric
+, ucx
 
 # Enable the Sun Grid Engine bindings
 , enableSGE ? false
@@ -34,7 +33,7 @@ let
     configureFlags = oldAttrs.configureFlags
       ++ [ "--with-cma" ]
       ++ lib.optional enableSlurm "--with-pmi=${pmix}"
-      ++ lib.optional (openucx != null) "--enable-mca-no-build=btl-uct"
+      ++ lib.optional (ucx != null) "--enable-mca-no-build=btl-uct"
     ;
 
   });
