@@ -8,11 +8,15 @@ final: prev: with final; let
 in {
   nixStore = "/home_nfs/bguibertd/nix";
 
-  p11-kit = tryUpstream prev.p11-kit (attrs: {
-    enableParallelBuilding = false;
+  libuv = tryUpstream prev.libuv (attrs: {
     doCheck = false;
     doInstallCheck=false;
   });
+  #p11-kit = tryUpstream prev.p11-kit (attrs: {
+  #  enableParallelBuilding = false;
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
   jobs = prev.jobs.override {
     admin_scripts_dir = "/home_nfs/script/admin";
     #scheduler = prev.jobs.scheduler_slurm;
