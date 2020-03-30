@@ -93,9 +93,17 @@ in rec {
   });
 
 
-  slurm_19_05_3_2 = lib.upgradeOverride slurm' (oldAttrs: {
+  slurm_19_05_3_2 = lib.upgradeOverride slurm' (oldAttrs: rec {
     version = "19.05.3.2";
-  });
+    src = fetchFromGitHub {
+      owner = "SchedMD";
+      repo = "slurm";
+      # The release tags use - instead of .
+      rev = "slurm-${builtins.replaceStrings ["."] ["-"] version}";
+      sha256 = "sha256-k1gAhf8jOgT5JWLgVxA9VEK4v2cURMWQqMA1jQpuN3Q=";
+    };
+
+});
 
   slurm = slurm_19_05_3_2;
 }
