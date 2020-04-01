@@ -10,7 +10,6 @@
     nixops.uri           = "github:dguibert/nixops/pu";
     nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
     nix.uri              = "github:dguibert/nix/pu";
-    nur_dguibert.uri     = "github:dguibert/nur-packages/dg-remote-urls";
     terranix             = { uri = "github:mrVanDalo/terranix"; flake=false; };
     #"nixos-18.03".uri   = "github:nixos/nixpkgs-channels/nixos-18.03";
     #"nixos-18.09".uri   = "github:nixos/nixpkgs-channels/nixos-18.09";
@@ -21,7 +20,6 @@
   };
 
   outputs = { self, nixpkgs
-            , nur_dguibert
             , base16-nix
             , NUR
             , gitignore
@@ -36,12 +34,25 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
 
       # Memoize nixpkgs for different platforms for efficiency.
-      nixpkgsFor = forAllSystems (system:
+      defaultPkgsFor = forAllSystems (system:
         import nixpkgs {
           inherit system;
           overlays =  [
             overlays.default
             nix.overlay
+            (final: prev: {
+              nixStore = "/home_nfs/bguibertd/nix";
+            })
+          ];
+          config.allowUnfree = true;
+        }
+      );
+      nixpkgsFor = forAllSystems (system:
+        import nixpkgs {
+          inherit system;
+          overlays =  [
+            nix.overlay
+            overlays.default
             self.overlay
           ];
           config.allowUnfree = true;
@@ -54,9 +65,9 @@
   in rec {
     overlay = import ./spartan-overlay.nix;
 
-    devShell.x86_64-linux = with nixpkgsFor.x86_64-linux; mkEnv rec {
+    devShell.x86_64-linux = with defaultPkgsFor.x86_64-linux; mkEnv rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ nixpkgsFor.x86_64-linux.nix jq ];
+      buildInputs = [ defaultPkgsFor.x86_64-linux.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         unset NIX_STORE NIX_REMOTE

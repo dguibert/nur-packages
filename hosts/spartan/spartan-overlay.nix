@@ -8,6 +8,10 @@ final: prev: with final; let
 in {
   nixStore = "/home_nfs/bguibertd/nix";
 
+  nix = tryUpstream prev.nix (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   libuv = tryUpstream prev.libuv (attrs: {
     doCheck = false;
     doInstallCheck=false;
