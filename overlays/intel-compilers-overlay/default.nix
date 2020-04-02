@@ -217,7 +217,7 @@ in {
     };
 
     intelPackages_2020_1_217 = intelPackages {
-      version = "2020.0.166";
+      version = "2020.1.217";
       comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16530/parallel_studio_xe_2020_update1_composer_edition.tgz";
       comp_sha256 = "07mhd520zw8v9hv3gn5yd9rrggkjv1aa7ch8skgkma5qhzdfgir6";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16546/l_mpi_2019.7.217.tgz";
