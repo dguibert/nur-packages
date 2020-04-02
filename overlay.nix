@@ -12,6 +12,13 @@ final: prev: {
   example-package = final.callPackage ./pkgs/example-package { };
   # some-qt5-package = prev.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
+  inherit (final.callPackage ./pkgs/elfutils {
+    lib = final.lib;
+    elfutils=prev.elfutils;
+  })
+    elfutils
+  ;
+
   dyninst = final.callPackage ./pkgs/dyninst { };
   palabos = final.callPackage ./pkgs/palabos { };
   otf2 = final.callPackage ./pkgs/otf2 { };
