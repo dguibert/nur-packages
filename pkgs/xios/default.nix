@@ -38,7 +38,7 @@ in stdenv.mkDerivation {
     rev = "1637";
     sha256 = "196vv9mh22vs67pasr56478k25yw79z7sfzwc1x9cckydj9xim0m";
   };
-  buildInputs = [ gfortran mpi perl netcdf-mpi netcdffortran
+  buildInputs = [ gfortran mpi perl netcdf-mpi netcdffortran hdf5-mpi
     perlPackages.URI
     blitz boost.all
     gcc /* cpp */
