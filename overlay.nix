@@ -31,6 +31,8 @@ final: prev: {
 
   libffi_3_2 = final.callPackage ./pkgs/libffi/3.2.nix { };
 
+  gotcha = final.callPackage ./pkgs/gotcha { };
+
   caliper = final.callPackage ./pkgs/caliper {
     inherit (final) dyninst;
   };
