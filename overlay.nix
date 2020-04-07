@@ -147,8 +147,15 @@ final: prev: {
 
   must = final.callPackage ./pkgs/must { inherit (final) dyninst; };
   muster = final.callPackage ./pkgs/muster { };
-  nemo_36 = final.callPackage ./pkgs/nemo/3.6.nix { xios = final.xios_10; };
-  nemo = final.callPackage ./pkgs/nemo { inherit (final) xios; };
+
+  inherit (final.callPackage ./pkgs/nemo { })
+    nemo_gyre_36
+    nemo_bench_4_0
+    nemo_gyre_pisces_4_0
+    nemo_bench_4_0_2
+    nemo_gyre_pisces_4_0_2
+    nemo_meto_go8_4_0_2
+    nemo;
 
   netcdf = final.callPackage ./pkgs/netcdf { inherit (final) compilers_line; };
 
