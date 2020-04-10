@@ -29,11 +29,7 @@
   in rec {
     lib = import ./lib { lib = nixpkgs.lib; };
 
-      packages.x86_64-linux = {
-        inherit (nixpkgsFor.x86_64-linux) hello nix
-        openmpi
-        ;
-      };
+      packages = nixpkgsFor;
 
       devShell.x86_64-linux = with nixpkgsFor.x86_64-linux; mkEnv {
         name = "nix";

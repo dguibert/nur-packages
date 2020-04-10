@@ -141,6 +141,8 @@ final: prev: {
 
   nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
 
+  nvptx-tools = final.callPackage ./pkgs/nvptx-tools { };
+
   inherit (final.callPackage ./pkgs/openmpi {
     enableSlurm=true;
     lib = final.lib;
