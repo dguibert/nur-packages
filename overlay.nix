@@ -141,6 +141,7 @@ final: prev: {
 
   nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
 
+  nvptx-newlib = final.callPackage ./pkgs/nvptx-newlib { };
   nvptx-tools = final.callPackage ./pkgs/nvptx-tools { };
 
   inherit (final.callPackage ./pkgs/openmpi {
