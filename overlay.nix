@@ -12,7 +12,7 @@ final: prev: {
   example-package = final.callPackage ./pkgs/example-package { };
   # some-qt5-package = prev.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
-  inherit (final.callPackage ./pkgs/elfutils {
+  inherit (final.callPackages ./pkgs/elfutils {
     lib = final.lib;
     elfutils=prev.elfutils;
   })
@@ -85,7 +85,7 @@ final: prev: {
   };
 
   hpcg = final.callPackage ./pkgs/hpcg { };
-  inherit (final.callPackage ./pkgs/hpl {
+  inherit (final.callPackages ./pkgs/hpl {
     inherit (final) fetchannex;
     inherit (final) nix-patchtools;
   })
@@ -150,7 +150,7 @@ final: prev: {
   must = final.callPackage ./pkgs/must { inherit (final) dyninst; };
   muster = final.callPackage ./pkgs/muster { };
 
-  inherit (final.callPackage ./pkgs/nemo { })
+  inherit (final.callPackages ./pkgs/nemo { })
     nemo_gyre_36
     nemo_bench_4_0
     nemo_gyre_pisces_4_0
@@ -163,7 +163,7 @@ final: prev: {
 
   nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
 
-  inherit (final.callPackage ./pkgs/openmpi {
+  inherit (final.callPackages ./pkgs/openmpi {
     enableSlurm=true;
     lib = final.lib;
     openmpi=prev.openmpi;
