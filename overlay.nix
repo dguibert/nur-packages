@@ -169,6 +169,7 @@ final: prev: {
     openmpi=prev.openmpi;
   })
     openmpi
+    openmpi_2_0_2
     openmpi_4_0_2
   ;
 
