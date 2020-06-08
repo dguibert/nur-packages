@@ -5,11 +5,25 @@
   description = "A flake for building my NUR packages on SPARTAN";
 
   inputs = {
-    home-manager         = { uri = "github:dguibert/home-manager/pu"; flake=false; };
+    home-manager. uri    = "github:dguibert/home-manager/pu";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
     hydra.uri            = "github:dguibert/hydra/pu";
+    hydra.inputs.nix.follows = "nix";
+    hydra.inputs.nixpkgs.follows = "nixpkgs";
+
     nixops.uri           = "github:dguibert/nixops/pu";
+    nixops.inputs.nixpkgs.follows = "nixpkgs";
+
     nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
+
     nix.uri              = "github:dguibert/nix/pu";
+    nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    nur_dguibert.uri     = "github:dguibert/nur-packages/pu";
+    nur_dguibert.inputs.nix.follows = "nix";
+    #nur_dguibert_envs.uri= "github:dguibert/nur-packages/pu?dir=envs";
+    #nur_dguibert_envs.uri= "/home/dguibert/nur-packages?dir=envs";
     terranix             = { uri = "github:mrVanDalo/terranix"; flake=false; };
     #"nixos-18.03".uri   = "github:nixos/nixpkgs-channels/nixos-18.03";
     #"nixos-18.09".uri   = "github:nixos/nixpkgs-channels/nixos-18.09";
@@ -20,6 +34,7 @@
   };
 
   outputs = { self, nixpkgs
+            , nur_dguibert
             , base16-nix
             , NUR
             , gitignore

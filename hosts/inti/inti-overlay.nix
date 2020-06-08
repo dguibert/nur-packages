@@ -51,13 +51,14 @@ in {
   #  doCheck = false;
   #  doInstallCheck=false;
   #});
-  #git = tryUpstream prev.git (attrs: {
+  libappamor = tryUpstream prev.libappamor (attrs: {
+    buildInputs = attrs.buildInputs ++ [ perl ];
   #  doCheck = false;
   #  doInstallCheck=false;
-  #});
-  #libuv = tryUpstream prev.libuv (attrs: {
-  #  doCheck = false;
-  #});
+  });
+  libuv = tryUpstream prev.libuv (attrs: {
+    doCheck = false;
+  });
   slurm = prev.slurm_17_11_5;
 
   pythonOverrides = prev.lib.composeOverlays [

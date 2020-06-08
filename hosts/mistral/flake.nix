@@ -1,6 +1,6 @@
 
 {
-  description = "A flake for building my NUR packages";
+  description = "A flake for building my NUR packages on MISTRAL";
 
   inputs = {
     home-manager. uri    = "github:dguibert/home-manager/pu";
@@ -42,30 +42,17 @@
             , nix
             , nixops
             }@flakes: let
-      systems = [ "aarch64-linux" ];
+      systems = [ "x86_64-linux" ];
 
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
 
       # Memoize nixpkgs for different platforms for efficiency.
-      defaultPkgsFor = forAllSystems (system:
-        import nixpkgs {
-          inherit system;
-          overlays =  [
-            overlays.default
-            nix.overlay
-            (final: prev: {
-              nixStore = "/ccc/scratch/cont003/bull/guibertd/nix";
-            })
-          ];
-          config.allowUnfree = true;
-        }
-      );
       nixpkgsFor = forAllSystems (system:
         import nixpkgs {
           inherit system;
           overlays =  [
-            nix.overlay
             overlays.default
+            nix.overlay
             self.overlay
           ];
           config.allowUnfree = true;
@@ -76,31 +63,41 @@
     overlays = import ../../overlays;
 
   in rec {
-    overlay =  import ./inti-overlay.nix;
+    overlay = import ./mistral-overlay.nix;
 
-    devShell.aarch64-linux = with defaultPkgsFor.aarch64-linux; mkEnv rec {
+    devShell.x86_64-linux = let
+       # raw package set with the new store path
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          overlays = [
+            overlays.default
+            nix.overlay
+            (final: prev: { nixStore = (overlay final prev).nixStore; })
+          ];
+        };
+      in with pkgs; mkEnv rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ defaultPkgsFor.aarch64-linux.nix jq ];
+      buildInputs = [ pkgs.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         unset NIX_STORE NIX_REMOTE
         unset TMP TMPDIR TEMPDIR TEMP
-        NIX_PATH=
-        ${lib.concatMapStrings (f: ''
-          NIX_PATH+=:${toString f}=${toString flakes.${f}}
-        '') (builtins.attrNames flakes) }
-        export NIX_PATH
 
+        export NIX_REMOTE='local?store=/pf/b/b381115&state=/tmp/nix--pf-b-b381115/var&real=/tmp/nix--pf-b-b381115'
       '';
+      NIX_CONF_DIR = let
+        current = pkgs.lib.optionalString (builtins.pathExists /etc/nix/nix.conf)
+          (builtins.readFile /etc/nix/nix.conf);
+
+        nixConf = pkgs.writeTextDir "opt/nix.conf" ''
+          ${current}
+          experimental-features = nix-command flakes ca-references
+        '';
+      in
+        "${nixConf}/opt";
     };
 
-    packages = forAllSystems (system: {
-      nix = nixpkgsFor.${system}.nix;
-      inherit (nixpkgsFor.${system}) git getpwuid;
-    });
-
-    defaultPackage = forAllSystems (system: self.packages.${system}.nix);
-
+    packages.x86_64-linux = nixpkgsFor.x86_64-linux;
 
   };
 }

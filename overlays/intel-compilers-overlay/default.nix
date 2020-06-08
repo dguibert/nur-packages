@@ -7,7 +7,7 @@ let
       , mpi_url, mpi_sha256 ? "", mpi_version ? version
       , redist_url, redist_sha256 ? ""
       , gcc ? pkgs.gcc7
-      , pkgs ? super
+      , pkgs ? self
       }:
       let
       wrapCCWith = { cc
@@ -61,7 +61,7 @@ let
           });
         };
       } else {}) // {
-        mpi = if (mpi_url!=null) then pkgs.callPackage ./mpi.nix { version = mpi_version; url=mpi_url; sha256=mpi_sha256;} else null;
+        mpi = if (mpi_url!=null) then pkgs.callPackage ./mpi.nix { version = mpi_version; url=mpi_url; sha256=mpi_sha256; } else null;
       };
     in self;
 
@@ -75,7 +75,6 @@ in {
       redist_url = null;
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
       mpi_sha256 = "02si091w8gvq7nsclngiz1ckqjy9hcf4g2apnisvrs6whk94h42s";
-      pkgs = super;
     };
     intelPackages_2017_7_259 = intelPackages {
       version = "2017.7.259";
@@ -86,7 +85,6 @@ in {
       mpi_version = "2017.5.239";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
       mpi_sha256 = "02si091w8gvq7nsclngiz1ckqjy9hcf4g2apnisvrs6whk94h42s";
-      pkgs = super;
     };
     intelPackages_2017 = self.intelPackages_2017_7_259;
 
