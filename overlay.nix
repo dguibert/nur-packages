@@ -54,6 +54,8 @@ final: prev: {
     }."${compiler_id}"."${mpi_id}";
   in builtins.trace "compilers: ${line}" line;
 
+  collectl = final.callPackage ./pkgs/collectl { };
+
   cubew = final.callPackage ./pkgs/cubew { };
   cubelib = final.callPackage ./pkgs/cubelib { };
   cubegui = final.callPackage ./pkgs/cubegui { inherit (final) cubelib; };
