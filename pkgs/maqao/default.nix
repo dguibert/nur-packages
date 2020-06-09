@@ -1,11 +1,11 @@
 { stdenv, requireFile, autoPatchelfHook }:
 
 stdenv.mkDerivation {
-  name = "maqao-2.9.16";
+  name = "maqao-2.10.11";
   src = requireFile {
-    name = "maqao-2.9.16.tar.gz";
-    url = "maqao-2.9.16.tar.gz";
-    sha256 = "1nh61gcn1rnq4qga9j06ngcd7m4ibmk4fhxnhvgv9l8ppy79qpsy";
+    name = "maqao-2.10.11.tar.gz";
+    url = "maqao-2.10.11.tar.gz";
+    sha256 = "0qxmxqx3dr986hbx3y817jlmnk2ikxxd1vf01nycx1j4caqkmslz";
   };
 
   buildInputs = [ autoPatchelfHook ];
