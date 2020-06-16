@@ -33,10 +33,7 @@ fi
 # GCC prints annoying warnings when they are not needed.
 dontLink=0
 nonFlagArgs=0
-cc1=0
 # shellcheck disable=SC2193
-[[ "@prog@" = *++ ]] && isCpp=1 || isCpp=0
-cppInclude=1
 
 expandResponseParams "$@"
 declare -i n=0
@@ -58,19 +55,9 @@ while (( "$n" < "$nParams" )); do
         dontLink=1
     elif [[ "$p" = -x && "$p2" = *-header ]]; then
         dontLink=1
-    elif [[ "$p" = -x && "$p2" = c++* && "$isCpp" = 0 ]]; then
-        isCpp=1
-    elif [ "$p" = -nostdlib ]; then
-        isCpp=-1
-    elif [ "$p" = -nostdinc ]; then
-        cppInclude=0
-    elif [ "$p" = -nostdinc++ ]; then
-        cppInclude=0
     elif [[ "$p" != -?* ]]; then
         # A dash alone signifies standard input; it is not a flag
         nonFlagArgs=1
-    elif [ "$p" = -cc1 ]; then
-        cc1=1
     fi
     n+=1
 done
@@ -100,6 +87,14 @@ if [[ "${NIX_ENFORCE_PURITY:-}" = 1 && -n "$NIX_STORE" ]]; then
             skip "${p:2}"
         elif [ "$p" = -I ] && badPath "$p2"; then
             n+=1; skip "$p2"
+        elif [ "${p:0:4}" = -aI/ ] && badPath "${p:3}"; then
+            skip "${p:3}"
+        elif [ "$p" = -aI ] && badPath "$p2"; then
+            n+=1; skip "$p2"
+        elif [ "${p:0:4}" = -aO/ ] && badPath "${p:3}"; then
+            skip "${p:3}"
+        elif [ "$p" = -aO ] && badPath "$p2"; then
+            n+=1; skip "$p2"
         elif [ "$p" = -isystem ] && badPath "$p2"; then
             n+=1; skip "$p2"
         else
@@ -127,38 +122,19 @@ if [ "$NIX_ENFORCE_NO_NATIVE_@suffixSalt@" = 1 ]; then
     params=(${rest+"${rest[@]}"})
 fi
 
-if [[ "$isCpp" = 1 ]]; then
-    if [[ "$cppInclude" = 1 ]]; then
-        NIX_CFLAGS_COMPILE_@suffixSalt@+=" ${NIX_CXXSTDLIB_COMPILE_@suffixSalt@:-@default_cxx_stdlib_compile@}"
-    fi
-    NIX_CFLAGS_LINK_@suffixSalt@+=" $NIX_CXXSTDLIB_LINK_@suffixSalt@"
+if [ "$(basename $0)x" = "gnatmakex" ]; then
+    extraBefore=("--GNATBIND=@out@/bin/gnatbind" "--GNATLINK=@out@/bin/gnatlink")
+    extraAfter=($NIX_GNATFLAGS_COMPILE_@suffixSalt@)
 fi
 
-source @out@/nix-support/add-hardening.sh
+if [ "$(basename $0)x" = "gnatbindx" ]; then
+    extraBefore=()
+    extraAfter=($NIX_GNATFLAGS_COMPILE_@suffixSalt@)
+fi
 
-# Add the flags for the C compiler proper.
-extraAfter=($NIX_CFLAGS_COMPILE_@suffixSalt@)
-extraBefore=(${hardeningCFlags[@]+"${hardeningCFlags[@]}"} $NIX_CFLAGS_COMPILE_BEFORE_@suffixSalt@)
-
-if [ "$dontLink" != 1 ]; then
-
-    # Add the flags that should only be passed to the compiler when
-    # linking.
-    extraAfter+=($NIX_CFLAGS_LINK_@suffixSalt@)
-
-    # Add the flags that should be passed to the linker (and prevent
-    # `ld-wrapper' from adding NIX_LDFLAGS_@suffixSalt@ again).
-    for i in $NIX_LDFLAGS_BEFORE_@suffixSalt@; do
-        extraBefore+=("-Wl,$i")
-    done
-    for i in $NIX_LDFLAGS_@suffixSalt@; do
-        if [ "${i:0:3}" = -L/ ]; then
-            extraAfter+=("$i")
-        else
-            extraAfter+=("-Wl,$i")
-        fi
-    done
-    export NIX_LDFLAGS_SET_@suffixSalt@=1
+if [ "$(basename $0)x" = "gnatlinkx" ]; then
+    extraBefore=()
+    extraAfter=("--GCC=@out@/bin/gcc")
 fi
 
 # As a very special hack, if the arguments are just `-v', then don't
@@ -168,14 +144,6 @@ fi
 if [ "$*" = -v ]; then
     extraAfter=()
     extraBefore=()
-fi
-
-# clang's -cc1 mode is not compatible with most options
-# that we would pass. Rather than trying to pass only
-# options that would work, let's just remove all of them.
-if [ "$cc1" = 1 ]; then
-  extraAfter=()
-  extraBefore=()
 fi
 
 # Optionally print debug info.
