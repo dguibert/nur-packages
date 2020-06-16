@@ -1,11 +1,9 @@
 {
-  epoch = 201909;
-
   description = "A flake for building my NUR packages";
 
   inputs = {
-    nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
-    nix.uri              = "github:dguibert/nix/pu";
+    nixpkgs.url          = "github:dguibert/nixpkgs/pu";
+    nix.url              = "github:dguibert/nix/pu";
   };
 
   outputs = { self, nixpkgs, nix }: let
