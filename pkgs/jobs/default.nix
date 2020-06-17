@@ -1,4 +1,4 @@
-{ pkgs
+{ final, prev
 , stream
 , date ? "20181216"
 , admin_scripts_dir ? null
@@ -7,12 +7,12 @@
 , writeScript
 , runCommand
 }:
-with pkgs; let
+with final; let
 
-  jobs = recurseIntoAttrs (rec {
+  jobs = recurseIntoAttrs (lib.virtual (self: with self; {
     bench-helpers = import ./bench-helpers.nix { inherit pkgs; };
 
-    scheduler_slurm = import ./scheduler-slurm.nix { inherit pkgs date; };
+    scheduler_slurm = import ./scheduler-slurm.nix { inherit final prev date; };
 
     vnc = import ./vnc.nix { inherit pkgs mkJob; };
 
@@ -172,6 +172,7 @@ with pkgs; let
     #'';
 
     # http://sandervanderburg.blogspot.com/2018/09/creating-nix-build-function.html
+    defaultJob = shJob;
     shJob = import ./sh-job.nix { inherit stdenvNoCC lib writeScript runCommand; };
     sbatchJob = import ./sbatch-job.nix { inherit stdenvNoCC lib writeScript runCommand;
       scontrol_show = scheduler_slurm.scontrol_show;
@@ -179,7 +180,7 @@ with pkgs; let
 
     mkJob = makeOverridable ({
         name
-      , jobImpl ? shJob
+      , jobImpl ? defaultJob
       , script ? ""
       , ...
       }@args: let
@@ -221,5 +222,5 @@ with pkgs; let
         /usr/bin/time /usr/bin/srun /usr/bin/sleep 60
       '';
     };
-  });
+  }));
 in jobs

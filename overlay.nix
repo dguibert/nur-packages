@@ -82,6 +82,7 @@ final: prev: {
   };
 
   jobs = final.callPackage ./pkgs/jobs {
+    inherit final prev;
     inherit (final) stream;
     admin_scripts_dir = "";
   };
@@ -185,7 +186,7 @@ final: prev: {
   python38 = prev.python38.override { packageOverrides = final.pythonOverrides; };
 
   pythonOverrides = python-self: python-super: with python-self; {
-    pyslurm = prev.lib.upgradeOverride python-super.pyslurm (oldAttrs: rec {
+    pyslurm = final.lib.upgradeOverride python-super.pyslurm (oldAttrs: rec {
       name = "${oldAttrs.pname}-${version}";
       version = "19-05-0";
     });
@@ -209,18 +210,33 @@ final: prev: {
       };
 
     });
-    pyslurm_17_11_12 = (python-super.pyslurm.override { slurm=slurm_17_11_9_1;}).overrideAttrs (oldAttrs: rec {
+    pyslurm_17_11_12 = (python-super.pyslurm.override { slurm=final.slurm_17_11_9_1;}).overrideAttrs (oldAttrs: rec {
       name = "${oldAttrs.pname}-${version}";
       version = "17.11.12";
 
       patches = [];
 
-      src = super.fetchFromGitHub {
+      src = prev.fetchFromGitHub {
         repo = "pyslurm";
         owner = "PySlurm";
         # The release tags use - instead of .
         rev = "${builtins.replaceStrings ["."] ["-"] version}";
         sha256 = "01xdx2v3w8i3bilyfkk50f786fq60938ikqp2ls2kf3j218xyxmz";
+      };
+
+    });
+    pyslurm_19_05_0 = (python-super.pyslurm.override { slurm=final.slurm_19_05_5;}).overrideAttrs (oldAttrs: rec {
+      name = "${oldAttrs.pname}-${version}";
+      version = "19.05.0";
+
+      patches = [];
+
+      src = prev.fetchFromGitHub {
+        repo = "pyslurm";
+        owner = "PySlurm";
+        # The release tags use - instead of .
+        rev = "${builtins.replaceStrings ["."] ["-"] version}";
+        sha256 = "sha256-WdCs1hs5cUp/iYM6Rtyk29XNHNOfBqvK99okHxAmy9E=";
       };
 
     });
@@ -233,7 +249,7 @@ final: prev: {
     inherit (final) otf2;
     inherit (final) muster;
   };
-  inherit (final.callPackage ./pkgs/slurm {
+  inherit (final.callPackages ./pkgs/slurm {
     gtk2 = null;
     lib = final.lib;
     slurm=prev.slurm; })
@@ -242,6 +258,7 @@ final: prev: {
     slurm_17_11_9_1
     slurm_18_08_5
     slurm_19_05_3_2
+    slurm_19_05_5
     slurm
   ;
   st = prev.st.override {patches = [

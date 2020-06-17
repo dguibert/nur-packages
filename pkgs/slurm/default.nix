@@ -1,7 +1,7 @@
 { stdenv, fetchFromGitHub, pkgconfig, libtool, curl
-, python, munge, perl, pam, openssl, zlib
+, python, munge, perl, pam, openssl, zlib, shadow, coreutils
 , ncurses, libmysqlclient, gtk2, lua, hwloc, numactl
-, readline, freeipmi, libssh2, xorg, lz4
+, readline, freeipmi, libssh2, xorg, lz4, rdma-core, nixosTests
 # enable internal X11 support via libssh2
 , enableX11 ? true
 , pmix
@@ -93,17 +93,29 @@ in rec {
   });
 
 
-  slurm_19_05_3_2 = lib.upgradeOverride slurm' (oldAttrs: rec {
+  slurm_19_05_3_2 = slurm'.overrideAttrs (oldAttrs: rec {
     version = "19.05.3.2";
     src = fetchFromGitHub {
       owner = "SchedMD";
       repo = "slurm";
       # The release tags use - instead of .
       rev = "slurm-${builtins.replaceStrings ["."] ["-"] version}";
-      sha256 = "sha256-k1gAhf8jOgT5JWLgVxA9VEK4v2cURMWQqMA1jQpuN3Q=";
+      sha256 = "sha256-YM/wuIklhkFh7N0BKxh7BI/4RXXic1aZzKl7rvluRLc=";
     };
 
-});
+  });
 
-  slurm = slurm_19_05_3_2;
+  slurm_19_05_5 = lib.upgradeOverride slurm' (oldAttrs: rec {
+    version = "19.05.5.1";
+    src = fetchFromGitHub {
+      owner = "SchedMD";
+      repo = "slurm";
+      # The release tags use - instead of .
+      rev = "slurm-${builtins.replaceStrings ["."] ["-"] version}";
+      sha256 = "sha256-HQ5v3ujWbJSVXg96VOrNdUkWMVu6eb5y69rcHPXYDzg=";
+    };
+
+  });
+
+  slurm = slurm_19_05_5;
 }

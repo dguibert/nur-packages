@@ -1,5 +1,5 @@
 final: prev: with final; let
-    tryUpstream = drv: attrs: (drv.overrideAttrs attrs).overrideAttrs (o: {
+    tryUpstream = drv: attrs: builtins.trace "broken upstream ${drv.name}" (drv.overrideAttrs attrs).overrideAttrs (o: {
       isBroken = isBroken drv;
     });
     #if (builtins.tryEval (isBroken drv)).success
@@ -21,13 +21,11 @@ in {
   #  doCheck = false;
   #  doInstallCheck=false;
   #});
-  jobs = prev.jobs.override {
+  jobs = prev.jobs._override (self: with self; {
     admin_scripts_dir = "/home_nfs/script/admin";
     #scheduler = prev.jobs.scheduler_slurm;
-    mkJob = prev.jobs.mkJob.override {
-      jobImpl = final.jobs.sbatchJob;
-    };
-  };
+    defaultJob = sbatchJob;
+  });
 
   fetchannex = { file ? builtins.baseNameOf url
                , repo ? "${builtins.getEnv "HOME"}/nur-packages/downloads"
@@ -49,12 +47,12 @@ in {
 
     '';
   };
-  slurm = prev.slurm_17_02_11;
+  slurm = final.slurm_19_05_5;
 
   pythonOverrides = prev.lib.composeOverlays [
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
-      pyslurm = python-super.pyslurm_17_02_0.override { slurm=final.slurm; };
+      pyslurm = python-super.pyslurm_19_05_0.override { slurm=final.slurm_19_05_5; };
     })
   ];
 }
