@@ -18,14 +18,20 @@ stdenv.mkDerivation {
     export DESTDIR=$out
     ./INSTALL
 
+    set -x
     sed -i -e "s@/usr/share/collectl@$out/share/collectl@" $out/bin/collectl
 
     sed -i -e 's@my $etcDir=sprintf("%s/etc", dirname(dirname($BinDir)));@my $etcDir=sprintf("%s/etc", dirname($BinDir));@' $out/bin/collectl
-    sed -i -e "s@/bin/cat@${coreutils}/bin/cat@" $out/bin/collectl
-    sed -i -e "s@/bin/grep@${gnugrep}/bin/grep@" $out/bin/collectl $out/etc/collectl.conf
-    sed -i -e "s@/bin/egrep@${gnugrep}/bin/egrep@" $out/bin/collectl $out/etc/collectl.conf
-    sed -i -e "s@/bin/hostname@${nettools}/bin/hostname@" $out/bin/collectl
-    sed -i -e "s@/bin/ps@${procps}/bin/ps@" $out/bin/collectl $out/etc/collectl.conf
+    sed -i -e 's@/bin/cat@${coreutils}/bin/cat@' $out/bin/collectl
+    sed -i -e 's@/bin/grep@${gnugrep}/bin/grep@' $out/bin/collectl $out/etc/collectl.conf
+    sed -i -e 's@/bin/egrep@${gnugrep}/bin/egrep@' $out/bin/collectl $out/etc/collectl.conf
+    sed -i -e 's@/bin/hostname@${nettools}/bin/hostname@' $out/bin/collectl
+    sed -i -e 's|@ps=`ps axo pid,ppid,uid,comm,user`;|@ps=`${procps}/bin/ps axo pid,ppid,uid,comm,user`;|' $out/bin/collectl
+
+    sed -i -e 's@/bin/ps@${procps}/bin/ps@' $out/bin/collectl $out/etc/collectl.conf
+
+    sed -i -e 's@$Host=`hostname`;@$Host=`${nettools}/bin/hostname`;@' $out/share/collectl/formatit.ph
+    set +x
   '';
   #collectl:$Rpm=          '/bin/rpm';
   #collectl:    $Lspci=(-e '/usr/sbin/lspci') ? '/usr/sbin/lspci' : '/usr/bin/lspci';
