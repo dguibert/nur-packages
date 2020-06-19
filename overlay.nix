@@ -59,6 +59,8 @@ final: prev: {
   cubew = final.callPackage ./pkgs/cubew { };
   cubelib = final.callPackage ./pkgs/cubelib { };
   cubegui = final.callPackage ./pkgs/cubegui { inherit (final) cubelib; };
+  ddt = final.callPackage ./pkgs/ddt { };
+
   dwm = prev.dwm.override {patches = [
     ./pkgs/dwm/0001-dwm-pertag-20170513-ceac8c9.patch
     ./pkgs/dwm/0002-dwm-systray-20180314-3bd8466.diff.patch
