@@ -6,7 +6,7 @@
 , log ? true
 , ...
 }@args: let
-  define_job_basename_sh = name: ''job_out=$(basename $out); job_basename=${name}-''${job_out:0:12}'';
+  define_job_basename_sh = name: ''export job_out=$(basename $out); export job_basename=${name}-''${job_out:0:12}'';
   job = writeScript "${name}.sh" ''
     #!${stdenvNoCC.shell}
 

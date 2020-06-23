@@ -6,7 +6,7 @@ final: prev: with final; let
     #then (isBroken drv) # should fail and use our override
     #else drv.overrideAttrs attrs;
 in {
-  nixStore = "/home_nfs/bguibertd/nix";
+  nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
   nix = tryUpstream prev.nix (attrs: {
     doCheck = false;

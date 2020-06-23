@@ -9,14 +9,14 @@ rec {
   arm = import ./arm-overlay;
   pgi = import ./pgi-overlay;
 
-  defaults = self: super:
-       (default self super)
-    // (aocc self super)
-    // (flang self super)
-    // (intel-compilers self super)
-    // (arm self super)
-    // (pgi self super)
-  ;
+  defaults = [
+    default
+    aocc
+    flang
+    intel-compilers
+    arm
+    pgi
+  ];
 
   nix-home-nfs-bguibertd          = import ./nix-store-overlay.nix "/home_nfs/bguibertd/nix";
   nix-home-nfs-robin-ib-bguibertd = import ./nix-store-overlay.nix "/home_nfs_robin_ib/bguibertd/nix";
