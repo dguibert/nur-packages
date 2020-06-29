@@ -124,7 +124,7 @@ final: prev: {
     szip = null;
     mpi = null;
   };
-  hdf5 = final.callPackage ./pkgs/hdf5 {
+  hdf5 = builtins.trace "hdf5 from overlay" final.callPackage ./pkgs/hdf5 {
     gfortran = null;
     szip = null;
     mpi = null;
@@ -155,14 +155,17 @@ final: prev: {
   must = final.callPackage ./pkgs/must { inherit (final) dyninst; };
   muster = final.callPackage ./pkgs/muster { };
 
-  inherit (final.callPackages ./pkgs/nemo { })
-    nemo_gyre_36
-    nemo_bench_4_0
-    nemo_gyre_pisces_4_0
-    nemo_bench_4_0_2
-    nemo_gyre_pisces_4_0_2
-    nemo_meto_go8_4_0_2
-    nemo;
+  nemo_gyre_36         = final.callPackage ./pkgs/nemo/3.6.nix { };
+
+  nemo_bench_4_0       = final.callPackage ./pkgs/nemo/4.0.nix { };
+  nemo_gyre_pisces_4_0 = final.callPackage ./pkgs/nemo/4.0.nix { config="GYRE_PISCES"; };
+
+  nemo_bench_4_0_2       = final.callPackage ./pkgs/nemo/4.0.2.nix { };
+  nemo_gyre_pisces_4_0_2 = final.callPackage ./pkgs/nemo/4.0.2.nix { config="GYRE_PISCES"; };
+
+  #inherit (final.callPackages ./pkgs/nemo { })
+  #  nemo_meto_go8_4_0_2
+  #;
 
   netcdf = final.callPackage ./pkgs/netcdf { inherit (final) compilers_line; };
 
