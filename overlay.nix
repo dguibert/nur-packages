@@ -16,7 +16,7 @@ final: prev: {
     lib = final.lib;
     elfutils=prev.elfutils;
   })
-    elfutils
+    elfutils_0_179
   ;
 
   dyninst = final.callPackage ./pkgs/dyninst { };
