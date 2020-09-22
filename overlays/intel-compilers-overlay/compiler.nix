@@ -140,7 +140,7 @@ self = stdenv.mkDerivation rec {
 
   meta = {
     description = "Intel compilers and libraries ${version}";
-    maintainers = [ stdenv.lib.maintainers.dguibert ];
+    maintainers = [ stdenv.lib.maintainers.guibert ];
     platforms = stdenv.lib.platforms.linux;
   };
 };
