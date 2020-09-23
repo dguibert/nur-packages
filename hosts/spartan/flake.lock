@@ -1,5 +1,20 @@
 {
   "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1600209923,
+        "narHash": "sha256-zoOWauTliFEjI++esk6Jzk7QO5EKpddWXQm9yQK24iM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "3cd06d3c1df6879c9e41cb2c33113df10566c760",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "lowdown-src": {
       "flake": false,
       "locked": {
@@ -55,28 +70,14 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1592548394,
-        "narHash": "sha256-+UbGqy2pjpXdz1CZHtJu2YBDkotTMPXlCnX5cP5ob1o=",
-        "owner": "dguibert",
-        "repo": "nixpkgs",
-        "rev": "c42e9ea11519865469497a42b30a250d237a9df7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dguibert",
-        "ref": "pu",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nur_dguibert": {
       "inputs": {
         "nix": [
           "nix"
         ],
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1593678155,
@@ -95,6 +96,7 @@
     },
     "root": {
       "inputs": {
+        "flake-utils": "flake-utils",
         "nix": "nix",
         "nixpkgs": "nixpkgs",
         "nur_dguibert": "nur_dguibert"
