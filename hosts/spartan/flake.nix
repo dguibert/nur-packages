@@ -56,9 +56,15 @@
 
     legacyPackages = pkgs;
 
-    defaultApp = {
-      type = "app";
-      program = "${defPkgs.nix}/bin/nix";
+    defaultApp = apps.nix;
+    apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with defPkgs; let
+        name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      in ''
+        #!${runtimeShell}
+        export XDG_CACHE_HOME=$HOME/.cache/${name}
+        unset NIX_STORE NIX_REMOTE
+        "${defPkgs.nix}/bin/nix";
+      '');
     };
 
     devShell = with defPkgs; mkEnv rec {
