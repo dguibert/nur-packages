@@ -11,7 +11,7 @@
 }@args:
 
 let
-  args_ = builtins.removeAttrs args ["lib" "slurm" ];
+  args_ = builtins.removeAttrs args ["lib" "slurm" "openssl" "libssh2" "python" ];
   slurm' = slurm.override args_;
 in rec {
   slurm_17_02_11 = slurm'.overrideAttrs (oldAttrs: {
