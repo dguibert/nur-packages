@@ -32,7 +32,7 @@ let
 
 
 in stdenv.mkDerivation {
-  name = "xios-2.0";
+  name = "xios-2.0.1937";
   src = fetchsvn {
     url = "http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/trunk/";
     rev = "1637";
