@@ -16,6 +16,7 @@
           self.overlays.intel-compilers
           self.overlays.arm
           self.overlays.pgi
+          self.overlays.extra-builtins
           nix.overlay
         ];
         config.allowUnfree = true;

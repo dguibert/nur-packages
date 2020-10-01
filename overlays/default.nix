@@ -8,6 +8,6 @@ rec {
   arm = import ./arm-overlay;
   pgi = import ./pgi-overlay;
 
-  extra_builtins = import ../extra-builtins/overlay.nix;
+  extra-builtins = import ../extra-builtins/overlay.nix;
 }
 

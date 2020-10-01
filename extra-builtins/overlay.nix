@@ -38,6 +38,12 @@ let
     wireguardtools = prev.wireguard-tools;
   };
 
+  sops_decrypt = makeProg {
+    name = "sops-decrypt";
+    src = ./sops-decrypt.sh;
+    inherit (prev) sops;
+  };
+
   # user
   #* System wide:
   #  echo "AuthorizedPrincipalsFile %h/.ssh/authorized_principals" >>/etc/ssh/sshd_config
@@ -72,19 +78,27 @@ in {
                then builtins.trace "isGitDecrypted_ => exec" exec [ is_git_decrypted name ]
                else builtins.trace "isGitDecrypted_ => false" { success=false; value=false; };
 
+  sopsDecrypt_ = name: if builtins ? extraBuiltins && builtins.extraBuiltins ? sopsDecrypt
+               then builtins.trace "sopsDecrypt_ => isGitDecrypted" builtins.extraBuiltins.sopsDecrypt name
+               else if exec != null
+               then builtins.trace "sopsDecrypt_ => exec" exec [ sops_decrypt name ]
+               else builtins.trace "sopsDecrypt_ => false" { success=false; };
+
   sshSignHost_ = ca: hostname: realms: type: if builtins ? extraBuiltins && builtins.extraBuiltins ? sshSignHost
                then builtins.trace "sshSignHost_ => sshSignHost" builtins.extraBuiltins.sshSignHost ca hostname realms type
                else if exec != null
                then builtins.trace "sshSignHost_ => exec" exec [ ssh_sign_host ca hostname realms type ]
                else builtins.trace "sshSignHost_ => ''" { success=false; value={ host_key=""; host_key_pub=""; host_key_cert_pub=""; }; };
 
-  extra_builtins_file = pkgs: pkgs.writeScript "extra-builtins-file.nix" ''
+  extra_builtins_file = prev.writeScript "extra-builtins-file.nix" ''
     {exec, ...}: {
       pass = name: exec [ ${nix_pass} name ];
 
       wgKeys = name: exec [ ${wg_keys} name ];
 
       isGitDecrypted = name: exec [ ${is_git_decrypted} name ];
+
+      sopsDecrypt = name: exec [ ${sops_decrypt} name ];
 
       sshSignHost = ca: hostname: realms: type: exec [ ${ssh_sign_host} ca hostname realms type ];
       sshSignUser = ca: username: realms: type: exec [ ${ssh_sign_user} ca username realms type ];
