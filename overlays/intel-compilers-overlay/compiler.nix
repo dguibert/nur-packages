@@ -5,38 +5,9 @@
 , url
 , sha256
 , preinstDir ? "opt/intel/compilers_and_libraries_${version}/linux"
-, config
 }:
 
 let
-  inherit (builtins) elem;
-  licenseHelpMsg = text: ''
-    error: ${text} for Intel Parallel Studio
-     Packages that are part of Intel Parallel Studio require a license and acceptance
-    of the End User License Agreement (EULA).
-     You can purchase a license at
-    https://software.intel.com/en-us/parallel-studio-xe
-     You can review the EULA at
-    https://software.intel.com/en-us/articles/end-user-license-agreement
-     Once purchased, you can use your license with the Intel Parallel Studio Nix
-    packages using the following methods:
-     a) for `nixos-rebuild` you can indicate the license file to use and your
-       acceptance of the EULA by adding lines to `nixpkgs.config` in the
-       configuration.nix, like so:
-         {
-           nixpkgs.config.psxe.licenseFile = /home/user/COM_L___XXXX-XXXXXXXX.lic;
-         }
-     b) For `nix-env`, `nix-build`, `nix-shell` or any other Nix command you can
-       indicate the license file to use and your acceptance of the EULA by adding
-       lines to ~/.config/nixpkgs/config.nix, like so:
-          {
-            psxe.licenseFile = /home/user/COM_L___XXXX-XXXXXXXX.lic;
-          }
-     Please note that the license type can be one of "composer", "professional" or
-    "cluster";
-     '';
-  licenseFile = config.psxe.licenseFile or (throw (licenseHelpMsg "missing license file"));
-
   components_ = [
     "intel-comp*"
     "intel-openmp*"
@@ -73,9 +44,6 @@ self = stdenv.mkDerivation rec {
     mv ${preinstDir}/* .
     rm -rf opt
     set +xv
-
-    mkdir $out/Licenses
-    cp ${licenseFile} $out/Licenses
   '';
 
   preFixup = ''
