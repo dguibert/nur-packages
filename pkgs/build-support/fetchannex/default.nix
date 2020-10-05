@@ -8,7 +8,7 @@
 , url
 }:
 
-#/*if isHydra then
+/*if isHydra then
 runCommand name ({
   nativeBuildInputs = [ git git-annex ];
 

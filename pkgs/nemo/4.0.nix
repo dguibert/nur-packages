@@ -9,9 +9,10 @@
 , perlPackages
 , substituteAll
 , xios
+, ...
 }@args:
 
-import ./generic.nix (args // {
+import ./generic.nix ({
   name = "nemo-bench-4.0-10741";
   config = "BENCH";
   src = fetchsvn {
@@ -19,4 +20,4 @@ import ./generic.nix (args // {
     rev = "10741";
     sha256 = "1w8hv1alqvyl5lgjd9xw3kfbvj15sp0aaf9ky0s151kcvkdjm40j";
   };
-})
+} // args)

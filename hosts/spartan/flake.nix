@@ -1,17 +1,9 @@
 {
   description = "A flake for building my NUR packages on SPARTAN";
 
+  # To update all inputs:
+  # $ nix flake update --recreate-lock-file
   inputs = {
-    home-manager. url    = "github:dguibert/home-manager/pu";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    hydra.url            = "github:dguibert/hydra/pu";
-    hydra.inputs.nix.follows = "nix";
-    hydra.inputs.nixpkgs.follows = "nixpkgs";
-
-    nixops.url           = "github:dguibert/nixops/pu";
-    nixops.inputs.nixpkgs.follows = "nixpkgs";
-
     nixpkgs.url          = "github:dguibert/nixpkgs/pu";
 
     nix.url              = "github:dguibert/nix/pu";
@@ -19,34 +11,20 @@
 
     nur_dguibert.url     = "github:dguibert/nur-packages/pu";
     nur_dguibert.inputs.nix.follows = "nix";
+    nur_dguibert.inputs.nixpkgs.follows = "nixpkgs";
     #nur_dguibert_envs.url= "github:dguibert/nur-packages/pu?dir=envs";
     #nur_dguibert_envs.url= "/home/dguibert/nur-packages?dir=envs";
-    terranix             = { url = "github:mrVanDalo/terranix"; flake=false; };
-    #"nixos-18.03".url   = "github:nixos/nixpkgs-channels/nixos-18.03";
-    #"nixos-18.09".url   = "github:nixos/nixpkgs-channels/nixos-18.09";
-    #"nixos-19.03".url   = "github:nixos/nixpkgs-channels/nixos-19.03";
-    base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
-    NUR                  = { url  = "github:nix-community/NUR"; flake=false; };
-    gitignore            = { url  = "github:hercules-ci/gitignore"; flake=false; };
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs = { self, nixpkgs
             , nur_dguibert
-            , base16-nix
-            , NUR
-            , gitignore
-            , home-manager
-            , terranix
-            , hydra
             , nix
-            , nixops
+            , flake-utils
             }@flakes: let
-      systems = [ "x86_64-linux" ];
-
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
 
       # Memoize nixpkgs for different platforms for efficiency.
-      defaultPkgsFor = forAllSystems (system:
+      defaultPkgsFor = system:
         import nixpkgs {
           inherit system;
           overlays =  [
@@ -57,9 +35,8 @@
             })
           ];
           config.allowUnfree = true;
-        }
-      );
-      nixpkgsFor = forAllSystems (system:
+        };
+      nixpkgsFor = system:
         import nixpkgs {
           inherit system;
           overlays =  [
@@ -68,20 +45,31 @@
             self.overlay
           ];
           config.allowUnfree = true;
-        }
-      );
-
+        };
 
     overlays = import ../../overlays;
 
-  in rec {
-    overlay = final: prev: (import ./spartan-overlay.nix final prev) //{
-      nix_spartan = defaultPkgsFor.x86_64-linux.nix;
+  in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+       let pkgs = nixpkgsFor system;
+           defPkgs = defaultPkgsFor system;
+       in rec {
+
+    legacyPackages = pkgs;
+
+    defaultApp = apps.nix;
+    apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with defPkgs; let
+        name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      in ''
+        #!${runtimeShell}
+        export XDG_CACHE_HOME=$HOME/.cache/${name}
+        unset NIX_STORE NIX_REMOTE
+        "${defPkgs.nix}/bin/nix";
+      '');
     };
 
-    devShell.x86_64-linux = with defaultPkgsFor.x86_64-linux; mkEnv rec {
+    devShell = with defPkgs; mkEnv rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ defaultPkgsFor.x86_64-linux.nix jq ];
+      buildInputs = [ defPkgs.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         unset NIX_STORE NIX_REMOTE
@@ -95,15 +83,9 @@
       '';
     };
 
-    packages = forAllSystems (system: {
-      inherit (nixpkgsFor.${system}) nix nix_spartan;
-    });
-
-    defaultPackage = forAllSystems (system: self.packages.${system}.nix);
-
-    defaultApp.x86_64-linux = {
-      type = "app";
-      program = "${defaultPkgsFor.x86_64-linux.nix}/bin/nix";
+  })) // {
+    overlay = final: prev: (import ./overlay.nix final prev) //{
+      nix_spartan = defaultPkgsFor.x86_64-linux.nix;
     };
   };
 }

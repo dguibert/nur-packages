@@ -1,5 +1,20 @@
 {
   "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1600209923,
+        "narHash": "sha256-zoOWauTliFEjI++esk6Jzk7QO5EKpddWXQm9yQK24iM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "3cd06d3c1df6879c9e41cb2c33113df10566c760",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "nix": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -36,12 +51,13 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1592548394,
-        "narHash": "sha256-+UbGqy2pjpXdz1CZHtJu2YBDkotTMPXlCnX5cP5ob1o=",
-        "owner": "dguibert",
-        "repo": "nixpkgs",
-        "rev": "c42e9ea11519865469497a42b30a250d237a9df7",
-        "type": "github"
+        "lastModified": 1600871870,
+        "narHash": "sha256-2hH4yOAX1b1x+nOSzAK62eS+UByTVVC5D/Vy46p+vms=",
+        "ref": "pu",
+        "rev": "d5ca301b0d6bf2161ebee43d4ced83f3a9359168",
+        "revCount": 244571,
+        "type": "git",
+        "url": "file:///home/dguibert/code/nixpkgs"
       },
       "original": {
         "owner": "dguibert",
@@ -52,6 +68,7 @@
     },
     "root": {
       "inputs": {
+        "flake-utils": "flake-utils",
         "nix": "nix",
         "nixpkgs": "nixpkgs_2"
       }

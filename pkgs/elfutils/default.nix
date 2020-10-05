@@ -17,6 +17,5 @@ let
 
   self = {
     inherit elfutils_0_179;
-    elfutils = self.elfutils_0_179;
   };
 in self

@@ -10,9 +10,10 @@
 , substituteAll
 , xios_10
 , fetchpatch, lib
+, ...
 }@args:
 
-(import ./generic.nix (args // {
+(import ./generic.nix ({
   name = "nemo_3.6-10379";
   config = "GYRE";
   src = fetchsvn {
@@ -21,7 +22,7 @@
     sha256 = "1pgaah508j9lya6mqasmxzs2j722ri4501346rvjcimkq560kc87";
   };
   xios = xios_10;
-})) // {
+}// args)) // {
   installPhase = ''
     mkdir -p $out/share/nemo/CONFIG/GYRE
     cp -av CONFIG/GYRE/EXP00 $out/share/nemo/CONFIG/GYRE

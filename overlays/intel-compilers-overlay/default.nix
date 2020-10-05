@@ -1,4 +1,4 @@
-self: super:
+final: prev:
 let
     # Intel compiler
     intelPackages =
@@ -7,7 +7,7 @@ let
       , mpi_url, mpi_sha256 ? "", mpi_version ? version
       , redist_url, redist_sha256 ? ""
       , gcc ? pkgs.gcc7
-      , pkgs ? self
+      , pkgs ? final
       }:
       let
       wrapCCWith = { cc
@@ -47,15 +47,16 @@ let
         stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
           mkDerivation = args: stdenv_.mkDerivation (args // {
             CC="icc";
-            FC="ifort";
             CXX="icpc";
+            FC="ifort";
             F77="ifort";
+            F90="ifort";
             postFixup = "${args.postFixup or ""}" + ''
             set -x
             storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-            find $out -not -type d -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+            find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
             storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-            find $out -not -type d -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+            find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
             set +x
             '';
           });
@@ -86,7 +87,7 @@ in {
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
       mpi_sha256 = "02si091w8gvq7nsclngiz1ckqjy9hcf4g2apnisvrs6whk94h42s";
     };
-    intelPackages_2017 = self.intelPackages_2017_7_259;
+    intelPackages_2017 = final.intelPackages_2017_7_259;
 
     #intelPackages_2018_0_128 = intelPackages "2018.0.128";
     # "2018.0.128"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12062/parallel_studio_xe_2018_professional_edition.tgz
@@ -127,9 +128,9 @@ in {
       mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d1";
       redist_url="https://software.intel.com/sites/default/files/managed/7a/1e/l_comp_lib_2018.5.274_comp.for_redist.tgz";
       redist_sha256="0i1h2dc7w3bhk5m7hkqvz1ffhrhgkx294b3r73hzs32hnjgbvqrg";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
-    intelPackages_2018 = self.intelPackages_2018_5_274;
+    intelPackages_2018 = final.intelPackages_2018_5_274;
 
     #https://software.intel.com/en-us/articles/redistributable-libraries-for-intel-c-and-fortran-2019-compilers-for-linux
     intelPackages_2019_0_117 = intelPackages {
@@ -140,7 +141,7 @@ in {
       redist_sha256 = "6218ea4176373cd21c41465a1f406d133c28a2c1301590aa1661243dd68c28fc";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13584/l_mpi_2019.0.117.tgz";
       mpi_sha256 = "025ww7qa03mbbs35fb63g4x8qm67i49bflm9g8ripxhskks07d6z";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
     intelPackages_2019_1_144 = intelPackages {
@@ -151,7 +152,7 @@ in {
       mpi_sha256 = "1kf3av1bzaa98p5h6wagc1ajjhvahlspbca26wqh6rdqnrfnmj6s";
       redist_url="https://software.intel.com/sites/default/files/managed/79/cd/l_comp_lib_2019.1.144_comp.for_redist.tgz";
       redist_sha256="05kd2lc2iyq3rgnbcalri86nf615n0c1ii21152yrfyxyhk60dxm";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
     intelPackages_2019_2_187 = intelPackages {
@@ -162,7 +163,7 @@ in {
       mpi_sha256 = "084bfw29swvpjm1lynl1pfj3y3v2j563k7lnvvvy7yay7f9hacva";
       redist_url="https://software.intel.com/sites/default/files/managed/95/e7/l_comp_lib_2019.2.187_comp.for_redist.tgz";
       redist_sha256="0sj0plax2bnid1qm1jqvijiflzfvs37vkfmg93mb7202g9fp7q77";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
     intelPackages_2019_3_199 = intelPackages {
@@ -173,7 +174,7 @@ in {
       mpi_sha256 = "143951k7c3pj4jqi627j5whwiky5a57v3vjhf9wxwr1zhrn3812k";
       redist_url="https://software.intel.com/sites/default/files/managed/7f/23/l_comp_lib_2019.3.199_comp.for_redist.tgz";
       redist_sha256="06c3w65ir481bqnwbmd9nqigrhcb3qyxbmx2ympckygjiparwh05";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
     intelPackages_2019_4_227 = intelPackages {
@@ -185,7 +186,7 @@ in {
       mpi_sha256 = "233a8660b92ecffd89fedd09f408da6ee140f97338c293146c9c080a154c5fcd";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/l_comp_lib_2019.4.227_comp.for_redist.tgz";
       redist_sha256="0f3lz0carshqi4nfpmdmi4kmndgml6prh9frf820sdg31w7khcbl";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
     intelPackages_2019_5_281 = intelPackages {
@@ -196,12 +197,12 @@ in {
       mpi_sha256 = "1x0id0q8jyg177x6jc0lkw0mvs2jj5l8nkdwwlhv498k3w2xlncw";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15810/l_comp_lib_2019.5.281_comp.for_redist.tgz";
       redist_sha256="1jxyw8qvrvz66xvf7ng6maw5q13kbzhdynr2yrdqw5iqhiw8wsl3";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
-    intelPackages_2019 = self.intelPackages_2019_4_227;
+    intelPackages_2019 = final.intelPackages_2019_4_227;
 
-    stdenvIntel = self.intelPackages_2019.stdenv;
+    stdenvIntel = final.intelPackages_2019.stdenv;
 
     intelPackages_2020_0_166 = intelPackages {
       version = "2020.0.166";
@@ -211,7 +212,7 @@ in {
       mpi_sha256="0vnd32pws5kxyxkrbbbqbajx4mcfj51ld2wvbsg3mj8p26gyd6qi";
       redist_url="https://software.intel.com/sites/default/files/managed/8a/61/l_comp_lib_2020.0.166_comp.for_redist.tgz";
       redist_sha256="0l7k1hs9f0fwwf8r8syva7ysq7744r85v5sld708bkp0kwwdswah";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
     intelPackages_2020_1_217 = intelPackages {
@@ -222,27 +223,38 @@ in {
       mpi_sha256="01wwmiqff5lad7cdi8i57bs3kiphpjfv52sxll1w0jpq4c03nf4h";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16526/l_comp_lib_2020.1.217_comp.for_redist.tgz";
       redist_sha256="13jdyakn09d923a8562jh0cjbnk3wxj8h8ph7926pz7kfcrk93l8";
-      gcc = super.gcc7;
+      gcc = prev.gcc7;
     };
 
-    intelPackages_2020 = self.intelPackages_2020_0_166;
+    intelPackages_2020_2_254 = intelPackages {
+      version = "2020.2.254";
+      comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16756/parallel_studio_xe_2020_update2_professional_edition.tgz";
+      comp_sha256 = "96f9bca551a43e09d9648e8cba357739a759423adb671d1aa5973b7a930370c5";
+      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16814/l_mpi_2019.8.254.tgz";
+      mpi_sha256="fa163b4b79bd1b7509980c3e7ad81b354fc281a92f9cf2469bf4d323899567c0";
+      redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/16744/l_comp_lib_2020.2.254_comp.for_redist.tgz";
+      redist_sha256="1cnsnzkd5izqjjcgh3nsnsw10ccdqdybh1v0xbjyd58vzg7hzlsp";
+      gcc = prev.gcc7;
+    };
 
-    helloIntel = super.hello.override { stdenv = self.stdenvIntel; };
-    miniapp-ping-pongIntel = super.miniapp-ping-pong.override { stdenv = self.stdenvIntel;
-      caliper = super.caliper.override { stdenv = self.stdenvIntel;
-        mpi = self.intelPackages_2019.mpi;
+    intelPackages_2020 = final.intelPackages_2020_0_166;
+
+    helloIntel = prev.hello.override { stdenv = final.stdenvIntel; };
+    miniapp-ping-pongIntel = prev.miniapp-ping-pong.override { stdenv = final.stdenvIntel;
+      caliper = prev.caliper.override { stdenv = final.stdenvIntel;
+        mpi = final.intelPackages_2019.mpi;
       };
-      mpi = self.intelPackages_2019.mpi;
+      mpi = final.intelPackages_2019.mpi;
     };
 
-    hemocellIntel = super.hemocell.override {
-      stdenv = self.stdenvIntel;
-      hdf5 = (super.hdf5-mpi.override {
-        stdenv = self.stdenvIntel;
-        mpi = self.intelPackages_2019.mpi;
+    hemocellIntel = prev.hemocell.override {
+      stdenv = final.stdenvIntel;
+      hdf5 = (prev.hdf5-mpi.override {
+        stdenv = final.stdenvIntel;
+        mpi = final.intelPackages_2019.mpi;
       }).overrideAttrs (oldAttrs: {
         configureFlags = oldAttrs.configureFlags ++ [
-          "CC=${self.intelPackages_2019.mpi}/bin/mpiicc"
+          "CC=${final.intelPackages_2019.mpi}/bin/mpiicc"
         ];
       });
     };

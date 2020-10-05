@@ -15,6 +15,7 @@
 , version ? "x.x"
 , src
 , postPatch ? ""
+, makenemoFlags ? ""
 , ...
 }:
 
@@ -34,7 +35,7 @@ stdenv.mkDerivation {
   inherit name src;
 
   buildInputs = [ gfortran mpi netcdf netcdffortran hdf5 perl
-    perlPackages.URI
+    perlPackages.URI xios
   ];
   postPatch = ''
     patchShebangs .
@@ -43,9 +44,9 @@ stdenv.mkDerivation {
     cp ${nemo_arch-X64_nix-fcm} arch/arch-X64_nix.fcm
     cat arch/arch-X64_nix.fcm
     if test -e tests/${config}; then
-      ./makenemo -a ${config} -m X64_nix -j$(nproc)
+      ./makenemo -a ${config} -m X64_nix -j$(nproc) ${makenemoFlags}
     elif test -e cfgs/${config}; then
-      ./makenemo -r ${config} -m X64_nix -j$(nproc)
+      ./makenemo -r ${config} -m X64_nix -j$(nproc) ${makenemoFlags}
     else
       echo "ERROR: neither 'tests/${config}' nor 'cfgs/${config}' can be found"
       exit 10
