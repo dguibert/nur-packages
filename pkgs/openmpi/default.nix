@@ -34,6 +34,7 @@ let
       ++ lib.optionals enableSlurm [
         "--with-slurm"
         "--with-pmix=internal"
+        "--enable-mpi-fortran=all"
         #"--with-hwloc"
         #"--with-libevent"
         ]
@@ -51,7 +52,9 @@ let
       ++ lib.optionals enableSlurm [ slurm pmix ]
     ;
     configureFlags = oldAttrs.configureFlags
-      ++ [ "--with-cma" ]
+      ++ [ "--with-cma"
+           "--enable-mpi-fortran=all"
+         ]
       ++ lib.optional enableSlurm "--with-slurm --with-pmi=${pmix}"
       ++ lib.optional (ucx != null) "--enable-mca-no-build=btl-uct"
     ;
