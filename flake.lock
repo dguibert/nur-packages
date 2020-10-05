@@ -1,0 +1,62 @@
+{
+  "nodes": {
+    "nix": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1592395535,
+        "narHash": "sha256-OnldCTY+/d17r7My7g5tvd0kZ/aBYm9DafXoLFdw3kg=",
+        "owner": "dguibert",
+        "repo": "nix",
+        "rev": "13a5680901e26ce0e79fc9682632a0535e66d52a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "nix",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1591633336,
+        "narHash": "sha256-oVXv4xAnDJB03LvZGbC72vSVlIbbJr8tpjEW5o/Fdek=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "70717a337f7ae4e486ba71a500367cad697e5f09",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-20.03-small",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1592548394,
+        "narHash": "sha256-+UbGqy2pjpXdz1CZHtJu2YBDkotTMPXlCnX5cP5ob1o=",
+        "owner": "dguibert",
+        "repo": "nixpkgs",
+        "rev": "c42e9ea11519865469497a42b30a250d237a9df7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nix": "nix",
+        "nixpkgs": "nixpkgs_2"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

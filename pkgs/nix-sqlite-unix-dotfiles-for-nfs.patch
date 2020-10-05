@@ -1,0 +1,26 @@
+diff --git a/src/libstore/globals.hh b/src/libstore/globals.hh
+index d0500be2..ac38fb33 100644
+--- a/src/libstore/globals.hh
++++ b/src/libstore/globals.hh
+@@ -132,7 +132,7 @@ public:
+     Setting<bool> fsyncMetadata{this, true, "fsync-metadata",
+         "Whether SQLite should use fsync()."};
+ 
+-    Setting<bool> useSQLiteWAL{this, !isWSL1(), "use-sqlite-wal",
++    Setting<bool> useSQLiteWAL{this, false /*!isWSL1()*/, "use-sqlite-wal",
+         "Whether SQLite should use WAL mode."};
+ 
+     Setting<bool> syncBeforeRegistering{this, false, "sync-before-registering",
+diff --git a/src/libstore/sqlite.cc b/src/libstore/sqlite.cc
+index eb1daafc..2dc94594 100644
+--- a/src/libstore/sqlite.cc
++++ b/src/libstore/sqlite.cc
+@@ -28,7 +28,7 @@ namespace nix {
+ SQLite::SQLite(const Path & path, bool create)
+ {
+     if (sqlite3_open_v2(path.c_str(), &db,
+-            SQLITE_OPEN_READWRITE | (create ? SQLITE_OPEN_CREATE : 0), 0) != SQLITE_OK)
++            SQLITE_OPEN_READWRITE | (create ? SQLITE_OPEN_CREATE : 0), "unix-dotfile") != SQLITE_OK)
+         throw Error(format("cannot open SQLite database '%s'") % path);
+ 
+     if (sqlite3_busy_timeout(db, 60 * 60 * 1000) != SQLITE_OK)

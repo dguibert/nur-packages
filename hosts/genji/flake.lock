@@ -1,0 +1,90 @@
+{
+  "nodes": {
+    "gitignore": {
+      "flake": false,
+      "info": {
+        "lastModified": 1589314779,
+        "narHash": "sha256-3g+tRj46v1dAXHkMCIc28Wz4+ZfMH4ZqRS264sPd16A="
+      },
+      "locked": {
+        "owner": "hercules-ci",
+        "repo": "gitignore",
+        "rev": "00b237fb1813c48e20ee2021deb6f3f03843e9e4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore",
+        "type": "github"
+      }
+    },
+    "home-manager": {
+      "flake": false,
+      "info": {
+        "lastModified": 1587559737,
+        "narHash": "sha256-WfcGfs2htfo9yDPz6b/TR8jH0aOmmYWZyToNueitLb0="
+      },
+      "locked": {
+        "owner": "dguibert",
+        "repo": "home-manager",
+        "rev": "ca338896c6507244272723d6f2cde0729fb3ea2c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "nix": {
+      "info": {
+        "lastModified": 1586853612,
+        "narHash": "sha256-WUQXqjaX8b8Yhgmy27/94YB0cejKisxsemX4sj5mVkQ="
+      },
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "owner": "dguibert",
+        "repo": "nix",
+        "rev": "75cbb150a6f4b3acfcee701135fd3687da6517ce",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "nix",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "info": {
+        "lastModified": 1589893158,
+        "narHash": "sha256-bs4F3M0WwStsG1WjaHbSfOlLYWD9XXNO+UUIp2m+kGE="
+      },
+      "locked": {
+        "owner": "dguibert",
+        "repo": "nixpkgs",
+        "rev": "3705343f4c353fe10b1fac5d1d68b3afb978436c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "gitignore": "gitignore",
+        "home-manager": "home-manager",
+        "nix": "nix",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 5
+}
