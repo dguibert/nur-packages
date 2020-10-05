@@ -47,9 +47,10 @@ let
         stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
           mkDerivation = args: stdenv_.mkDerivation (args // {
             CC="icc";
-            FC="ifort";
             CXX="icpc";
+            FC="ifort";
             F77="ifort";
+            F90="ifort";
             postFixup = "${args.postFixup or ""}" + ''
             set -x
             storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
