@@ -37,6 +37,23 @@ final: prev: {
     inherit (final) dyninst;
   };
 
+  drvFlavor = drv: let
+    isIntel = drv.cc ? isIntel && drv.cc.isIntel;
+    isClang = drv.cc ? isClang && drv.cc.isClang;
+    name=builtins.parseDrvName drv.name;
+    flavors = {
+      stdenv-linux = if isIntel then "intel"
+                     else if isClang then "clang"
+                          else "gnu";
+      intelmpi = "intelmpi";
+      openmpi = "openmpi";
+    };
+    flavor = if drv ? flavor then drv.flavor
+             else
+               if flavors ? "${name.name}" then flavors.${name.name}
+               else "undefined";
+  in builtins.trace "drvFlavor: ${drv}=${flavor}" flavor;
+
   compilers_line = stdenv: mpi: let
     compiler_id = if (stdenv.cc.isIntel or false) then "intel" else "gnu";
     mpi_id = if (mpi.isIntel or false) then "intel" else
