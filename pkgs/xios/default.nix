@@ -22,6 +22,7 @@ let
     fflags=if (stdenv.cc.isIntel or false) then
       "-g -i4 -r8 -O3 -fp-model precise -fno-alias -traceback" else
       "-g -fdefault-real-8 -O3 -funroll-all-loops -fcray-pointer -ffree-line-length-none";
+    cflags = "";
   };
 
   arch-X86_nix_path = substituteAll {

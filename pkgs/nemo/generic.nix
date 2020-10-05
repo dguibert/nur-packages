@@ -35,7 +35,7 @@ stdenv.mkDerivation {
   inherit name src;
 
   buildInputs = [ gfortran mpi netcdf netcdffortran hdf5 perl
-    perlPackages.URI
+    perlPackages.URI xios
   ];
   postPatch = ''
     patchShebangs .

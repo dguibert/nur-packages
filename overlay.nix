@@ -48,7 +48,7 @@ final: prev: {
         none = "CC=icc CXX=icpc F77=ifort FC=ifort";
       };
       gnu = {
-        openmpi = "CC=${mpi}/bin/mpicc";
+        openmpi = "CC=${mpi}/bin/mpicc CXX=${mpi}/bin/mpicxx F77=${mpi}/bin/mpif77 FC=${mpi}/bin/mpif90";
         none = "";
       };
     }."${compiler_id}"."${mpi_id}";
