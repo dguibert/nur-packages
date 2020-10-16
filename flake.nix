@@ -3,7 +3,7 @@
 
   inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
   inputs.nix.url              = "github:dguibert/nix/pu";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.flake-utils.url      = "github:numtide/flake-utils";
 
   outputs = { self, nixpkgs, nix, flake-utils }: let
     nixpkgsFor = system:

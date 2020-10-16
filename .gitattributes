@@ -1,2 +1,3 @@
-envs/* filter=git-crypt diff=git-crypt
+envs/* filter=git-crypt diff=git-crypt annex.largefiles=nothing
+* annex.largefiles=nothing
 
