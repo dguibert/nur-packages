@@ -5,6 +5,8 @@ let
   withOverride = overrides: f: self: f self //
       (if builtins.isFunction overrides then overrides self else overrides);
 
+  libStr = lib.strings;
+  libAttr = lib.attrsets;
 in with lib; lib // rec {
 
   # http://r6.ca/blog/20140422T142911Z.html
@@ -33,5 +35,41 @@ in with lib; lib // rec {
       "Warning: ${package.name} downgraded by overlay with ${upgraded.name}.";
     pass = x: x;
   in (if isDowngrade then warn else pass) upgraded;
+
+  toExtendedINI = {
+    # apply transformations (e.g. escapes) to section names
+    mkSectionName ? (name: libStr.escape [ "[" "]" ] name),
+    # format a setting line from key and value
+    mkKeyValue    ? generators.mkKeyValueDefault {} "=",
+    # allow lists as values for duplicate keys
+    listsAsDuplicateKeys ? false
+  }: attrsOfAttrs:
+    let
+      # map function to string for each key val
+      mapAttrsToStringsSep = sep: mapFn: attrs:
+        libStr.concatStringsSep sep
+          (libAttr.mapAttrsToList mapFn attrs);
+
+       mkLine = {
+         intentChar ? "",
+         openChar ? "[",
+         closeChar ? "]",
+       }: name: values:
+          if isAttrs values then
+            ''
+              ${intentChar}${openChar}${mkSectionName name}${closeChar}
+            ''
+            + (mapAttrsToStringsSep "" (name: val: (mkLine {
+              intentChar = "${intentChar}  ";
+              openChar = "[${openChar}";
+              closeChar = "${closeChar}]";
+            } name) val) values)
+          else
+            intentChar + (generators.toKeyValue { inherit mkKeyValue listsAsDuplicateKeys; } { "${name}"=values; })
+          ;
+    in
+      # map input to ini sections
+      mapAttrsToStringsSep "\n" (mkLine {}) attrsOfAttrs;
+
 }
 

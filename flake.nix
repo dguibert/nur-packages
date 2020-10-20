@@ -36,6 +36,9 @@
 
     checks = {
       "intel_2020_2_254" = legacyPackages.intelPackages_2020_2_254.compilers;
+      # nix flake check FAILS since it's not a derivation
+      # nix eval .#checks.x86_64-linux.lib-tests
+      #"lib-tests" = import ./lib/tests.nix pkgs;
     };
   })) // rec {
 
