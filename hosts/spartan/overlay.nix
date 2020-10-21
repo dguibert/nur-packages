@@ -12,10 +12,10 @@ in {
     doCheck = false;
     doInstallCheck=false;
   });
-  libuv = tryUpstream prev.libuv (attrs: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  #libuv = tryUpstream prev.libuv (attrs: {
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
   #p11-kit = tryUpstream prev.p11-kit (attrs: {
   #  enableParallelBuilding = false;
   #  doCheck = false;
