@@ -59,6 +59,16 @@
     defaultApp = apps.nix;
     apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with defPkgs; let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+        NIX_CONF_DIR = let
+          current = pkgs.lib.optionalString (builtins.pathExists /etc/nix/nix.conf)
+            (builtins.readFile /etc/nix/nix.conf);
+
+          nixConf = pkgs.writeTextDir "opt/nix.conf" ''
+            ${current}
+            experimental-features = nix-command flakes ca-references
+          '';
+        in
+          "${nixConf}/opt";
       # https://gist.githubusercontent.com/cleverca22/bc86f34cff2acb85d30de6051fa2c339/raw/03a36bbced6b3ae83e46c9ea9286a3015e8285ee/doit.sh
       # NIX_REMOTE=local?root=/home/clever/rootfs/
       # NIX_CONF_DIR=/home/$X/etc/nix
@@ -68,13 +78,15 @@
       # nix-build -E 'with import <nixpkgs> {}; nix.override { storeDir = "/home/'$X'/nix/store"; stateDir = "/home/'$X'/nix/var"; confDir = "/home/'$X'/etc"; }'
       in ''
         #!${runtimeShell}
+        set -x
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         export NIX_REMOTE=local?root=$HOME/${name}/
-        export NIX_CONF_DIR=${nixStore}/etc
+        #FIXME export NIX_CONF_DIR=${nixStore}/etc
+        export NIX_CONF_DIR=${NIX_CONF_DIR}
         export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
         export NIX_STATE_DIR=${nixStore}/var
-        "${defPkgs.nix}/bin/nix";
+        ${defPkgs.nix}/bin/nix $@
       '');
     };
 
