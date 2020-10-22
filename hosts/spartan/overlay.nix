@@ -16,6 +16,11 @@ in {
   #  doCheck = false;
   #  doInstallCheck=false;
   #});
+  go_bootstrap = tryUpstream prev.go_bootstrap (attrs: {
+    prePatch = attrs.prePatch + ''
+      sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
+    '';
+  });
   p11-kit = tryUpstream prev.p11-kit (attrs: {
     enableParallelBuilding = false;
     doCheck = false;
