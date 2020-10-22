@@ -175,8 +175,8 @@ with lib;
     gitAndTools.git-crypt
     gitFull #guiSupport is harmless since we also installl xpra
     (pkgs.writeScriptBin "git-annex-diff-wrapper" ''
-      #!${pkgs.runtimeShell}
-      LANG=C ${pkgs.difftools}/bin/diff -u "$1" "$2"
+      #!${runtimeShell}
+      LANG=C ${difftools}/bin/diff -u "$1" "$2"
       exit 0
     '')
     python3Packages.datalad
