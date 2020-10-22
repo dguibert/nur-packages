@@ -176,7 +176,7 @@ with lib;
     gitFull #guiSupport is harmless since we also installl xpra
     (pkgs.writeScriptBin "git-annex-diff-wrapper" ''
       #!${runtimeShell}
-      LANG=C ${difftools}/bin/diff -u "$1" "$2"
+      LANG=C ${diffutils}/bin/diff -u "$1" "$2"
       exit 0
     '')
     python3Packages.datalad
