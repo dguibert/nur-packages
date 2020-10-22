@@ -53,6 +53,19 @@ in {
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
       pyslurm = python-super.pyslurm_19_05_0.override { slurm=final.slurm_19_05_5; };
+      annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
+        version = "1.3.1";
+
+        # use fetchFromGitHub instead of fetchPypi because the test suite of
+        # the package is not included into the PyPI tarball
+        src = fetchFromGitHub {
+          rev = "v${version}";
+          owner = "Lykos153";
+          repo = "AnnexRemote";
+          sha256 = "sha256-CM9Xe6a/Bt0tWdqVDGAqtl5qqQYwvcbzKFj1xoLz0Hs=";
+        };
+
+      });
     })
   ];
 }
