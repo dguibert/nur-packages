@@ -16,11 +16,11 @@ in {
   #  doCheck = false;
   #  doInstallCheck=false;
   #});
-  #p11-kit = tryUpstream prev.p11-kit (attrs: {
-  #  enableParallelBuilding = false;
-  #  doCheck = false;
-  #  doInstallCheck=false;
-  #});
+  p11-kit = tryUpstream prev.p11-kit (attrs: {
+    enableParallelBuilding = false;
+    doCheck = false;
+    doInstallCheck=false;
+  });
   jobs = prev.jobs._override (self: with self; {
     admin_scripts_dir = "/home_nfs/script/admin";
     #scheduler = prev.jobs.scheduler_slurm;
