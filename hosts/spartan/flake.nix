@@ -67,12 +67,24 @@
     apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with defPkgs; let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
         NIX_CONF_DIR = let
-          current = pkgs.lib.optionalString (builtins.pathExists /etc/nix/nix.conf)
-            (builtins.readFile /etc/nix/nix.conf);
-
           nixConf = pkgs.writeTextDir "opt/nix.conf" ''
-            ${current}
-            experimental-features = nix-command flakes ca-references
+            max-jobs = 8
+            cores = 24
+            sandbox = true
+            auto-optimise-store = true
+            require-sigs = true
+            trusted-users = nixBuild dguibert
+            allowed-users = *
+
+            system-features = recursive-nix nixos-test benchmark big-parallel kvm
+            sandbox-fallback = false
+
+            keep-outputs = true       # Nice for developers
+            keep-derivations = true   # Idem
+            extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
+            experimental-features = nix-command flakes ca-references recursive-nix
+
+            extra-platforms = aarch64-linux armv7l-linux i686-linux
           '';
         in
           "${nixConf}/opt";
@@ -112,12 +124,24 @@
 
       '';
       NIX_CONF_DIR = let
-        current = pkgs.lib.optionalString (builtins.pathExists /etc/nix/nix.conf)
-          (builtins.readFile /etc/nix/nix.conf);
-
         nixConf = pkgs.writeTextDir "opt/nix.conf" ''
-          ${current}
-          experimental-features = nix-command flakes ca-references
+          max-jobs = 8
+          cores = 24
+          sandbox = true
+          auto-optimise-store = true
+          require-sigs = true
+          trusted-users = nixBuild dguibert
+          allowed-users = *
+
+          system-features = recursive-nix nixos-test benchmark big-parallel kvm
+          sandbox-fallback = false
+
+          keep-outputs = true       # Nice for developers
+          keep-derivations = true   # Idem
+          extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
+          experimental-features = nix-command flakes ca-references recursive-nix
+
+          extra-platforms = aarch64-linux armv7l-linux i686-linux
         '';
       in
         "${nixConf}/opt";
