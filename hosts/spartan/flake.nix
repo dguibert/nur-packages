@@ -15,12 +15,19 @@
     #nur_dguibert_envs.url= "github:dguibert/nur-packages/pu?dir=envs";
     #nur_dguibert_envs.url= "/home/dguibert/nur-packages?dir=envs";
     flake-utils.url = "github:numtide/flake-utils";
+
+    home-manager. url    = "github:dguibert/home-manager/pu";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
   };
 
   outputs = { self, nixpkgs
             , nur_dguibert
             , nix
             , flake-utils
+            , home-manager
+            , base16-nix
             }@flakes: let
 
       # Memoize nixpkgs for different platforms for efficiency.
@@ -115,6 +122,19 @@
       in
         "${nixConf}/opt";
     };
+
+    home-bguibertd = home-manager.lib.homeManagerConfiguration {
+      username = "bguibertd";
+      homeDirectory = "/home_nfs_robin_ib/bguibertd";
+      inherit system pkgs;
+      configuration = { lib, ... }: {
+        imports = [ (import "${base16-nix}/base16.nix")
+          (import ./home-dguibert.nix)
+        ];
+        _module.args.pkgs = lib.mkForce pkgs;
+      };
+    };
+
 
   })) // {
     overlay = final: prev: (import ./overlay.nix final prev) //{
