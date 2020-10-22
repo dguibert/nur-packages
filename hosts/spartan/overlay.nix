@@ -21,6 +21,13 @@ in {
       sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
     '';
   });
+  go_1_15 = tryUpstream prev.go_1_15 (attrs: {
+    prePatch = attrs.prePatch + ''
+      sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
+      sed -i '/TestFileChown/aif true \{ return\; \}' src/os/os_unix_test.go
+      sed -i '/TestLchown/aif true \{ return\; \}' src/os/os_unix_test.go
+    '';
+  });
   p11-kit = tryUpstream prev.p11-kit (attrs: {
     enableParallelBuilding = false;
     doCheck = false;
