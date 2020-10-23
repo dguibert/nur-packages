@@ -19,9 +19,12 @@ with lib;
       '';
     };
   };
-  nixpkgs.overlays = final: prev: {
-    pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
-  };
+  nixpkgs.overlays = [
+    (import ./overlay.nix)
+    (final: prev: {
+      pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
+    })
+  ];
   services.gpg-agent.pinentryFlavor = lib.mkForce "curses";
 
   programs.home-manager.enable = true;
