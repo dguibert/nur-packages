@@ -105,7 +105,8 @@
         export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
         export NIX_STATE_DIR=${nixStore}/var
-        ${defPkgs.nix}/bin/nix $@
+	export PATH=${defPkgs.nix}/bin:$PATH
+	$@
       '');
     };
 
