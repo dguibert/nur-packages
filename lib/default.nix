@@ -33,5 +33,7 @@ in with lib; lib // rec {
       "Warning: ${package.name} downgraded by overlay with ${upgraded.name}.";
     pass = x: x;
   in (if isDowngrade then warn else pass) upgraded;
+
+  find-tarballs = drv: import ./find-tarballs.nix { inherit lib drv; };
 }
 
