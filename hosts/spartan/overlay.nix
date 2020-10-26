@@ -8,9 +8,15 @@ final: prev: with final; let
 in {
   nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
-  nix = tryUpstream prev.nix (attrs: {
+  nix = tryUpstream prev.nix (o: {
     doCheck = false;
     doInstallCheck=false;
+    patches = (o.patches or []) ++ [
+      ../../pkgs/nix-dont-remove-lustre-xattr.patch
+      # dont apply
+      #../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
+      ../../pkgs/nix-unshare.patch
+    ];
   });
   #libuv = tryUpstream prev.libuv (attrs: {
   #  doCheck = false;
