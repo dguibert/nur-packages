@@ -20,6 +20,8 @@ let
           && drv.postFetch or "" == "" && (drv ? url || drv ? urls))
       dependencies;
 
+  sourceDrvs = map (drv: [(drv.src or drv.srcs) (drv.patch or drv.patches or null)]) (filter (drv: (drv ? src || drv ? srcs)) dependencies);
+
   dependencies = map (x: x.value) (genericClosure {
     startSet = map keyDrv (derivationsIn' root);
     operator = { key, value }: map keyDrv (immediateDependenciesOf value);
@@ -46,4 +48,5 @@ let
   canEval = val: (builtins.tryEval val).success;
 
 #in uniqueUrls
-in map (drv: drv.drvPath) fetchurlDependencies
+#in fetchurlDependencies
+in sourceDrvs
