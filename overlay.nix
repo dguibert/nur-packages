@@ -184,7 +184,7 @@ final: prev: {
   #  nemo_meto_go8_4_0_2
   #;
 
-  netcdf = final.callPackage ./pkgs/netcdf { inherit (final) compilers_line; };
+  netcdf = builtins.trace "netcdf from overlay" final.callPackage ./pkgs/netcdf { inherit (final) compilers_line; };
 
   nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
 
