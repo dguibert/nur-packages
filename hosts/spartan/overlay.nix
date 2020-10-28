@@ -16,6 +16,14 @@ in {
     doCheck = false;
     doInstallCheck=false;
   });
+  libgpgerror = tryUpstream prev.libgpgerror (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  e2fsprogs = prev.e2fsprogs.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   #p11-kit = tryUpstream prev.p11-kit (attrs: {
   #  enableParallelBuilding = false;
   #  doCheck = false;
