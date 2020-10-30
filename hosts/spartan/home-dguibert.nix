@@ -120,7 +120,7 @@ with lib;
  #home.sessionVariables.SINFO_FORMAT="%30N  %.6D %.6c %15F %10t %20f %P"; # with state
   home.sessionVariables.SINFO_FORMAT="%30N  %.6D %.6c %15F %20f %P";
   home.sessionVariables.PATH="$HOME/bin:$PATH";
-  home.sessionVariables.MANPATH="$HOME/man:$MANPATH:/share/man:/usr/share/man";
+  home.sessionVariables.MANPATH="$HOME/man:$MANPATH:/share/man";
   home.sessionVariables.PAGER="less -R";
   home.sessionVariables.EDITOR="vim";
   home.sessionVariables.GIT_PS1_SHOWDIRTYSTATE=1;
