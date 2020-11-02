@@ -79,7 +79,7 @@ in {
                else builtins.trace "isGitDecrypted_ => false" { success=false; value=false; };
 
   sopsDecrypt_ = name: if builtins ? extraBuiltins && builtins.extraBuiltins ? sopsDecrypt
-               then builtins.trace "sopsDecrypt_ => isGitDecrypted" builtins.extraBuiltins.sopsDecrypt name
+               then builtins.trace "sopsDecrypt_ => sopsDecrypt" builtins.extraBuiltins.sopsDecrypt name
                else if exec != null
                then builtins.trace "sopsDecrypt_ => exec" exec [ sops_decrypt name ]
                else builtins.trace "sopsDecrypt_ => false" { success=false; };
