@@ -6,7 +6,7 @@ with lib;
   themes.base16 = {
     enable = true;
     scheme = "solarized";
-    variant = "solarized-light";
+    variant = "solarized-dark";
 
     # Add extra variables for inclusion in custom templates
     extraParams = {
@@ -88,7 +88,7 @@ with lib;
     tput smkx
   '';
 
-  home.file.".vim/base16.vim".source = ./base16.vim;
+  home.file.".vim/base16.vim".source = config.lib.base16.base16template "vim";
   #config.lib.base16.base16template "vim";
 
   programs.git.enable = true;
