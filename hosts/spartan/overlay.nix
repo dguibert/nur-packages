@@ -18,10 +18,10 @@ in {
       ../../pkgs/nix-unshare.patch
     ];
   });
-  libuv = tryUpstream prev.libuv (attrs: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  #libuv = tryUpstream prev.libuv (attrs: {
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
   #libgpgerror = tryUpstream prev.libgpgerror (attrs: {
   #  doCheck = false;
   #  doInstallCheck=false;
