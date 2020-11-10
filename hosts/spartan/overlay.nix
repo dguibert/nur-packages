@@ -22,10 +22,10 @@ in {
     doCheck = false;
     doInstallCheck=false;
   });
-  libgpgerror = tryUpstream prev.libgpgerror (attrs: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  #libgpgerror = tryUpstream prev.libgpgerror (attrs: {
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
   e2fsprogs = prev.e2fsprogs.overrideAttrs (attrs: {
     doCheck = false;
     doInstallCheck=false;
