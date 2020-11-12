@@ -78,10 +78,10 @@ in {
                then builtins.trace "isGitDecrypted_ => exec" exec [ is_git_decrypted name ]
                else builtins.trace "isGitDecrypted_ => false" { success=false; value=false; };
 
-  sopsDecrypt_ = name: if builtins ? extraBuiltins && builtins.extraBuiltins ? sopsDecrypt
-               then builtins.trace "sopsDecrypt_ => sopsDecrypt" builtins.extraBuiltins.sopsDecrypt name
+  sopsDecrypt_ = name: key: if builtins ? extraBuiltins && builtins.extraBuiltins ? sopsDecrypt
+               then builtins.trace "sopsDecrypt_ => sopsDecrypt" builtins.extraBuiltins.sopsDecrypt name key
                else if exec != null
-               then builtins.trace "sopsDecrypt_ => exec" exec [ sops_decrypt name ]
+               then builtins.trace "sopsDecrypt_ => exec" exec [ sops_decrypt name key]
                else builtins.trace "sopsDecrypt_ => false" { success=false; };
 
   sshSignHost_ = ca: hostname: realms: type: if builtins ? extraBuiltins && builtins.extraBuiltins ? sshSignHost
@@ -98,7 +98,7 @@ in {
 
       isGitDecrypted = name: exec [ ${is_git_decrypted} name ];
 
-      sopsDecrypt = name: exec [ ${sops_decrypt} name ];
+      sopsDecrypt = name: key: exec [ ${sops_decrypt} name key ];
 
       sshSignHost = ca: hostname: realms: type: exec [ ${ssh_sign_host} ca hostname realms type ];
       sshSignUser = ca: username: realms: type: exec [ ${ssh_sign_user} ca username realms type ];
