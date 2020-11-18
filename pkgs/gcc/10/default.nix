@@ -28,6 +28,12 @@
 , gnused ? null
 , cloog # unused; just for compat with gcc4, as we override the parameter on some places
 , buildPackages
+
+, enableOffloadNVidiaPtx ? false
+, nvptx-tools ? null
+, nvptx-newlib ? null
+, cudatoolkit ? null
+, nvidia_x11 ? null
 }:
 
 # LTO needs libelf and zlib.
@@ -42,6 +48,8 @@ assert langAda -> gnatboot != null;
 
 # threadsCross is just for MinGW
 assert threadsCross != null -> stdenv.targetPlatform.isWindows;
+
+assert enableOffloadNVidiaPtx -> nvptx-tools != null && nvptx-newlib != null && nvidia_x11 != null;
 
 with stdenv.lib;
 with builtins;
@@ -136,11 +144,19 @@ stdenv.mkDerivation ({
         ''
         )
     else "")
+      + stdenv.lib.optionalString enableOffloadNVidiaPtx ''
+          #ln -sv ${nvptx-newlib} newlib
+          cp -r ${nvptx-newlib}/newlib newlib
+          chmod +w -R newlib
+      ''
       + stdenv.lib.optionalString targetPlatform.isAvr ''
-	        makeFlagsArray+=(
-	           'LIMITS_H_TEST=false'
-	        )
-	      '';
+          makeFlagsArray+=(
+             'LIMITS_H_TEST=false'
+          )
+        '';
+
+  inherit enableOffloadNVidiaPtx;
+  nvptxtools = nvptx-tools;
 
   inherit noSysDirs staticCompiler crossStageStatic
     libcCross crossMingw;
@@ -169,6 +185,7 @@ stdenv.mkDerivation ({
     # "-i may not be used with stdin"), and `stdenvNative' doesn't provide it.
     ++ (optional hostPlatform.isDarwin gnused)
     ++ (optional langAda gnatboot)
+    ++ (optionals enableOffloadNVidiaPtx [ nvidia_x11 cudatoolkit])
     ;
 
   depsTargetTarget = optional (!crossStageStatic && threadsCross != null) threadsCross;
@@ -207,6 +224,9 @@ stdenv.mkDerivation ({
       langObjC
       langObjCpp
       langJit
+
+      enableOffloadNVidiaPtx
+      cudatoolkit
       ;
   };
 

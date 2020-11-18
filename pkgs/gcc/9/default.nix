@@ -35,7 +35,6 @@
 , nvptx-newlib ? null
 , cudatoolkit ? null
 , nvidia_x11 ? null
-, breakpointHook
 }:
 
 # Note: this package is used for bootstrapping fetchurl, and thus
@@ -56,7 +55,7 @@ assert langAda -> gnatboot != null;
 # threadsCross is just for MinGW
 assert threadsCross != null -> stdenv.targetPlatform.isWindows;
 
-assert enableOffloadNVidiaPtx -> nvptx-tools != null && nvptx-newlib != null;
+assert enableOffloadNVidiaPtx -> nvptx-tools != null && nvptx-newlib != null && nvidia_x11 != null;
 
 with stdenv.lib;
 with builtins;
@@ -175,16 +174,18 @@ stdenv.mkDerivation ({
 
   # For building runtime libs
   depsBuildTarget =
-    if hostPlatform == buildPlatform then [
-      targetPackages.stdenv.cc.bintools # newly-built gcc will be used
-    ] else assert targetPlatform == hostPlatform; [ # build != host == target
-      stdenv.cc
-    ];
+    (
+      if hostPlatform == buildPlatform then [
+        targetPackages.stdenv.cc.bintools # newly-built gcc will be used
+      ] else assert targetPlatform == hostPlatform; [ # build != host == target
+        stdenv.cc
+      ]
+    )
+    ++ optional targetPlatform.isLinux patchelf;
 
   buildInputs = [
     gmp mpfr libmpc libelf
     targetPackages.stdenv.cc.bintools # For linking code at run-time
-    breakpointHook
   ] ++ (optional (isl != null) isl)
     ++ (optional (zlib != null) zlib)
     # The builder relies on GNU sed (for instance, Darwin's `sed' fails with

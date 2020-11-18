@@ -140,7 +140,23 @@ final: prev: with final; {
     isl = if !stdenv.isDarwin then isl_0_17 else null;
   };
 
-  gccOffloadPtx = final.callPackage ./pkgs/gcc/9 {
+  gcc9OffloadPtx = final.callPackage ./pkgs/gcc/9 {
+    enableOffloadNVidiaPtx = true;
+    nvidia_x11 = linuxPackages.nvidia_x11;
+    noSysDirs = true;
+
+    # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
+    profiledCompiler = with stdenv; (!isDarwin && (isi686 || isx86_64));
+
+    enableLTO = !stdenv.isi686;
+
+    libcCross = if stdenv.targetPlatform != stdenv.buildPlatform then libcCross else null;
+    threadsCross = if stdenv.targetPlatform != stdenv.buildPlatform then threadsCross else null;
+
+    isl = if !stdenv.isDarwin then isl_0_17 else null;
+  };
+
+  gcc10OffloadPtx = final.callPackage ./pkgs/gcc/10 {
     enableOffloadNVidiaPtx = true;
     nvidia_x11 = linuxPackages.nvidia_x11;
     noSysDirs = true;
