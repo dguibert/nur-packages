@@ -34,15 +34,6 @@ in with lib; lib // rec {
     pass = x: x;
   in (if isDowngrade then warn else pass) upgraded;
 
-  pass_ = key: if builtins ? extraBuiltins
-               then
-                 if builtins.extraBuiltins ? pass then builtins.extraBuiltins.pass key
-                 else builtins.trace "extraBuiltins.pass undefined" "undefined ${key}"
-               else if builtins ? exec
-                 then builtins.exec [ "${toString ./nix-pass.sh}" "${key}" ]
-                 else builtins.trace "builtins.exec undefined" "undefined ${key}"
-        ;
-
   find-tarballs = drv: import ./find-tarballs.nix { inherit lib drv; };
 }
 
