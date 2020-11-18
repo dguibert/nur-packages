@@ -1,8 +1,14 @@
 { pkgs ? null, lib ? pkgs.lib }:
 
-with lib; lib // rec {
-  # Add your library functions here
-  #
+let
+  fix = f: let fixpoint = f fixpoint; in fixpoint;
+  withOverride = overrides: f: self: f self //
+      (if builtins.isFunction overrides then overrides self else overrides);
+
+in with lib; lib // rec {
+
+  # http://r6.ca/blog/20140422T142911Z.html
+  virtual = f: fix f // { _override = overrides: virtual (withOverride overrides f); };  #
   # hexint = x: hexvals.${toLower x};
   compose = list: fix (builtins.foldl' (flip extends) (self: pkgs) list);
 
@@ -36,5 +42,7 @@ with lib; lib // rec {
                  then builtins.exec [ "${toString ./nix-pass.sh}" "${key}" ]
                  else builtins.trace "builtins.exec undefined" "undefined ${key}"
         ;
+
+  find-tarballs = drv: import ./find-tarballs.nix { inherit lib drv; };
 }
 

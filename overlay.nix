@@ -12,6 +12,13 @@ final: prev: with final; {
   example-package = final.callPackage ./pkgs/example-package { };
   # some-qt5-package = prev.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
+  inherit (final.callPackages ./pkgs/elfutils {
+    lib = final.lib;
+    elfutils=prev.elfutils;
+  })
+    elfutils_0_179
+  ;
+
   dyninst = final.callPackage ./pkgs/dyninst { };
   palabos = final.callPackage ./pkgs/palabos { };
   otf2 = final.callPackage ./pkgs/otf2 { };
@@ -24,29 +31,53 @@ final: prev: with final; {
 
   libffi_3_2 = final.callPackage ./pkgs/libffi/3.2.nix { };
 
+  gotcha = final.callPackage ./pkgs/gotcha { };
+
   caliper = final.callPackage ./pkgs/caliper {
     inherit (final) dyninst;
   };
+
+  drvFlavor = drv: let
+    isIntel = drv.cc ? isIntel && drv.cc.isIntel;
+    isClang = drv.cc ? isClang && drv.cc.isClang;
+    name=builtins.parseDrvName drv.name;
+    flavors = {
+      stdenv-linux = if isIntel then "intel"
+                     else if isClang then "clang"
+                          else "gnu";
+      intelmpi = "intelmpi";
+      openmpi = "openmpi";
+    };
+    flavor = if drv ? flavor then drv.flavor
+             else
+               if flavors ? "${name.name}" then flavors.${name.name}
+               else "undefined";
+  in builtins.trace "drvFlavor: ${drv}=${flavor}" flavor;
 
   compilers_line = stdenv: mpi: let
     compiler_id = if (stdenv.cc.isIntel or false) then "intel" else "gnu";
     mpi_id = if (mpi.isIntel or false) then "intel" else
              if (mpi != null) then "openmpi" else "none";
-  in {
+    line = {
       intel = {
         intel = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
         openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
         none = "CC=icc CXX=icpc F77=ifort FC=ifort";
       };
       gnu = {
-        openmpi = "CC=${mpi}/bin/mpicc";
+        openmpi = "CC=${mpi}/bin/mpicc CXX=${mpi}/bin/mpicxx F77=${mpi}/bin/mpif77 FC=${mpi}/bin/mpif90";
         none = "";
       };
     }."${compiler_id}"."${mpi_id}";
+  in builtins.trace "compilers: ${line}" line;
+
+  collectl = final.callPackage ./pkgs/collectl { };
 
   cubew = final.callPackage ./pkgs/cubew { };
   cubelib = final.callPackage ./pkgs/cubelib { };
   cubegui = final.callPackage ./pkgs/cubegui { inherit (final) cubelib; };
+  ddt = final.callPackage ./pkgs/ddt { };
+
   dwm = prev.dwm.override {patches = [
     ./pkgs/dwm/0001-dwm-pertag-20170513-ceac8c9.patch
     ./pkgs/dwm/0002-dwm-systray-20180314-3bd8466.diff.patch
@@ -70,12 +101,13 @@ final: prev: with final; {
   };
 
   jobs = final.callPackage ./pkgs/jobs {
+    inherit final prev;
     inherit (final) stream;
     admin_scripts_dir = "";
   };
 
   hpcg = final.callPackage ./pkgs/hpcg { };
-  inherit (final.callPackage ./pkgs/hpl {
+  inherit (final.callPackages ./pkgs/hpl {
     inherit (final) fetchannex;
     inherit (final) nix-patchtools;
   })
@@ -135,7 +167,12 @@ final: prev: with final; {
     ];
   });
 
-  hdf5 = final.callPackage ./pkgs/hdf5 {
+  hdf5_1_8 = builtins.trace "hdf5_1_8 from overlay" final.callPackage ./pkgs/hdf5/1_8.nix {
+    gfortran = null;
+    szip = null;
+    mpi = null;
+  };
+  hdf5 = builtins.trace "hdf5 from overlay" final.callPackage ./pkgs/hdf5 {
     gfortran = null;
     szip = null;
     mpi = null;
@@ -149,7 +186,7 @@ final: prev: with final; {
           , ...
         }@args: let name_=name;
                     args_ = builtins.removeAttrs args [ "name" "buildInputs" "shellHook" ];
-        in prev.stdenv.mkDerivation (rec {
+        in builtins.trace "mkEnv-${name}" prev.stdenv.mkDerivation (rec {
     name = "${name_}-env";
     phases = [ "buildPhase" ];
     postBuild = "ln -s ${env} $out";
@@ -165,22 +202,34 @@ final: prev: with final; {
 
   must = final.callPackage ./pkgs/must { inherit (final) dyninst; };
   muster = final.callPackage ./pkgs/muster { };
-  nemo_36 = final.callPackage ./pkgs/nemo/3.6.nix { xios = final.xios_10; };
-  nemo = final.callPackage ./pkgs/nemo { inherit (final) xios; };
 
-  netcdf = final.callPackage ./pkgs/netcdf { inherit (final) compilers_line; };
+  nemo_gyre_36         = final.callPackage ./pkgs/nemo/3.6.nix { };
+
+  nemo_bench_4_0       = final.callPackage ./pkgs/nemo/4.0.nix { };
+  nemo_gyre_pisces_4_0 = final.callPackage ./pkgs/nemo/4.0.nix { config="GYRE_PISCES"; };
+
+  nemo_bench_4_0_2       = final.callPackage ./pkgs/nemo/4.0.2.nix { };
+  nemo_gyre_pisces_4_0_2 = final.callPackage ./pkgs/nemo/4.0.2.nix { config="GYRE_PISCES"; };
+
+  #inherit (final.callPackages ./pkgs/nemo { })
+  #  nemo_meto_go8_4_0_2
+  #;
+
+  netcdf = builtins.trace "netcdf from overlay" final.callPackage ./pkgs/netcdf { inherit (final) compilers_line; };
 
   nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
+
 
   nvptx-newlib = final.callPackage ./pkgs/nvptx-newlib { };
   nvptx-tools = final.callPackage ./pkgs/nvptx-tools { };
 
-  inherit (final.callPackage ./pkgs/openmpi {
+  inherit (final.callPackages ./pkgs/openmpi {
     enableSlurm=true;
     lib = final.lib;
     openmpi=prev.openmpi;
   })
     openmpi
+    openmpi_2_0_2
     openmpi_4_0_2
   ;
 
@@ -194,7 +243,7 @@ final: prev: with final; {
   python38 = prev.python38.override { packageOverrides = final.pythonOverrides; };
 
   pythonOverrides = python-self: python-super: with python-self; {
-    pyslurm = prev.lib.upgradeOverride python-super.pyslurm (oldAttrs: rec {
+    pyslurm = final.lib.upgradeOverride python-super.pyslurm (oldAttrs: rec {
       name = "${oldAttrs.pname}-${version}";
       version = "19-05-0";
     });
@@ -218,18 +267,33 @@ final: prev: with final; {
       };
 
     });
-    pyslurm_17_11_12 = (python-super.pyslurm.override { slurm=slurm_17_11_9_1;}).overrideAttrs (oldAttrs: rec {
+    pyslurm_17_11_12 = (python-super.pyslurm.override { slurm=final.slurm_17_11_9_1;}).overrideAttrs (oldAttrs: rec {
       name = "${oldAttrs.pname}-${version}";
       version = "17.11.12";
 
       patches = [];
 
-      src = super.fetchFromGitHub {
+      src = prev.fetchFromGitHub {
         repo = "pyslurm";
         owner = "PySlurm";
         # The release tags use - instead of .
         rev = "${builtins.replaceStrings ["."] ["-"] version}";
         sha256 = "01xdx2v3w8i3bilyfkk50f786fq60938ikqp2ls2kf3j218xyxmz";
+      };
+
+    });
+    pyslurm_19_05_0 = (python-super.pyslurm.override { slurm=final.slurm_19_05_5;}).overrideAttrs (oldAttrs: rec {
+      name = "${oldAttrs.pname}-${version}";
+      version = "19.05.0";
+
+      patches = [];
+
+      src = prev.fetchFromGitHub {
+        repo = "pyslurm";
+        owner = "PySlurm";
+        # The release tags use - instead of .
+        rev = "${builtins.replaceStrings ["."] ["-"] version}";
+        sha256 = "sha256-WdCs1hs5cUp/iYM6Rtyk29XNHNOfBqvK99okHxAmy9E=";
       };
 
     });
@@ -242,7 +306,7 @@ final: prev: with final; {
     inherit (final) otf2;
     inherit (final) muster;
   };
-  inherit (final.callPackage ./pkgs/slurm {
+  inherit (final.callPackages ./pkgs/slurm {
     gtk2 = null;
     lib = final.lib;
     slurm=prev.slurm; })
@@ -251,6 +315,7 @@ final: prev: with final; {
     slurm_17_11_9_1
     slurm_18_08_5
     slurm_19_05_3_2
+    slurm_19_05_5
     slurm
   ;
   st = prev.st.override {patches = [

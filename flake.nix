@@ -1,69 +1,50 @@
 {
-  epoch = 201909;
-
   description = "A flake for building my NUR packages";
 
-  inputs = {
-    nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
-    nix.uri              = "github:dguibert/nix/pu";
-  };
+  inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
+  inputs.nix.url              = "github:dguibert/nix/pu";
+  inputs.flake-utils.url      = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, nix }@flakes: let
-    systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" ];
-
-    forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
-
-    # Memoize nixpkgs for different platforms for efficiency.
-    nixpkgsFor = forAllSystems (system:
+  outputs = { self, nixpkgs, nix, flake-utils }: let
+    nixpkgsFor = system:
       import nixpkgs {
         inherit system;
         overlays =  [
-          nix.overlay
           self.overlay
+          self.overlays.aocc
+          self.overlays.flang
+          self.overlays.intel-compilers
+          self.overlays.arm
+          self.overlays.pgi
+          self.overlays.extra-builtins
+          nix.overlay
         ];
         config.allowUnfree = true;
-      }
-    );
-
-
-  in rec {
-    lib = import ./lib { lib = nixpkgs.lib; };
-
-      packages = nixpkgsFor;
-
-      devShell.x86_64-linux = with nixpkgsFor.x86_64-linux; mkEnv {
-        name = "nix";
-        buildInputs = [
-          nixpkgsFor.x86_64-linux.nix
-          jq ];
-        shellHook = ''
-          unset NIX_INDENT_MAKE
-          unset IN_NIX_SHELL NIX_REMOTE
-          unset TMP TMPDIR
-
-          export SHELL=${bashInteractive}/bin/bash
-
-          NIX_PATH=
-          ${lib.concatMapStrings (f: ''
-            NIX_PATH+=:${toString f}=${toString flakes.${f}}
-          '') (builtins.attrNames flakes) }
-          export NIX_PATH
-
-          NIX_OPTIONS=()
-          NIX_OPTIONS+=("--option plugin-files ${(nixpkgsFor.x86_64-linux.nix-plugins.override { nix = nixpkgsFor.x86_64-linux.nix; }).overrideAttrs (o: {
-              buildInputs = o.buildInputs ++ [ boehmgc ];
-            })}/lib/nix/plugins/libnix-extra-builtins.so")
-          NIX_OPTIONS+=("--option extra-builtins-file ${./lib/extra-builtins.nix}")
-          export NIX_OPTIONS
-        '';
-      };
-
-      ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
-      nixosModules = {
-      };
-
-      overlay = overlays.default;
-
-      overlays = import ./overlays;
+        config.psxe.licenseFile = "none"; #<secrets/lic>;
     };
+
+  in (flake-utils.lib.eachDefaultSystem (system:
+       let pkgs = nixpkgsFor system; in
+       rec {
+
+    legacyPackages = nixpkgsFor system;
+
+    devShell = pkgs.mkEnv {
+      name = "nix";
+      buildInputs = with pkgs; [ pkgs.nix jq ];
+    };
+
+    checks = {
+      "intel_2020_2_254" = legacyPackages.intelPackages_2020_2_254.compilers;
+    };
+  })) // rec {
+
+    ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
+    nixosModules = import ./modules;
+
+    overlay = overlays.default;
+
+    overlays = import ./overlays;
+
+  };
 }

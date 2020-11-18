@@ -1,6 +1,6 @@
 rec {
   default = import ../overlay.nix;
-  local = self: super: if (builtins.pathExists ./local.nix) then (import (./local.nix)) self super else {};
+  local = final: prev: if (builtins.pathExists ./local.nix) then (import (./local.nix)) final prev else {};
 
   aocc = import ./aocc-overlay;
   flang = import ./flang-overlay;
@@ -8,18 +8,6 @@ rec {
   arm = import ./arm-overlay;
   pgi = import ./pgi-overlay;
 
-  defaults = [ default
-    aocc
-    flang
-    intel-compilers
-    arm
-    pgi
-  ];
-
-  nix-home-nfs-bguibertd          = import ./nix-store-overlay.nix "/home_nfs/bguibertd/nix";
-  nix-home-nfs-robin-ib-bguibertd = import ./nix-store-overlay.nix "/home_nfs_robin_ib/bguibertd/nix";
-  nix-scratch-gpfs-bguibertd      = import ./nix-store-overlay.nix "/scratch_gpfs/bguibertd/nix";
-  #nix-ccc-guibertd                = import ./nix-store-overlay.nix "/ccc/dsku/nfs-server/user/cont003/bull/guibertd/nix";
-  nix-ccc-guibertd                = import ./nix-store-overlay.nix "/ccc/scratch/cont003/bull/guibertd/nix";
+  extra-builtins = import ../extra-builtins/overlay.nix;
 }
 

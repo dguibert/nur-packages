@@ -2,21 +2,23 @@
 , cmake
 , boost
 , libelf
+, elfutils
 , libdwarf
 , libiberty
+, tbb
 }:
 
 stdenv.mkDerivation {
-  name = "dyninst-9.2.0";
+  name = "dyninst-10.1.0";
   src = fetchFromGitHub {
     owner = "dyninst";
     repo = "dyninst";
-    rev = "refs/tags/v9.2.0";
-    sha256 = "140hpxs5v60cvf92hxa98vyk9fcnn7h2xarhxzwki5yx8d7vgma2";
+    rev = "refs/tags/v10.1.0";
+    sha256 = "sha256-7WO1RwlSfFVoUfLIJL25Y7dMvpx5Z5jl5G9fnoobRgg=";
   };
   nativeBuildInputs = [ cmake ];
-  buildInputs = [ boost libelf libdwarf libiberty ];
-  propagatedBuildInputs = [ boost ];
+  buildInputs = [ boost elfutils libelf libdwarf libiberty tbb ];
+  propagatedBuildInputs = [ boost tbb /* tbb/concurrent_hash_map.h: No such file or directory */ ];
   postPatch = "patchShebangs .";
   cmakeFlags = [
     "-DBUILD_RTLIB_32=ON"

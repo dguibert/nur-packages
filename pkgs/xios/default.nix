@@ -22,6 +22,7 @@ let
     fflags=if (stdenv.cc.isIntel or false) then
       "-g -i4 -r8 -O3 -fp-model precise -fno-alias -traceback" else
       "-g -fdefault-real-8 -O3 -funroll-all-loops -fcray-pointer -ffree-line-length-none";
+    cflags = "";
   };
 
   arch-X86_nix_path = substituteAll {
@@ -32,13 +33,13 @@ let
 
 
 in stdenv.mkDerivation {
-  name = "xios-2.0";
+  name = "xios-2.0.1937";
   src = fetchsvn {
     url = "http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/trunk/";
     rev = "1637";
     sha256 = "196vv9mh22vs67pasr56478k25yw79z7sfzwc1x9cckydj9xim0m";
   };
-  buildInputs = [ gfortran mpi perl netcdf-mpi netcdffortran
+  buildInputs = [ gfortran mpi perl netcdf-mpi netcdffortran hdf5-mpi
     perlPackages.URI
     blitz boost.all
     gcc /* cpp */

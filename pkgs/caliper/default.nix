@@ -53,8 +53,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
-    rev = "refs/tags/v2.1.1";
-    sha256 = "sha256-76iSBrea3MU7aK9Vd9IDcYgRB1k2uTNKBNhVpDXHPjU=";
+    rev = "refs/tags/v2.3.0";
+    sha256 = "sha256-MRjcEeOWA5jO0nBxvAUUAzq9nwGwVq3lE6vQFBdrljc=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ];
   nativeBuildInputs = [ cmake python git ];
@@ -65,14 +65,19 @@ stdenv.mkDerivation {
   '';
 
   cmakeFlags = [
-    "-DWITH_FORTRAN=ON"
-    "-DWITH_CALLPATH=ON"
-    "-DWITH_LIBPFM=ON"
     "-DWITH_MPI=ON"
     #"-DWITH_MPIT=ON"
-    "-DWITH_PAPI=ON"
+    "-DWITH_CALLPATH=ON"
+    "-DWITH_SYMBOLLOOKUP=On"
     "-DWITH_SAMPLER=ON"
-    #"-DWITH_DYNINST=ON"
+    "-DWITH_GOTCHA=ON"
+    "-DWITH_PAPI=ON"
+    "-DWITH_LIBPFM=ON"
+    "-DWITH_DYNINST=ON" #–DDyninst_DIR=<path to Dyninst-config.cmake>
+    # -DWITH_CUPTI=On –DCUDA_TOOLKIT_ROOT_DIR=<cudadir> –DCUPTI_PREFIX=<path to cupti> \-DWITH_NVPROF=On
+    # -DWITH_VTUNE=On –DITT_PREFIX=<path to vtune>
+
+    "-DWITH_FORTRAN=ON"
     "-DBUILD_DOCS=ON"
 
     ];

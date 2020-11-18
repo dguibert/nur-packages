@@ -1,17 +1,27 @@
 
 {
-  epoch = 201909;
-
   description = "A flake for building my NUR packages";
 
   inputs = {
-    home-manager         = { uri = "github:dguibert/home-manager/pu"; flake=false; };
+    home-manager. uri    = "github:dguibert/home-manager/pu";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
     hydra.uri            = "github:dguibert/hydra/pu";
+    hydra.inputs.nix.follows = "nix";
+    hydra.inputs.nixpkgs.follows = "nixpkgs";
+
     nixops.uri           = "github:dguibert/nixops/pu";
+    nixops.inputs.nixpkgs.follows = "nixpkgs";
+
     nixpkgs.uri          = "github:dguibert/nixpkgs/pu";
+
     nix.uri              = "github:dguibert/nix/pu";
-    nix.inputs.nixpkgs.uri = "github:dguibert/nixpkgs/pu";
-    nur_dguibert.uri     = "github:dguibert/nur-packages/dg-remote-urls";
+    nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    nur_dguibert.uri     = "github:dguibert/nur-packages/pu";
+    nur_dguibert.inputs.nix.follows = "nix";
+    #nur_dguibert_envs.uri= "github:dguibert/nur-packages/pu?dir=envs";
+    #nur_dguibert_envs.uri= "/home/dguibert/nur-packages?dir=envs";
     terranix             = { uri = "github:mrVanDalo/terranix"; flake=false; };
     #"nixos-18.03".uri   = "github:nixos/nixpkgs-channels/nixos-18.03";
     #"nixos-18.09".uri   = "github:nixos/nixpkgs-channels/nixos-18.09";
@@ -37,12 +47,25 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
 
       # Memoize nixpkgs for different platforms for efficiency.
-      nixpkgsFor = forAllSystems (system:
+      defaultPkgsFor = forAllSystems (system:
         import nixpkgs {
           inherit system;
           overlays =  [
             overlays.default
             nix.overlay
+            (final: prev: {
+              nixStore = "/ccc/scratch/cont003/bull/guibertd/nix";
+            })
+          ];
+          config.allowUnfree = true;
+        }
+      );
+      nixpkgsFor = forAllSystems (system:
+        import nixpkgs {
+          inherit system;
+          overlays =  [
+            nix.overlay
+            overlays.default
             self.overlay
           ];
           config.allowUnfree = true;
@@ -55,9 +78,9 @@
   in rec {
     overlay =  import ./inti-overlay.nix;
 
-    devShell.aarch64-linux = with nixpkgsFor.aarch64-linux; mkEnv rec {
+    devShell.aarch64-linux = with defaultPkgsFor.aarch64-linux; mkEnv rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ nixpkgsFor.aarch64-linux.nix jq ];
+      buildInputs = [ defaultPkgsFor.aarch64-linux.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         unset NIX_STORE NIX_REMOTE

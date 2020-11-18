@@ -1,6 +1,6 @@
-self: super:
+final: prev:
 let
-  wrapCCWith = with super; { cc
+  wrapCCWith = with prev; { cc
     , # This should be the only bintools runtime dep with this sort of logic. The
       # Others should instead delegate to the next stage's choice with
       # `targetPackages.stdenv.cc.bintools`. This one is different just to
@@ -22,10 +22,10 @@ let
   } // extraArgs; in self);
 
   pgiPackages = { version, mpi_version, sha256 }: rec {
-    unwrapped = super.callPackage ./pgi {
+    unwrapped = prev.callPackage ./pgi {
       inherit version sha256;
     };
-    mpi = super.callPackage ./pgi/mpi.nix {
+    mpi = prev.callPackage ./pgi/mpi.nix {
       inherit sha256 pgi;
       version = mpi_version;
       pgi_version = version;
@@ -36,11 +36,11 @@ let
       extraPackages = [
       ];
       extraBuildCommands = ''
-      ccLDFlags+=" -L${super.numactl}/lib -rpath,${super.numactl}/lib"
+      ccLDFlags+=" -L${prev.numactl}/lib -rpath,${prev.numactl}/lib"
       echo "$ccLDFlags" > $out/nix-support/cc-ldflags
       '';
     };
-    stdenv = super.overrideCC super.stdenv pgi;
+    stdenv = prev.overrideCC prev.stdenv pgi;
   };
 
 in

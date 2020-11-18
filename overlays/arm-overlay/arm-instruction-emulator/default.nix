@@ -22,8 +22,8 @@ let
     name = "arm-instruction-emulator-${version}";
     src = fetchannex {
       url = "https://developer.arm.com/tools-and-software/server-and-hpc/compile/arm-instruction-emulator/get-software/download";
-      file = "ARM-Instruction-Emulator_19.2_AArch64_RHEL_7_aarch64.tar.gz";
-      name = "ARM-Instruction-Emulator_19.2_AArch64_RHEL_7_aarch64.tar.gz";
+      file = "ARM-Instruction-Emulator_${version}_AArch64_RHEL_7_aarch64.tar.gz";
+      name = "ARM-Instruction-Emulator_${version}_AArch64_RHEL_7_aarch64.tar.gz";
       inherit sha256;
     };
     dontPatchELF = true;

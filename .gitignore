@@ -16,3 +16,4 @@ nix-tarball-*
 *.orig
 shell
 shell-*
+.direnv
