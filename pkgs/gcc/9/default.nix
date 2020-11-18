@@ -29,6 +29,13 @@
 , gnused ? null
 , cloog # unused; just for compat with gcc4, as we override the parameter on some places
 , buildPackages
+
+, enableOffloadNVidiaPtx ? false
+, nvptx-tools ? null
+, nvptx-newlib ? null
+, cudatoolkit ? null
+, nvidia_x11 ? null
+, breakpointHook
 }:
 
 # Note: this package is used for bootstrapping fetchurl, and thus
@@ -145,12 +152,19 @@ stdenv.mkDerivation ({
         ''
         )
     else "")
+      + stdenv.lib.optionalString enableOffloadNVidiaPtx ''
+          #ln -sv ${nvptx-newlib} newlib
+          cp -r ${nvptx-newlib}/newlib newlib
+          chmod +w -R newlib
+      ''
       + stdenv.lib.optionalString targetPlatform.isAvr ''
           makeFlagsArray+=(
              'LIMITS_H_TEST=false'
           )
         '';
 
+  inherit enableOffloadNVidiaPtx;
+  nvptxtools = nvptx-tools;
 
   inherit noSysDirs staticCompiler crossStageStatic
     libcCross crossMingw;
@@ -170,6 +184,7 @@ stdenv.mkDerivation ({
   buildInputs = [
     gmp mpfr libmpc libelf
     targetPackages.stdenv.cc.bintools # For linking code at run-time
+    breakpointHook
   ] ++ (optional (isl != null) isl)
     ++ (optional (zlib != null) zlib)
     # The builder relies on GNU sed (for instance, Darwin's `sed' fails with
@@ -216,6 +231,9 @@ stdenv.mkDerivation ({
       langObjC
       langObjCpp
       langJit
+
+      enableOffloadNVidiaPtx
+      cudatoolkit
       ;
   };
 

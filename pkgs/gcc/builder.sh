@@ -184,13 +184,34 @@ preConfigure() {
         configureFlags="$configureFlags --with-build-sysroot=`pwd`/.."
     fi
 
+    configureScript=../$sourceRoot/configure
+
+    if test -n "$enableOffloadNVidiaPtx"; then
+      set -x
+      mkdir ../build-nvptx-gcc
+      cd ../build-nvptx-gcc
+      $configureScript --target=nvptx-none \
+        --enable-as-accelerator-for=x86_64-pc-linux-gnu \
+        --with-build-time-tools=$nvptxtools/nvptx-none/bin \
+        --disable-sjlj-exceptions \
+        --enable-newlib-io-long-long \
+        --enable-languages="c,c++,fortran,lto" \
+        --prefix=$out || (cat config.log ; exit 10)
+      make \
+        ${enableParallelBuilding:+-j${NIX_BUILD_CORES} -l${NIX_BUILD_CORES}}
+      make install DESTDIR=$out
+      echo "============================================"
+      echo "========= NVPTX DONE ======================="
+      echo "============================================"
+      set +x
+    fi
+
     # Eval the preConfigure script from nix expression.
     eval "$providedPreConfigure"
 
     # Perform the build in a different directory.
     mkdir ../build
     cd ../build
-    configureScript=../$sourceRoot/configure
 }
 
 

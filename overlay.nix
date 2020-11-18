@@ -1,4 +1,4 @@
-final: prev: {
+final: prev: with final; {
   lib = import ./lib { pkgs=prev; };
 
   adapters = import ./pkgs/stdenv/adapters.nix prev;
@@ -92,6 +92,37 @@ final: prev: {
 
   lo2s = final.callPackage ./pkgs/lo2s { inherit (final) otf2; };
   lulesh = final.callPackage ./pkgs/lulesh { };
+
+  gccNoOffloadPtx = final.callPackage ./pkgs/gcc/9 {
+    enableOffloadNVidiaPtx = false;
+    noSysDirs = true;
+
+    # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
+    profiledCompiler = with stdenv; (!isDarwin && (isi686 || isx86_64));
+
+    enableLTO = !stdenv.isi686;
+
+    libcCross = if stdenv.targetPlatform != stdenv.buildPlatform then libcCross else null;
+    threadsCross = if stdenv.targetPlatform != stdenv.buildPlatform then threadsCross else null;
+
+    isl = if !stdenv.isDarwin then isl_0_17 else null;
+  };
+
+  gccOffloadPtx = final.callPackage ./pkgs/gcc/9 {
+    enableOffloadNVidiaPtx = true;
+    nvidia_x11 = linuxPackages.nvidia_x11;
+    noSysDirs = true;
+
+    # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
+    profiledCompiler = with stdenv; (!isDarwin && (isi686 || isx86_64));
+
+    enableLTO = !stdenv.isi686;
+
+    libcCross = if stdenv.targetPlatform != stdenv.buildPlatform then libcCross else null;
+    threadsCross = if stdenv.targetPlatform != stdenv.buildPlatform then threadsCross else null;
+
+    isl = if !stdenv.isDarwin then isl_0_17 else null;
+  };
 
   gnumake_slurm = prev.gnumake.overrideAttrs (attrs: {
     patches = (attrs.patches or []) ++ [

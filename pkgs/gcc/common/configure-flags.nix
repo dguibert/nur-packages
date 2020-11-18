@@ -22,6 +22,8 @@
 , langObjC
 , langObjCpp
 , langJit
+, enableOffloadNVidiaPtx ? false
+, cudatoolkit ? null
 }:
 
 assert cloog != null -> stdenv.lib.versionOlder version "5";
@@ -193,6 +195,11 @@ let
     ]
     ++ lib.optionals (langD) [
       "--with-target-system-zlib=yes"
+    ]
+    ++ lib.optionals (enableOffloadNVidiaPtx) [
+      "--enable-offload-targets=nvptx-none"
+      "--with-cuda-driver-include=${cudatoolkit}/include"
+      "--with-cuda-driver-lib=${cudatoolkit}/lib"
     ]
   ;
 
