@@ -20,6 +20,8 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
+    # For accessing `deploy-rs`'s utility Nix functions
+    deploy-rs.url = "github:serokell/deploy-rs";
   };
 
   outputs = { self, nixpkgs
@@ -28,6 +30,7 @@
             , flake-utils
             , home-manager
             , base16-nix
+	    , deploy-rs
             }@flakes: let
 
       # Memoize nixpkgs for different platforms for efficiency.
@@ -112,7 +115,9 @@
 
     devShell = with defPkgs; mkEnv rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ defPkgs.nix jq ];
+      buildInputs = [ defPkgs.nix jq
+        deploy-rs.packages.${system}.deploy-rs
+      ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         export NIX_REMOTE=local?root=$HOME/${name}/
@@ -148,7 +153,7 @@
         "${nixConf}/opt";
     };
 
-    home-bguibertd = home-manager.lib.homeManagerConfiguration {
+    homeConfigurations.home-bguibertd = home-manager.lib.homeManagerConfiguration {
       username = "bguibertd";
       homeDirectory = "/home_nfs_robin_ib/bguibertd";
       inherit system pkgs;
@@ -164,6 +169,14 @@
   })) // {
     overlay = final: prev: (import ./overlay.nix final prev) //{
       nix_spartan = defaultPkgsFor.x86_64-linux.nix;
+    };
+
+    deploy.nodes.spartan = {
+      hostname = "spartan";
+      profiles.hm = {
+        user = "bguibertd";
+        path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage "./activate";
+      };
     };
   };
 }
