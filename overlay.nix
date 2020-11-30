@@ -1,4 +1,4 @@
-final: prev: {
+final: prev: with final; {
   lib = import ./lib { pkgs=prev; };
 
   adapters = import ./pkgs/stdenv/adapters.nix prev;
@@ -125,6 +125,56 @@ final: prev: {
   lo2s = final.callPackage ./pkgs/lo2s { inherit (final) otf2; };
   lulesh = final.callPackage ./pkgs/lulesh { };
 
+  gccNoOffloadPtx = final.callPackage ./pkgs/gcc/9 {
+    cudaSupport = false;
+    noSysDirs = true;
+
+    # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
+    profiledCompiler = with stdenv; (!isDarwin && (isi686 || isx86_64));
+
+    enableLTO = !stdenv.isi686;
+
+    libcCross = if stdenv.targetPlatform != stdenv.buildPlatform then libcCross else null;
+    threadsCross = if stdenv.targetPlatform != stdenv.buildPlatform then threadsCross else null;
+
+    isl = if !stdenv.isDarwin then isl_0_17 else null;
+  };
+
+  gcc9OffloadPtx = final.callPackage ./pkgs/gcc/9 {
+    cudaSupport = true;
+    nvidia_x11 = linuxPackages.nvidia_x11;
+
+    noSysDirs = true;
+
+    # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
+    profiledCompiler = with stdenv; (!isDarwin && (isi686 || isx86_64));
+
+    enableLTO = !stdenv.isi686;
+
+    libcCross = if stdenv.targetPlatform != stdenv.buildPlatform then libcCross else null;
+    threadsCross = if stdenv.targetPlatform != stdenv.buildPlatform then threadsCross else null;
+
+    isl = if !stdenv.isDarwin then isl_0_17 else null;
+  };
+
+  gcc10OffloadPtx = final.callPackage ./pkgs/gcc/10 {
+    cudaSupport = true;
+    nvidia_x11 = linuxPackages.nvidia_x11;
+    langFortran = true;
+
+    noSysDirs = true;
+
+    # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
+    profiledCompiler = with stdenv; (!isDarwin && (isi686 || isx86_64));
+
+    enableLTO = !stdenv.isi686;
+
+    libcCross = if stdenv.targetPlatform != stdenv.buildPlatform then libcCross else null;
+    threadsCross = if stdenv.targetPlatform != stdenv.buildPlatform then threadsCross else null;
+
+    isl = if !stdenv.isDarwin then isl_0_17 else null;
+  };
+
   gnumake_slurm = prev.gnumake.overrideAttrs (attrs: {
     patches = (attrs.patches or []) ++ [
        ./pkgs/make/make-4.2.slurm.patch
@@ -187,6 +237,10 @@ final: prev: {
   netcdf = builtins.trace "netcdf from overlay" final.callPackage ./pkgs/netcdf { inherit (final) compilers_line; };
 
   nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
+
+
+  nvptx-newlib = final.callPackage ./pkgs/nvptx-newlib { };
+  nvptx-tools = final.callPackage ./pkgs/nvptx-tools { };
 
   inherit (final.callPackages ./pkgs/openmpi {
     enableSlurm=true;
