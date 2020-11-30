@@ -186,16 +186,11 @@ preConfigure() {
 
     configureScript=../$sourceRoot/configure
 
-    if test -n "$enableOffloadNVidiaPtx"; then
+    if test -n "$cudaSupport"; then
       set -x
       mkdir ../build-nvptx-gcc
       cd ../build-nvptx-gcc
-      $configureScript --target=nvptx-none \
-        --enable-as-accelerator-for=x86_64-pc-linux-gnu \
-        --with-build-time-tools=$nvptxtools/nvptx-none/bin \
-        --disable-sjlj-exceptions \
-        --enable-newlib-io-long-long \
-        --enable-languages="c,c++,fortran,lto" \
+      $configureScript $nvptxConfigureFlags \
         --prefix=$out || (cat config.log ; exit 10)
       make \
         ${enableParallelBuilding:+-j${NIX_BUILD_CORES} -l${NIX_BUILD_CORES}}

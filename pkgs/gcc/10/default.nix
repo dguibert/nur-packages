@@ -29,7 +29,7 @@
 , cloog # unused; just for compat with gcc4, as we override the parameter on some places
 , buildPackages
 
-, enableOffloadNVidiaPtx ? false
+, cudaSupport ? false
 , nvptx-tools ? null
 , nvptx-newlib ? null
 , cudatoolkit ? null
@@ -49,7 +49,7 @@ assert langAda -> gnatboot != null;
 # threadsCross is just for MinGW
 assert threadsCross != null -> stdenv.targetPlatform.isWindows;
 
-assert enableOffloadNVidiaPtx -> nvptx-tools != null && nvptx-newlib != null && nvidia_x11 != null;
+assert cudaSupport -> nvptx-tools != null && nvptx-newlib != null && nvidia_x11 != null;
 
 with stdenv.lib;
 with builtins;
@@ -144,7 +144,7 @@ stdenv.mkDerivation ({
         ''
         )
     else "")
-      + stdenv.lib.optionalString enableOffloadNVidiaPtx ''
+      + stdenv.lib.optionalString cudaSupport ''
           #ln -sv ${nvptx-newlib} newlib
           cp -r ${nvptx-newlib}/newlib newlib
           chmod +w -R newlib
@@ -155,8 +155,7 @@ stdenv.mkDerivation ({
           )
         '';
 
-  inherit enableOffloadNVidiaPtx;
-  nvptxtools = nvptx-tools;
+  inherit cudaSupport;
 
   inherit noSysDirs staticCompiler crossStageStatic
     libcCross crossMingw;
@@ -185,7 +184,7 @@ stdenv.mkDerivation ({
     # "-i may not be used with stdin"), and `stdenvNative' doesn't provide it.
     ++ (optional hostPlatform.isDarwin gnused)
     ++ (optional langAda gnatboot)
-    ++ (optionals enableOffloadNVidiaPtx [ nvidia_x11 cudatoolkit])
+    ++ (optionals cudaSupport [ nvidia_x11 cudatoolkit])
     ;
 
   depsTargetTarget = optional (!crossStageStatic && threadsCross != null) threadsCross;
@@ -225,10 +224,33 @@ stdenv.mkDerivation ({
       langObjCpp
       langJit
 
-      enableOffloadNVidiaPtx
+      cudaSupport
       cudatoolkit
       ;
   };
+  nvptxConfigureFlags = optionals cudaSupport [
+    "--target=nvptx-none"
+    #"--enable-as-accelerator-for=x86_64-pc-linux-gnu"
+    "--enable-as-accelerator-for=${hostPlatform.config}"
+    "--with-build-time-tools=${nvptx-tools}/nvptx-none/bin"
+    "--disable-sjlj-exceptions"
+    "--enable-newlib-io-long-long"
+    "--enable-languages=${
+        stdenv.lib.concatStrings (stdenv.lib.intersperse ","
+          (  optional langC        "c"
+          ++ optional langCC       "c++"
+          #++ optional langD        "d"
+          ++ optional langFortran  "fortran"
+          #++ optional langJava     "java"
+          ++ optional langAda      "ada"
+          ++ optional langGo       "go"
+          ++ optional langObjC     "objc"
+          ++ optional langObjCpp   "obj-c++"
+          ++ optional langJit      "jit"
+          )
+        )
+      }"
+  ];
 
   targetConfig = if targetPlatform != hostPlatform then targetPlatform.config else null;
 

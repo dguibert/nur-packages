@@ -22,7 +22,7 @@
 , langObjC
 , langObjCpp
 , langJit
-, enableOffloadNVidiaPtx ? false
+, cudaSupport ? false
 , cudatoolkit ? null
 }:
 
@@ -196,7 +196,7 @@ let
     ++ lib.optionals (langD) [
       "--with-target-system-zlib=yes"
     ]
-    ++ lib.optionals (enableOffloadNVidiaPtx) [
+    ++ lib.optionals (cudaSupport) [
       "--enable-offload-targets=nvptx-none"
       "--with-cuda-driver-include=${cudatoolkit}/include"
       "--with-cuda-driver-lib=${cudatoolkit}/lib"

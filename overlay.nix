@@ -126,7 +126,7 @@ final: prev: with final; {
   lulesh = final.callPackage ./pkgs/lulesh { };
 
   gccNoOffloadPtx = final.callPackage ./pkgs/gcc/9 {
-    enableOffloadNVidiaPtx = false;
+    cudaSupport = false;
     noSysDirs = true;
 
     # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
@@ -141,8 +141,9 @@ final: prev: with final; {
   };
 
   gcc9OffloadPtx = final.callPackage ./pkgs/gcc/9 {
-    enableOffloadNVidiaPtx = true;
+    cudaSupport = true;
     nvidia_x11 = linuxPackages.nvidia_x11;
+
     noSysDirs = true;
 
     # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
@@ -157,8 +158,10 @@ final: prev: with final; {
   };
 
   gcc10OffloadPtx = final.callPackage ./pkgs/gcc/10 {
-    enableOffloadNVidiaPtx = true;
+    cudaSupport = true;
     nvidia_x11 = linuxPackages.nvidia_x11;
+    langFortran = true;
+
     noSysDirs = true;
 
     # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
