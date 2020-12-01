@@ -24,12 +24,13 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1606281216,
-        "narHash": "sha256-PtWSeXNjtghdKQR+BLf83Zt6K/IzwMqNHLaI4GbjaR4=",
-        "owner": "serokell",
-        "repo": "deploy-rs",
-        "rev": "3da8c6d048be03ecaf5caa54d945740ab88be465",
-        "type": "github"
+        "lastModified": 1606766421,
+        "narHash": "sha256-y992f9zzTgfOMMjntkcYUAfITeifN6SX4ZFaPc1R2cE=",
+        "ref": "pu",
+        "rev": "4cb5fc9fd1280e912bd09a5eca22223f5b4f8333",
+        "revCount": 116,
+        "type": "git",
+        "url": "file:///home/dguibert/code/deploy-rs"
       },
       "original": {
         "owner": "serokell",
