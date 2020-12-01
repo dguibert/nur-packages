@@ -237,6 +237,17 @@ in {
       gcc = prev.gcc7;
     };
 
+    intelPackages_2020_4_304 = intelPackages {
+      version = "2020.4.304";
+      comp_url = "https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17114/parallel_studio_xe_2020_update4_professional_edition.tgz";
+      comp_sha256 = "1rn9kk5bjj0jfv853b09dxrx7kzvv8dlyzw3hl9ijx9mqr09lrzr";
+      mpi_url = "https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17263/l_mpi_2019.9.304.tgz";
+      mpi_sha256="1rxj1gcy1yfhsz5gngd8nl8lpdb7savmx322wr2ncc2lvv15v2k1";
+      redist_url="https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17113/l_comp_lib_2020.4.304_comp.for_redist.tgz";
+      redist_sha256="1qy0b0ngv0annmrplmv0kinffpqd9vhi3bnyvlf6h5z5p4g8j6n6";
+      gcc = prev.gcc7;
+    };
+
     intelPackages_2020 = final.intelPackages_2020_0_166;
 
     helloIntel = prev.hello.override { stdenv = final.stdenvIntel; };
