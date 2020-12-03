@@ -168,11 +168,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1606830438,
-        "narHash": "sha256-WPNB0Mg4HeGheI++oiVio+pKjAHYqt0geLGxShUAbco=",
-        "ref": "pu",
-        "rev": "c2df3478c860d22fc5cb573894e54d4c1dc5cf9c",
-        "revCount": 256024,
+        "lastModified": 1606994278,
+        "narHash": "sha256-CEkhZ1ZJ7R6HjasAsoqb/MjyNG/xJpuWMW1DwBeEcx0=",
+        "ref": "pu-sandbox",
+        "rev": "c3e3bd59c69d4b3b3190c9b7cac017359f534b43",
+        "revCount": 256026,
         "type": "git",
         "url": "file:///home/dguibert/code/nixpkgs"
       },
