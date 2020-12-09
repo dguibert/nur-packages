@@ -6,6 +6,7 @@ final: prev: with final; let
     #then (isBroken drv) # should fail and use our override
     #else drv.overrideAttrs attrs;
 in {
+  #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
   nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
   nix = tryUpstream prev.nix (o: {
@@ -22,23 +23,23 @@ in {
   #  doCheck = false;
   #  doInstallCheck=false;
   #});
-  go_bootstrap = tryUpstream prev.go_bootstrap (attrs: {
-    prePatch = attrs.prePatch + ''
-      sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
-    '';
-  });
-  go_1_15 = tryUpstream prev.go_1_15 (attrs: {
-    prePatch = attrs.prePatch + ''
-      sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
-      sed -i '/TestFileChown/aif true \{ return\; \}' src/os/os_unix_test.go
-      sed -i '/TestLchown/aif true \{ return\; \}' src/os/os_unix_test.go
-    '';
-  });
-  p11-kit = tryUpstream prev.p11-kit (attrs: {
-    enableParallelBuilding = false;
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  #go_bootstrap = tryUpstream prev.go_bootstrap (attrs: {
+  #  prePatch = attrs.prePatch + ''
+  #    sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
+  #  '';
+  #});
+  #go_1_15 = tryUpstream prev.go_1_15 (attrs: {
+  #  prePatch = attrs.prePatch + ''
+  #    sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
+  #    sed -i '/TestFileChown/aif true \{ return\; \}' src/os/os_unix_test.go
+  #    sed -i '/TestLchown/aif true \{ return\; \}' src/os/os_unix_test.go
+  #  '';
+  #});
+  #p11-kit = tryUpstream prev.p11-kit (attrs: {
+  #  enableParallelBuilding = false;
+  #  doCheck = false;
+  #  doInstallCheck=false;
+  #});
   jobs = prev.jobs._override (self: with self; {
     admin_scripts_dir = "/home_nfs/script/admin";
     #scheduler = prev.jobs.scheduler_slurm;

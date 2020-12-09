@@ -30,7 +30,7 @@
             , flake-utils
             , home-manager
             , base16-nix
-	    , deploy-rs
+            , deploy-rs
             }@flakes: let
 
       # Memoize nixpkgs for different platforms for efficiency.
@@ -72,8 +72,8 @@
         NIX_CONF_DIR = let
           nixConf = pkgs.writeTextDir "opt/nix.conf" ''
             max-jobs = 8
-            cores = 24
-            sandbox = true
+            cores = 28
+            sandbox = false
             auto-optimise-store = true
             require-sigs = true
             trusted-users = nixBuild dguibert
@@ -88,6 +88,7 @@
             experimental-features = nix-command flakes ca-references recursive-nix
 
             extra-platforms = aarch64-linux armv7l-linux i686-linux
+            builders = ssh://spartan501 x86_64-linux "" 8 16 benchmark
           '';
         in
           "${nixConf}/opt";
@@ -102,14 +103,14 @@
         #!${runtimeShell}
         set -x
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        export NIX_REMOTE=local?root=$HOME/${name}/
-        #FIXME export NIX_CONF_DIR=${nixStore}/etc
-        export NIX_CONF_DIR=${NIX_CONF_DIR}
-        export NIX_LOG_DIR=${nixStore}/var/log/nix
+        ##export NIX_REMOTE=local?root=$HOME/${name}/
+        ###FIXME export NIX_CONF_DIR=${nixStore}/etc
+        ##export NIX_CONF_DIR=${NIX_CONF_DIR}
+        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        export NIX_STATE_DIR=${nixStore}/var
-	export PATH=${defPkgs.nix}/bin:$PATH
-	$@
+        ##export NIX_STATE_DIR=${nixStore}/var
+        export PATH=${defPkgs.nix}/bin:$PATH
+        $@
       '');
     };
 
@@ -120,11 +121,11 @@
       ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        export NIX_REMOTE=local?root=$HOME/${name}/
-        #export NIX_CONF_DIR=${nixStore}/etc
-        export NIX_LOG_DIR=${nixStore}/var/log/nix
+        ##export NIX_REMOTE=local?root=$HOME/${name}/
+        ###export NIX_CONF_DIR=${nixStore}/etc
+        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        export NIX_STATE_DIR=${nixStore}/var
+        ##export NIX_STATE_DIR=${nixStore}/var
         unset TMP TMPDIR TEMPDIR TEMP
         unset NIX_PATH
 
@@ -132,8 +133,8 @@
       NIX_CONF_DIR = let
         nixConf = pkgs.writeTextDir "opt/nix.conf" ''
           max-jobs = 8
-          cores = 24
-          sandbox = true
+          cores = 28
+          sandbox = false
           auto-optimise-store = true
           require-sigs = true
           trusted-users = nixBuild dguibert
@@ -147,7 +148,8 @@
           extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
           experimental-features = nix-command flakes ca-references recursive-nix
 
-          extra-platforms = aarch64-linux armv7l-linux i686-linux
+          use-sqlite-wal = false
+          builders = ssh://spartan501 x86_64-linux "" 8 16 benchmark
         '';
       in
         "${nixConf}/opt";
@@ -175,7 +177,10 @@
       hostname = "spartan";
       profiles.hm = {
         user = "bguibertd";
-        path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage "./activate";
+        sshUser = "bguibertd";
+        path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
+               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix ./activate";
+        profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
       };
     };
   };
