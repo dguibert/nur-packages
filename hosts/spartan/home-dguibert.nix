@@ -86,6 +86,13 @@ with lib;
     alias t='todo.sh'
 
     tput smkx
+    case $HOSTNAME in
+      spartan0)
+      ;;
+      spartan*)
+      export TMP=/dev/shm; export TMPDIR=$TMP; export TEMP=$TMP; export TEMPDIR=$TMP
+      ;;
+    esac
   '';
 
   home.file.".vim/base16.vim".source = config.lib.base16.base16template "vim";
