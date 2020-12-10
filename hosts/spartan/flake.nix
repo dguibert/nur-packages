@@ -52,12 +52,42 @@
           overlays =  [
             nix.overlay
             overlays.default
+            overlays.aocc
+            overlays.flang
+            overlays.intel-compilers
+            overlays.arm
+            overlays.pgi
+            (import ../../envs/overlay.nix nixpkgs)
             self.overlay
           ];
           config.allowUnfree = true;
         };
 
     overlays = import ../../overlays;
+
+    NIX_CONF_DIR_fun = pkgs: let
+      nixConf = pkgs.writeTextDir "opt/nix.conf" ''
+        max-jobs = 8
+        cores = 0
+        sandbox = false
+        auto-optimise-store = true
+        require-sigs = true
+        trusted-users = nixBuild dguibert
+        allowed-users = *
+
+        system-features = recursive-nix nixos-test benchmark big-parallel kvm
+        sandbox-fallback = false
+
+        keep-outputs = true       # Nice for developers
+        keep-derivations = true   # Idem
+        extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
+        experimental-features = nix-command flakes ca-references recursive-nix
+
+        extra-platforms = armv7l-linux i686-linux
+        builders = ssh://spartan501; ssh://spartan501 x86_64-linux - 16 1 benchmark,big-parallel,recursive-nix
+      '';
+    in
+      "${nixConf}/opt";
 
   in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
        let pkgs = nixpkgsFor system;
@@ -69,29 +99,7 @@
     defaultApp = apps.nix;
     apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with defPkgs; let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-        NIX_CONF_DIR = let
-          nixConf = pkgs.writeTextDir "opt/nix.conf" ''
-            max-jobs = 8
-            cores = 28
-            sandbox = false
-            auto-optimise-store = true
-            require-sigs = true
-            trusted-users = nixBuild dguibert
-            allowed-users = *
-
-            system-features = recursive-nix nixos-test benchmark big-parallel kvm
-            sandbox-fallback = false
-
-            keep-outputs = true       # Nice for developers
-            keep-derivations = true   # Idem
-            extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
-            experimental-features = nix-command flakes ca-references recursive-nix
-
-            extra-platforms = aarch64-linux armv7l-linux i686-linux
-            builders = ssh://spartan501 x86_64-linux "" 8 16 benchmark
-          '';
-        in
-          "${nixConf}/opt";
+        NIX_CONF_DIR = NIX_CONF_DIR_fun pkgs;
       # https://gist.githubusercontent.com/cleverca22/bc86f34cff2acb85d30de6051fa2c339/raw/03a36bbced6b3ae83e46c9ea9286a3015e8285ee/doit.sh
       # NIX_REMOTE=local?root=/home/clever/rootfs/
       # NIX_CONF_DIR=/home/$X/etc/nix
@@ -130,29 +138,7 @@
         unset NIX_PATH
 
       '';
-      NIX_CONF_DIR = let
-        nixConf = pkgs.writeTextDir "opt/nix.conf" ''
-          max-jobs = 8
-          cores = 28
-          sandbox = false
-          auto-optimise-store = true
-          require-sigs = true
-          trusted-users = nixBuild dguibert
-          allowed-users = *
-
-          system-features = recursive-nix nixos-test benchmark big-parallel kvm
-          sandbox-fallback = false
-
-          keep-outputs = true       # Nice for developers
-          keep-derivations = true   # Idem
-          extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
-          experimental-features = nix-command flakes ca-references recursive-nix
-
-          use-sqlite-wal = false
-          builders = ssh://spartan501 x86_64-linux "" 8 16 benchmark
-        '';
-      in
-        "${nixConf}/opt";
+      NIX_CONF_DIR = NIX_CONF_DIR_fun pkgs;
     };
 
     homeConfigurations.home-bguibertd = home-manager.lib.homeManagerConfiguration {
@@ -175,7 +161,14 @@
 
     deploy.nodes.spartan = {
       hostname = "spartan";
-      profiles.hm = {
+      profiles.software = rec {
+        user = "bguibertd";
+        sshUser = "bguibertd";
+        path = deploy-rs.lib.x86_64-linux.activate.custom self.legacyPackages.x86_64-linux.slash_software._modulefiles
+               "rm -f ~/software; ln -sfd ${profilePath} ~/software";
+        profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/software";
+      };
+      profiles.bguibertd-hm = {
         user = "bguibertd";
         sshUser = "bguibertd";
         path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
