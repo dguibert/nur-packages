@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     owner = "TACC";
     repo = "Lmod";
     rev = "refs/tags/${version}";
-    sha256 = "0ydn8vbcw3y06mfx9ygazfv55rva6jggp8k27lqawdlq1cj2qjki";
+    sha256 = "sha256-J/5dqFS4jzH7cOyyCCqZLtBCtwLvjagJ4FuQ7ROwLpM=";
   };
 
   buildInputs = [ lua tcl perl rsync procps makeWrapper ];
