@@ -318,6 +318,7 @@ final: prev: with final; {
     });
     mpi4py = builtins.trace "mpi4py without check" python-super.mpi4py.overrideAttrs (oldAttrs: {
       doCheck = false;
+      doInstallCheck = false;
     });
   };
 
