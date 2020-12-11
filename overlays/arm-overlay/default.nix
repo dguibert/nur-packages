@@ -96,6 +96,13 @@ in
     llvmPackages = prev.llvmPackages_8;
   };
 
+  armPackages_203 = armPackages {
+    version="20.3.2";
+    sha256 = "1rivj6fa0m1qynzl2sjgqx79728y91v91ynjwr3x6w67fxb38mzi";
+    release_version = "9.0.1";
+    llvmPackages = prev.llvmPackages_8;
+  };
+
   armie_192 = (final.callPackage ./arm-instruction-emulator {}).armie;
   armie_200 = (final.callPackage ./arm-instruction-emulator {
     version = "20.0";
