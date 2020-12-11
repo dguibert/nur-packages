@@ -23,7 +23,7 @@ let
 
   armPackages = { version, sha256, release_version
                 , llvmPackages ? null
-                , gcc ? llvmPackages.tools.clang-unwrapped.gcc }: let
+                , gccForLibs ? prev.gccForLibs }: let
     mkExtraBuildCommands = cc: flang: ''
       ${prev.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -Wl,-rpath ${flang}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
       rsrc="$out/resource-root"
@@ -37,7 +37,7 @@ let
       ln -s "${cc}/lib" "$rsrc/lib"
       echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
     '' + prev.stdenv.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
-      echo "--gcc-toolchain=${gcc} -B${llvmPackages.tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
+      echo "--gcc-toolchain=${gccForLibs} -B${gccForLibs}" >> $out/nix-support/cc-cflags
     '';
     in rec {
     inherit (prev.callPackage ./arm-compiler-for-hpc {
@@ -100,7 +100,7 @@ in
     version="20.3.2";
     sha256 = "1rivj6fa0m1qynzl2sjgqx79728y91v91ynjwr3x6w67fxb38mzi";
     release_version = "9.0.1";
-    llvmPackages = prev.llvmPackages_8;
+    llvmPackages = prev.llvmPackages_9;
   };
 
   armie_192 = (final.callPackage ./arm-instruction-emulator {}).armie;
