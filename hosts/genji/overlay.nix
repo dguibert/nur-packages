@@ -14,7 +14,8 @@ in {
     doInstallCheck=false;
     patches = (o.patches or []) ++ [
       ../../pkgs/nix-dont-remove-lustre-xattr.patch
-      ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
+      # dont apply
+      #../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
       ../../pkgs/nix-unshare.patch
     ];
   });
