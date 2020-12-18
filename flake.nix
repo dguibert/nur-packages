@@ -46,5 +46,13 @@
 
     overlays = import ./overlays;
 
+    templates = {
+      env_flake = {
+        path = ./templates/env_flake;
+        description = "A bery basic env for my project";
+      };
+    };
+    defaultTemplate = self.templates.env_flake;
+
   };
 }
