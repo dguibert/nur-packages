@@ -10,11 +10,12 @@ let
   mpiSupport = hdf5.mpiSupport;
   mpi = hdf5.mpi;
 in stdenv.mkDerivation rec {
-  name = "netcdf-4.6.1";
+  pname = "netcdf-c";
+  version="4.7.3";
 
   src = fetchurl {
-    url = "https://www.unidata.ucar.edu/downloads/netcdf/ftp/${name}.tar.gz";
-    sha256 = "0hi61cdihwwvz5jz1l7yq712j7ca1cj4bhr8x0x7c2vlb1s9biw9";
+    url = "https://www.unidata.ucar.edu/downloads/netcdf/ftp/${pname}-${version}.tar.gz";
+    sha256 = "sha256-joyfTuFVMd68+DeIWUdEvWVTuEicBqQ0haFck7TgRIs=";
   };
 
   postPatch = ''
@@ -41,6 +42,8 @@ in stdenv.mkDerivation rec {
   ]
   ++ [ (compilers_line stdenv mpi) ]
   ++ (stdenv.lib.optionals mpiSupport [ "--enable-parallel-tests" ]);
+
+  #doCheck = false; # FAIL: tst_io
 
   meta = {
       platforms = stdenv.lib.platforms.unix;

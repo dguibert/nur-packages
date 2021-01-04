@@ -43,6 +43,7 @@ rec {
           export LUSTRE_vs_GPFS="gpfs"
         fi
   '';
+
   jobScratchDir = { scratch ? "/scratch_gpfs/bguibertd/s", drv }: let
       basename = baseNameOf (builtins.toPath drv);
     in "${scratch}/${builtins.substring 0 12 basename}";
@@ -121,6 +122,22 @@ rec {
         # contents of the /proc/modules, showing what kernel modules are currently loaded
         figlet "lsmod"                                                                     | tee -a env.txt
         /usr/sbin/lsmod                                                                    | tee -a env.txt
+  '';
+
+  benchMKLTuningAVX2Hook = makeBenchHook { name = "benchMKLTuning";  } ''
+        figlet "MKL Tuning: AVX2"
+        export MKL_CBWR=AUTO,STRICT
+        # MKL_DEBUG_CPU_TYPE # 1:SSE: 2:SSE3.3; 4:SSE4.2; 5:AVX ...
+        export MKL_DEBUG_CPU_TYPE=6
+        export MKL_ENABLE_INSTRUCTIONS=AVX2
+  '';
+
+  benchMKLTuningAVX512Hook = makeBenchHook { name = "benchMKLTuning";  } ''
+        figlet "MKL Tuning: AVX512"
+        export MKL_CBWR=AUTO,STRICT
+        # MKL_DEBUG_CPU_TYPE # 1:SSE: 2:SSE3.3; 4:SSE4.2; 5:AVX ...
+        export MKL_DEBUG_CPU_TYPE=7
+        export MKL_ENABLE_INSTRUCTIONS=AVX512
   '';
 
 }

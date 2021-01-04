@@ -13,4 +13,10 @@ self: super:
     stateDir = "${nixDir}/var";
     confDir = "${nixDir}/etc";
   };
+
+  nixFlakes = super.nixFlakes.override {
+    storeDir = "${nixDir}/store";
+    stateDir = "${nixDir}/var";
+    confDir = "${nixDir}/etc";
+  };
 }

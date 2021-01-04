@@ -39,13 +39,6 @@
 ## nvprof	WITH_NVPROF=On. Set CUPTI installation dir in CUPTI_PREFIX.
 ## vtune	WITH_VTUNE=On. Set Intel ITT API installation dir in ITT_PREFIX.
 let
-  gotcha = fetchgit {
-    url = "https://github.com/LLNL/gotcha.git";
-    rev = "refs/tags/1.0.2";
-    sha256 = "0p6x751cpmzkv9w51w1r1ifli1s7jjr2rxzmbpaxbi51damq3yf8";
-    leaveDotGit = true;
-  };
-
   googletest = fetchgit {
     url = "https://github.com/google/googletest.git";
     rev = "release-1.8.0";
@@ -56,33 +49,35 @@ let
 in
 
 stdenv.mkDerivation {
-  name = "caliper-1.7.0-24-g0c24886";
+  name = "caliper-2.1.1";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
-    rev = "0c24886";
-    sha256 = "0vj0fnk981bagg73m83m39axpy00dxxdx9hjc79znadfpvwf7lp2";
+    rev = "refs/tags/v2.3.0";
+    sha256 = "sha256-MRjcEeOWA5jO0nBxvAUUAzq9nwGwVq3lE6vQFBdrljc=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ];
   nativeBuildInputs = [ cmake python git ];
 
   preConfigure = ''
-    sed -i -e 's@GIT_REPOSITORY    "https://github.com/LLNL/gotcha.git"@GIT_REPOSITORY    "${gotcha}"@' ext/gotcha/gotcha-download_CMakeLists.txt.in
-    sed -i -e 's@GIT_TAG           "1.0.2"@GIT_TAG "HEAD"@' ext/gotcha/gotcha-download_CMakeLists.txt.in
-
     sed -i -e 's@GIT_REPOSITORY    "https://github.com/google/googletest.git"@GIT_REPOSITORY    "${googletest}"@' ext/googletest/googletest-download_CMakeLists.txt.in
     sed -i -e 's@GIT_TAG           "release-1.8.0"@GIT_TAG "HEAD"@' ext/googletest/googletest-download_CMakeLists.txt.in
   '';
 
   cmakeFlags = [
-    "-DWITH_FORTRAN=ON"
-    "-DWITH_CALLPATH=ON"
-    "-DWITH_LIBPFM=ON"
     "-DWITH_MPI=ON"
-    "-DWITH_MPIT=ON"
-    "-DWITH_PAPI=ON"
+    #"-DWITH_MPIT=ON"
+    "-DWITH_CALLPATH=ON"
+    "-DWITH_SYMBOLLOOKUP=On"
     "-DWITH_SAMPLER=ON"
-    "-DWITH_DYNINST=ON"
+    "-DWITH_GOTCHA=ON"
+    "-DWITH_PAPI=ON"
+    "-DWITH_LIBPFM=ON"
+    "-DWITH_DYNINST=ON" #–DDyninst_DIR=<path to Dyninst-config.cmake>
+    # -DWITH_CUPTI=On –DCUDA_TOOLKIT_ROOT_DIR=<cudadir> –DCUPTI_PREFIX=<path to cupti> \-DWITH_NVPROF=On
+    # -DWITH_VTUNE=On –DITT_PREFIX=<path to vtune>
+
+    "-DWITH_FORTRAN=ON"
     "-DBUILD_DOCS=ON"
 
     ];
