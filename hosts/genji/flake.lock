@@ -135,13 +135,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1607442069,
-        "narHash": "sha256-IDYEAKBoxZmNGnnajHWef9suEh+MY327OUKMqEpsfwk=",
-        "ref": "pu",
-        "rev": "4593d43adb5740fac94f0ba44018b342e78814cb",
-        "revCount": 9749,
-        "type": "git",
-        "url": "file:///home/dguibert/code/nix"
+        "lastModified": 1609689018,
+        "narHash": "sha256-IlKZQItWQZabFDYI6L529TkJUmZkvMLIQYERNM1Xgv0=",
+        "owner": "dguibert",
+        "repo": "nix",
+        "rev": "71425bbd4febc2c25513687839726563791c59da",
+        "type": "github"
       },
       "original": {
         "owner": "dguibert",
@@ -168,42 +167,17 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1607522486,
-        "narHash": "sha256-N/aNHuFtRLZBnfhy4TCHgjKZiy05TteZSie21yzI97w=",
-        "ref": "pu-sandbox",
-        "rev": "940963f48aaf0bbef8cc165e69e33469572cc39c",
-        "revCount": 257831,
-        "type": "git",
-        "url": "file:///home/dguibert/code/nixpkgs"
-      },
-      "original": {
+        "lastModified": 1610111078,
+        "narHash": "sha256-YruTgl3sStSwfBk1GQWGVICBgmcg26tL9U4C9PQP65c=",
         "owner": "dguibert",
-        "ref": "pu",
         "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nur_dguibert": {
-      "inputs": {
-        "nix": [
-          "nix"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1593678155,
-        "narHash": "sha256-ujfy+6FsH7F7OGgtceyNZWc/lshXqdRuMsyPUFXjn5o=",
-        "owner": "dguibert",
-        "repo": "nur-packages",
-        "rev": "7fd02c9df418db8790af71894c8b378f8427a148",
+        "rev": "1e4aba0a3b0f32274896eddf2b8efa031c06deac",
         "type": "github"
       },
       "original": {
         "owner": "dguibert",
-        "ref": "pu",
-        "repo": "nur-packages",
+        "ref": "pu-sandbox",
+        "repo": "nixpkgs",
         "type": "github"
       }
     },
@@ -214,8 +188,7 @@
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",
         "nix": "nix",
-        "nixpkgs": "nixpkgs_2",
-        "nur_dguibert": "nur_dguibert"
+        "nixpkgs": "nixpkgs_2"
       }
     },
     "utils": {
