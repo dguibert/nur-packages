@@ -1,0 +1,20 @@
+✓   env:nix--home_nfs-bguibertd-nix  dguibert@titan spartan |pu *|$ nix build .#nixBinaryTarball -vvvv
+resolved search path element '/nix/store/sdfz96mc7zsgzd9a68pcvc20q2q1p67r-nix-3.0pre20200914_db632eb/share/nix/corepkgs' to '/nix/store/sdfz96mc7zsgzd9a68pcvc20q2q1p67r-nix-3.0pre20200914_db632eb/share/nix/corepkgs'
+checking access to '/nix/store/sdfz96mc7zsgzd9a68pcvc20q2q1p67r-nix-3.0pre20200914_db632eb/share/nix/corepkgs/derivation.nix'
+evaluating file '/nix/store/sdfz96mc7zsgzd9a68pcvc20q2q1p67r-nix-3.0pre20200914_db632eb/share/nix/corepkgs/derivation.nix'
+warning: Git tree '/home/dguibert/nur-packages' is dirty
+acquiring global GC lock '/home/dguibert/rootfs/nix/var/nix/gc.lock'
+acquiring read lock on '/home/dguibert/rootfs/nix/var/nix/temproots/14244'
+acquiring write lock on '/home/dguibert/rootfs/nix/var/nix/temproots/14244'
+downgrading to read lock on '/home/dguibert/rootfs/nix/var/nix/temproots/14244'
+locking path '/home/dguibert/rootfs/nix/store/zqsx6lpbsrvfri6lxlv9ybl2j6a3wdn5-source'
+lock acquired on '/home/dguibert/rootfs/nix/store/zqsx6lpbsrvfri6lxlv9ybl2j6a3wdn5-source.lock'
+lock released on '/home/dguibert/rootfs/nix/store/zqsx6lpbsrvfri6lxlv9ybl2j6a3wdn5-source.lock'
+got tree '/home_nfs/bguibertd/nix/store/zqsx6lpbsrvfri6lxlv9ybl2j6a3wdn5-source' from 'git+file:///home/dguibert/nur-packages?dir=hosts%2fspartan'
+error: --- Error -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- nix
+source tree referenced by 'git+file:///home/dguibert/nur-packages?dir=hosts%2fspartan' does not contain a 'hosts/spartan/flake.nix' file
+
+
+autogen
+  checking for references to /tmp/nix-build-autogen-5.18.16.drv-0/ in /home_nfs/bguibertd/nix/store/fgjp9v9n9shx87npg8iv47kslf4smvqz-autogen-5.18.16-bin...
+  RPATH of binary /home_nfs/bguibertd/nix/store/fgjp9v9n9shx87npg8iv47kslf4smvqz-autogen-5.18.16-bin/bin/autogen contains a forbidden reference to /tmp/nix-build-autogen-5.18.16.drv-0/

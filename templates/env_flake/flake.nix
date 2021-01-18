@@ -27,10 +27,10 @@
       import nixpkgs {
         inherit system;
         overlays =  [
-          self.overlay
+          nix.overlay
           nur_dguibert_envs.overlay
           nur_dguibert_envs.overlays.extra-builtins
-          nix.overlay
+          self.overlay
         ];
         config.allowUnfree = true;
         config.psxe.licenseFile = "none"; #<secrets/lic>;
@@ -40,7 +40,7 @@
        let pkgs = nixpkgsFor system; in
        rec {
 
-    legacyPackages = nixpkgsFor system;
+    legacyPackages = pkgs;
 
     devShell = pkgs.mkEnv {
       name = "env";

@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  tasks:
+    - name: build HM
+      shell:
+    - name: copy to spartan
+      shell:
+
+- hosts: spartan
+  tasks:
+    - name: activate HM
