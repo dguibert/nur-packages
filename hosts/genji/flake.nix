@@ -79,7 +79,7 @@
         experimental-features = nix-command flakes ca-references recursive-nix
 
         extra-platforms = armv7l-linux i686-linux
-        builders = ssh://spartan501; ssh://spartan501 x86_64-linux - 16 1 benchmark,big-parallel,recursive-nix
+      #  builders = ssh://spartan501; ssh://spartan501 x86_64-linux - 16 1 benchmark,big-parallel,recursive-nix
       '';
     in
       "${nixConf}/opt";
@@ -171,5 +171,9 @@
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
       };
     };
+
+    # This is highly advised, and will prevent many possible mistakes
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
   };
 }
