@@ -116,6 +116,9 @@ let
       mv -v _installdir/${dir_name}/*/linux $out
 
     '';
+  } // attrs);
+
+  compilers_attrs = {
     preFixup = ''
       # Fixing man path
       rm -rf $out/documentation
@@ -143,8 +146,8 @@ let
         esac
       done
     '';
+  };
 
-  } // attrs);
 
 in {
 ### For quick turnaround debugging, copy instead of install
@@ -171,6 +174,6 @@ in {
     unwrapped = oneapiPackage {
       name = "compilers";
       version = "2021.1.0";
-    } {};
+    } compilers_attrs;
   };
 }
