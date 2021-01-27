@@ -1,7 +1,7 @@
 final: prev: with prev;
 let
   releases = {
-    "mpi.2021.1.1" = { irc_id=17397; build=76;};
+    "mpi.2021.1.1" = { irc_id=17397; build=76; dir_name="mpi"; };
     #"tbb.'2021.1.1': {'irc_id': '17378', build: '119'}}
     # mkl.'2021.1.1': {'irc_id': '17402', build: '52'}}
     "compilers.2021.1.0" = { irc_id=17427; build=2684; dir_name="compiler"; };
@@ -24,28 +24,20 @@ let
   #intel.oneapi.lin.dpcpp-compiler.eclipse-cfg,v=2021.1.1-189
   #intel.oneapi.lin.dpcpp-compiler.eclipse-plugin-file,v=2021.1.1-189
   #intel.oneapi.lin.dpcpp-compiler.eclipse-plugin-integration,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-cpp-common.runtime,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-cpp-common,v=2021.1.1-189
   #intel.oneapi.lin.dpcpp-cpp-compiler-pro.eclipse-cfg,v=2021.1.1-189
   #intel.oneapi.lin.dpcpp-cpp-compiler-pro.eclipse-plugin-file,v=2021.1.1-189
   #intel.oneapi.lin.dpcpp-cpp-compiler-pro.eclipse-plugin-integration,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-cpp-compiler-pro,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-cpp-pro-fortran-compiler-common,v=2021.1.1-189
   #intel.oneapi.lin.hpckit.getting_started,v=2021.1.0-2684
   #intel.oneapi.lin.hpckit.product,v=2021.1.0-2684
-  #intel.oneapi.lin.ifort-compiler,v=2021.1.1-189
   #intel.oneapi.lin.inspector,v=2021.1.1-42
   #intel.oneapi.lin.itac,v=2021.1.1-42
-  #intel.oneapi.lin.mpi.devel,v=2021.1.1-76
-  #intel.oneapi.lin.mpi.runtime,v=2021.1.1-76
   #intel.oneapi.lin.oneapi-common.licensing,v=2021.1.1-60
   #intel.oneapi.lin.oneapi-common.vars,v=2021.1.1-60
   #intel.oneapi.lin.openmp,v=2021.1.1-189
-  #intel.oneapi.lin.tbb.devel,v=2021.1.1-119
-  #intel.oneapi.lin.tbb.runtime,v=2021.1.1-119
   components = {
     mpi = [
-      "intel.oneapi.lin.mpi.devel"
+      "intel.oneapi.lin.mpi.devel,v=*"#2021.1.1-76
+      "intel.oneapi.lin.mpi.runtime,v=*"#2021.1.1-76
     ];
     compilers = [
       "intel.oneapi.lin.compilers-common.runtime,v=*"#2021.1.1-189
@@ -58,6 +50,8 @@ let
     ];
   };
   # tbb', components='intel.oneapi.lin.tbb.devel', releases=releases, url_name='tbb_oneapi')
+  #intel.oneapi.lin.tbb.devel,v=2021.1.1-119
+  #intel.oneapi.lin.tbb.runtime,v=2021.1.1-119
   # mkl', components='intel.oneapi.lin.mkl.devel', releases=releases, url_name='onemkl')
 
   oneapiPackage = { name
@@ -74,6 +68,7 @@ let
     #self._url_name, version, release['build'])";
 
     extract = pattern: ''
+      7za l    packages/${pattern}/cupPayload.cup
       7za x -y packages/${pattern}/cupPayload.cup
     '';
   in prev.stdenv.mkDerivation ({
@@ -113,13 +108,34 @@ let
       # '--components',
       # self._components,
       # '--install-dir', prefix)
-      mv -v _installdir/${dir_name}/*/linux $out
-
     '';
   } // attrs);
 
+  mpi_attrs = {
+    preFixup = ''
+      mv _installdir/mpi/* $out
+      for f in $(find $out -type f -executable); do
+        type="$(file -b --mime-type $f)"
+        case "$type" in
+        "application/executable"|"application/x-executable")
+          echo "    Patching executable: $f"
+          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
+          ;;
+        "application/x-sharedlib"|"application/x-pie-executable")
+          echo "    Patching library   : $f"
+          patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
+          ;;
+        *)
+          echo "Not Patching           : $f ($type)"
+          ;;
+        esac
+      done
+    '';
+  };
+
   compilers_attrs = {
     preFixup = ''
+      mv _installdir/compiler/*/linux $out
       # Fixing man path
       rm -rf $out/documentation
       rm -rf $out/man
@@ -175,5 +191,10 @@ in {
       name = "compilers";
       version = "2021.1.0";
     } compilers_attrs;
+
+    mpi = oneapiPackage {
+      name = "mpi";
+      version = "2021.1.1";
+    } mpi_attrs;
   };
 }
