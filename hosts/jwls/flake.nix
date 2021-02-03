@@ -143,7 +143,7 @@
 
     homeConfigurations.home-guibert1 = home-manager.lib.homeManagerConfiguration {
       username = "guibert1";
-      homeDirectory = "/home_nfs_robin_ib/guibert1";
+      homeDirectory = "/p/home/jusers/guibert1/juwels";
       inherit system pkgs;
       configuration = { lib, ... }: {
         imports = [ (import "${base16-nix}/base16.nix")
@@ -159,13 +159,13 @@
       nix_spartan = defaultPkgsFor.x86_64-linux.nix;
     };
 
-    deploy.nodes.spartan = {
-      hostname = "spartan";
+    deploy.nodes.jwls = {
+      hostname = "juwels-booster";
       profiles.guibert1-hm = {
         user = "guibert1";
         sshUser = "guibert1";
         path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-guibert1.activationPackage
-               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix ./activate";
+               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix HOME_MANAGER_BACKUP_EXT=bak ./activate";
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/guibert1/hm";
       };
     };

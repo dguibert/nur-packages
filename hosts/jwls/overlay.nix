@@ -7,7 +7,7 @@ final: prev: with final; let
     #else drv.overrideAttrs attrs;
 in {
   #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
-  nixStore = builtins.trace "nixStore=/p/home/jusers/guibert1/shared/nix" "/p/home/jusers/guibert1/shared/nix";
+  nixStore = builtins.trace "nixStore=/p/project/prcoe08/guibert1/nix" "/p/project/prcoe08/guibert1/nix";
 
   nix = tryUpstream prev.nix (o: {
     doCheck = false;
