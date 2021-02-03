@@ -1,0 +1,127 @@
+{
+  "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1610051610,
+        "narHash": "sha256-U9rPz/usA1/Aohhk7Cmc2gBrEEKRzcW4nwPWMPwja4Y=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "3982c9903e93927c2164caa727cd3f6a0e6d14cc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "lowdown-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1598695561,
+        "narHash": "sha256-gyH/5j+h/nWw0W8AcR2WKvNBUsiQ7QuxqSJNXAwV+8E=",
+        "owner": "kristapsdz",
+        "repo": "lowdown",
+        "rev": "1705b4a26fbf065d9574dce47a94e8c7c79e052f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kristapsdz",
+        "repo": "lowdown",
+        "type": "github"
+      }
+    },
+    "nix": {
+      "inputs": {
+        "lowdown-src": "lowdown-src",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1609689018,
+        "narHash": "sha256-IlKZQItWQZabFDYI6L529TkJUmZkvMLIQYERNM1Xgv0=",
+        "owner": "dguibert",
+        "repo": "nix",
+        "rev": "71425bbd4febc2c25513687839726563791c59da",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "nix",
+        "type": "github"
+      }
+    },
+    "nix-ccache": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1592238424,
+        "narHash": "sha256-ysTi7+l+dE72ubCYv69S3gUFpzqWR+aI6P2GcXdZPKQ=",
+        "owner": "dguibert",
+        "repo": "nix-ccache",
+        "rev": "edea4b70204980cad6edcea495ec07fd71bc3353",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "nix-ccache",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1611859548,
+        "narHash": "sha256-FpvDn3Y13zdM41FxooWjfJtsl8PNLYemiLWRYEfQclw=",
+        "owner": "dguibert",
+        "repo": "nixpkgs",
+        "rev": "9ce722b21ce727503d46605bcb4f6163bf52aa36",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dguibert",
+        "ref": "pu",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nur_dguibert_envs": {
+      "inputs": {
+        "nix": [
+          "nix"
+        ],
+        "nix-ccache": "nix-ccache",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "envs",
+        "lastModified": 1611768016,
+        "narHash": "sha256-LxBDohHt5AWHjfEQT1fn55UVWmdT4aHmXiml/ZP1tVY=",
+        "type": "git",
+        "url": "file:///home/dguibert/nur-packages?dir=envs"
+      },
+      "original": {
+        "dir": "envs",
+        "type": "git",
+        "url": "file:///home/dguibert/nur-packages?dir=envs"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nix": "nix",
+        "nixpkgs": "nixpkgs",
+        "nur_dguibert_envs": "nur_dguibert_envs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
