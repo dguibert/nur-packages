@@ -1,4 +1,4 @@
-{ stdenv, fetchurl
+{ stdenv, lib, fetchurl
 , palabos
 , parmetis ? null
 , hdf5
@@ -27,7 +27,7 @@ stdenv.mkDerivation {
     ( tar xf ${palabos.src}; ln -s palabos-* palabos)
     ( cd patch && ./patchPLB.sh )
 
-    ${stdenv.lib.optionalString (parmetis != null) "cd external && tar -xzf ${parmetis.src}"}
+    ${lib.optionalString (parmetis != null) "cd external && tar -xzf ${parmetis.src}"}
 
     ( cd build/hemocell
       sed -i -e "s@cmake ./@cmake $cmakeFlags .@" ../../scripts/safe_libhemocell_compilation.sh

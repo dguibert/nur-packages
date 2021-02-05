@@ -101,7 +101,7 @@ let
     noAuditTmpdir = true;
 
     installPhase = ''
-      ${stdenv.lib.concatMapStringsSep "\n" extract components."${name}"}
+      ${lib.concatMapStringsSep "\n" extract components."${name}"}
       # bash('./%s' % self._oneapi_file(version, release),
       # '-s', '-a', '-s', '--action', 'install',
       # '--eula', 'accept',

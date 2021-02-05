@@ -40,7 +40,7 @@ let
       ls rpms
 
       mkdir $out; cd $out
-      ${stdenv.lib.concatMapStringsSep "\n" extract components}
+      ${lib.concatMapStringsSep "\n" extract components}
 
       set +xve
 

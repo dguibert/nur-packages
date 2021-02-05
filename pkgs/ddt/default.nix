@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, licenceFile ? null, patchelf
+{ stdenv, lib, fetchurl, licenceFile ? null, patchelf
 , fontconfig, libpng12, libICE, ncurses, qt4, libSM, libX11, libXau, libXext, libXpm, libXrender, zlib
 , makeWrapper, gcc
 }:
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ patchelf makeWrapper ];
 
-  rPath = "${stdenv.lib.makeLibraryPath [fontconfig libpng12 libICE ncurses qt4 libSM libX11 libXau libXext libXpm libXrender zlib ]}";
+  rPath = "${lib.makeLibraryPath [fontconfig libpng12 libICE ncurses qt4 libSM libX11 libXau libXext libXpm libXrender zlib ]}";
   dontStrip = true;
   dontPatchELF = true;
 

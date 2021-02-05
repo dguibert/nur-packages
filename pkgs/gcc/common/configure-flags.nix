@@ -26,8 +26,8 @@
 , cudatoolkit ? null
 }:
 
-assert cloog != null -> stdenv.lib.versionOlder version "5";
-assert langJava -> stdenv.lib.versionOlder version "7";
+assert cloog != null -> lib.versionOlder version "5";
+assert langJava -> lib.versionOlder version "7";
 
 # Note [Windows Exception Handling]
 # sjlj (short jump long jump) exception handling makes no sense on x86_64,

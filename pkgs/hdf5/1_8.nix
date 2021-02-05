@@ -1,4 +1,4 @@
-{ stdenv
+{ stdenv, lib
 , fetchurl
 , removeReferencesTo
 , cpp ? false
@@ -21,7 +21,7 @@ assert fortran2003 -> gfortran != null;
 # No point splitting version 1.8.18 into multiple outputs.
 # The library /lib/libhdf5.so has a reference to gcc-wrapper
 
-let inherit (stdenv.lib) optional optionals; in
+let inherit (lib) optional optionals; in
 
 stdenv.mkDerivation rec {
   version = "1.8.19";
@@ -69,9 +69,9 @@ stdenv.mkDerivation rec {
       applications to evolve in their use of HDF5. The HDF5 Technology suite includes tools and
       applications for managing, manipulating, viewing, and analyzing data in the HDF5 format.
     '';
-    license = stdenv.lib.licenses.free; # BSD-like
+    license = lib.licenses.free; # BSD-like
     homepage = https://www.hdfgroup.org/HDF5/;
-    platforms = stdenv.lib.platforms.unix;
+    platforms = lib.platforms.unix;
     broken = (gfortran != null) && stdenv.isDarwin;
   };
 }

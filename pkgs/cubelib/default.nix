@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, zlib, pkgconfig, which, autoreconfHook }:
+{ stdenv, lib, fetchurl, zlib, pkgconfig, which, autoreconfHook }:
 
 stdenv.mkDerivation {
   name = "cubelib-4.4.3";
@@ -8,7 +8,7 @@ stdenv.mkDerivation {
   };
   buildInputs = [ zlib ];
   postConfigure = ''
-    ${stdenv.lib.optionalString stdenv.cc.isIntel or false ''
+    ${lib.optionalString stdenv.cc.isIntel or false ''
     # remove wrong lib path
     echo "PATCHING libtool"
     sed -i.bak -e 's@\(intel-compilers-.*/lib\)\\"@\1@' build-frontend/libtool
@@ -16,7 +16,7 @@ stdenv.mkDerivation {
   '';
   nativeBuildInputs = [ pkgconfig which autoreconfHook ];
   configureFlags = [
-    "${stdenv.lib.optionalString stdenv.cc.isIntel or false "--with-nocross-compiler-suite=intel"}"
+    "${lib.optionalString stdenv.cc.isIntel or false "--with-nocross-compiler-suite=intel"}"
   ];
   enableParallelBuilding = true;
 }

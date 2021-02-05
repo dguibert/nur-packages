@@ -29,7 +29,7 @@ let
   #
   # TODO(@Ericson2314) Make unconditional, or optional but always true by
   # default.
-  targetPrefix = stdenv.lib.optionalString (targetPlatform != hostPlatform)
+  targetPrefix = lib.optionalString (targetPlatform != hostPlatform)
                                            (targetPlatform.config + "-");
 
   ccVersion = (builtins.parseDrvName cc.name).version;
@@ -69,13 +69,13 @@ assert nativePrefix == bintools.nativePrefix;
 
 stdenv.mkDerivation {
   name = targetPrefix
-    + (if name != "" then name else stdenv.lib.removePrefix targetPrefix "${ccName}-wrapper")
-    + (stdenv.lib.optionalString (cc != null && ccVersion != "") "-${ccVersion}");
+    + (if name != "" then name else lib.removePrefix targetPrefix "${ccName}-wrapper")
+    + (lib.optionalString (cc != null && ccVersion != "") "-${ccVersion}");
 
   preferLocalBuild = true;
 
   inherit cc libc_bin libc_dev libc_lib bintools coreutils_bin;
-  shell = getBin shell + stdenv.lib.optionalString (stdenv ? shellPath) stdenv.shellPath;
+  shell = getBin shell + lib.optionalString (stdenv ? shellPath) stdenv.shellPath;
   gnugrep_bin = if nativeTools then "" else gnugrep;
 
   inherit targetPrefix infixSalt;
@@ -323,7 +323,7 @@ stdenv.mkDerivation {
     let cc_ = if cc != null then cc else {}; in
     (if cc_ ? meta then removeAttrs cc.meta ["priority"] else {}) //
     { description =
-        stdenv.lib.attrByPath ["meta" "description"] "System C compiler" cc_
+        lib.attrByPath ["meta" "description"] "System C compiler" cc_
         + " (wrapper script)";
   };
 }

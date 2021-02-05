@@ -1,4 +1,4 @@
-{ stdenv, fetchannex, glibc, gcc, file
+{ stdenv, lib, fetchannex, glibc, gcc, file
 , cpio, rpm
 , patchelf
 , makeWrapper
@@ -42,8 +42,8 @@ self = stdenv.mkDerivation rec {
     export build=$PWD
     mkdir $out
     cd $out
-    echo "${stdenv.lib.concatStringsSep "+" components_}"
-    ${stdenv.lib.concatMapStringsSep "\n" extract components_}
+    echo "${lib.concatStringsSep "+" components_}"
+    ${lib.concatMapStringsSep "\n" extract components_}
 
     mv ${preinstDir}/* .
     rm -rf opt
@@ -96,8 +96,8 @@ self = stdenv.mkDerivation rec {
 
   meta = {
     description = "Intel MPI ${version} library";
-    maintainers = [ stdenv.lib.maintainers.dguibert ];
-    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ lib.maintainers.dguibert ];
+    platforms = lib.platforms.linux;
   };
 };
 in self

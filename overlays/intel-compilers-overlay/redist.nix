@@ -1,4 +1,4 @@
-{ stdenv, fetchannex, glibc, file
+{ stdenv, lib, fetchannex, glibc, file
 , patchelf
 , version ? "2019.0.117"
 , url
@@ -51,8 +51,8 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Intel compilers and libraries ${version}";
-    maintainers = [ stdenv.lib.maintainers.dguibert ];
-    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ lib.maintainers.dguibert ];
+    platforms = lib.platforms.linux;
   };
 
 }

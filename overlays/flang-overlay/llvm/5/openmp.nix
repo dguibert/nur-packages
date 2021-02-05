@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, llvm, version, perl, python, gfortran, hwloc }:
+{ stdenv, lib, fetchFromGitHub, cmake, llvm, version, perl, python, gfortran, hwloc }:
 
 stdenv.mkDerivation {
   name = "openmp-${version}";
@@ -25,8 +25,8 @@ stdenv.mkDerivation {
   meta = {
     description = "An OpenMP runtime for the llvm compiler";
     homepage    = http://llvm.org/;
-    license     = stdenv.lib.licenses.ncsa;
-    platforms   = stdenv.lib.platforms.all;
+    license     = lib.licenses.ncsa;
+    platforms   = lib.platforms.all;
   };
 
 }

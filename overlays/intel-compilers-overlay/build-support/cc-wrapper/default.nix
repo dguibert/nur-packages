@@ -34,11 +34,11 @@ let
   #
   # TODO(@Ericson2314) Make unconditional, or optional but always true by
   # default.
-  targetPrefix = stdenv.lib.optionalString (targetPlatform != hostPlatform)
+  targetPrefix = lib.optionalString (targetPlatform != hostPlatform)
                                            (targetPlatform.config + "-");
 
-  ccVersion = stdenv.lib.getVersion cc;
-  ccName = stdenv.lib.removePrefix targetPrefix (stdenv.lib.getName cc);
+  ccVersion = lib.getVersion cc;
+  ccName = lib.removePrefix targetPrefix (lib.getName cc);
 
   libc_bin = if libc == null then null else getBin libc;
   libc_dev = if libc == null then null else getDev libc;
@@ -422,7 +422,7 @@ stdenv.mkDerivation {
     let cc_ = if cc != null then cc else {}; in
     (if cc_ ? meta then removeAttrs cc.meta ["priority"] else {}) //
     { description =
-        stdenv.lib.attrByPath ["meta" "description"] "System C compiler" cc_
+        lib.attrByPath ["meta" "description"] "System C compiler" cc_
         + " (wrapper script)";
       priority = 10;
   };

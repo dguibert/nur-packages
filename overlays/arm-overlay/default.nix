@@ -36,7 +36,7 @@ let
       ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
       ln -s "${cc}/lib" "$rsrc/lib"
       echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
-    '' + prev.stdenv.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
+    '' + prev.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
       echo "--gcc-toolchain=${gccForLibs} -B${gccForLibs}" >> $out/nix-support/cc-cflags
     '';
     in rec {

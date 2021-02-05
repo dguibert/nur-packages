@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, libxml2, llvm, version, python
+{ stdenv, lib, fetchFromGitHub, cmake, libxml2, llvm, version, python
 , fixDarwinDylibNames
 , enableManpages ? false
 }:
@@ -14,14 +14,14 @@ let
       sha256 = "sha256-BLkD1eUBYuX7oRApkDJYr676HdT3V2Jx+pWsFoi7+7s=";
     };
     nativeBuildInputs = [ cmake python ]
-      ++ stdenv.lib.optional enableManpages python.pkgs.sphinx;
+      ++ lib.optional enableManpages python.pkgs.sphinx;
 
     buildInputs = [ libxml2 llvm ]
-      ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+      ++ lib.optional stdenv.isDarwin fixDarwinDylibNames;
 
     cmakeFlags = [
       "-DCMAKE_CXX_FLAGS=-std=c++11"
-    ] ++ stdenv.lib.optionals enableManpages [
+    ] ++ lib.optionals enableManpages [
       "-DCLANG_INCLUDE_DOCS=ON"
       "-DLLVM_ENABLE_SPHINX=ON"
       "-DSPHINX_OUTPUT_MAN=ON"
@@ -38,9 +38,9 @@ let
 
       # Patch for standalone doc building
       sed -i '1s,^,find_package(Sphinx REQUIRED)\n,' docs/CMakeLists.txt
-    '' + stdenv.lib.optionalString stdenv.hostPlatform.isMusl ''
+    '' + lib.optionalString stdenv.hostPlatform.isMusl ''
       sed -i -e 's/lgcc_s/lgcc_eh/' lib/Driver/ToolChains/*.cpp
-    '' + stdenv.lib.optionalString stdenv.hostPlatform.isDarwin ''
+    '' + lib.optionalString stdenv.hostPlatform.isDarwin ''
       substituteInPlace tools/extra/clangd/CMakeLists.txt \
         --replace "NOT HAVE_CXX_ATOMICS64_WITHOUT_LIB" FALSE
     '';
@@ -75,17 +75,17 @@ let
       isClang = true;
       langFortran = true;
       inherit llvm;
-    } // stdenv.lib.optionalAttrs (stdenv.targetPlatform.isLinux || (stdenv.cc.isGNU && stdenv.cc.cc ? gcc)) {
+    } // lib.optionalAttrs (stdenv.targetPlatform.isLinux || (stdenv.cc.isGNU && stdenv.cc.cc ? gcc)) {
       gcc = if stdenv.cc.isGNU then stdenv.cc.cc else stdenv.cc.cc.gcc;
     };
 
     meta = {
       description = "A c, c++, objective-c, and objective-c++ frontend for the llvm compiler";
       homepage    = http://llvm.org/;
-      license     = stdenv.lib.licenses.ncsa;
-      platforms   = stdenv.lib.platforms.all;
+      license     = lib.licenses.ncsa;
+      platforms   = lib.platforms.all;
     };
-  } // stdenv.lib.optionalAttrs enableManpages {
+  } // lib.optionalAttrs enableManpages {
     name = "clang-manpages-${version}";
 
     buildPhase = ''

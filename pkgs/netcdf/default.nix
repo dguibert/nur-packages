@@ -1,4 +1,4 @@
-{ stdenv
+{ stdenv, lib
 , fetchurl
 , hdf5
 , m4
@@ -41,12 +41,12 @@ in stdenv.mkDerivation rec {
       "--enable-shared"
   ]
   ++ [ (compilers_line stdenv mpi) ]
-  ++ (stdenv.lib.optionals mpiSupport [ "--enable-parallel-tests" ]);
+  ++ (lib.optionals mpiSupport [ "--enable-parallel-tests" ]);
 
   #doCheck = false; # FAIL: tst_io
 
   meta = {
-      platforms = stdenv.lib.platforms.unix;
+      platforms = lib.platforms.unix;
       homepage = https://www.unidata.ucar.edu/software/netcdf/;
       license = {
         url = https://www.unidata.ucar.edu/software/netcdf/docs/copyright.html;

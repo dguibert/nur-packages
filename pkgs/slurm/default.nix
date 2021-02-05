@@ -27,7 +27,7 @@ in rec {
     };
 
     prePatch= null;
-    configureFlags = with stdenv.lib;
+    configureFlags = with lib;
       [ "--with-freeipmi=${freeipmi}"
         #"--with-hwloc=${hwloc.dev}"
         "--with-lz4=${lz4.dev}"
@@ -57,7 +57,7 @@ in rec {
       libmysqlclient ncurses gtk2 lz4
       lua numactl readline freeipmi
       pmix
-    ] ++ stdenv.lib.optionals enableX11 [ libssh2 xorg.xauth ];
+    ] ++ lib.optionals enableX11 [ libssh2 xorg.xauth ];
 
 
   });

@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, makeOverridable
+{ stdenv, lib, fetchurl, makeOverridable
 , blas ? openblas, openblas
 , openmpi
 
@@ -78,7 +78,7 @@ let
       sha256 = "0xynj4yd4n7nc22pxmzxbpl64m5rlv38lwbs3j50wc94j6sjfy1x";
     };
     buildInputs = [ nix-patchtools ];
-    libs = stdenv.lib.makeLibraryPath [
+    libs = lib.makeLibraryPath [
       cudatoolkit_10_1.lib
       cudatoolkit_10_1.out
       nvidia_x11

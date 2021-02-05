@@ -22,7 +22,7 @@ let
 
   openmpi_2_0_2 = lib.upgradeOverride (openmpi) (oldAttrs: rec {
     version = "2.0.2";
-    src = with stdenv.lib.versions; fetchurl {
+    src = with lib.versions; fetchurl {
       url = "https://www.open-mpi.org/software/ompi/v${major version}.${minor version}/downloads/${oldAttrs.pname}-${version}.tar.gz";
       #url = "https://download.open-mpi.org/release/open-mpi/v2.0/openmpi-2.0.2.tar.gz";
       sha256 = "sha256-MpFMxkeA05gAZvO+OSCwKM04HJTRJipVQV/B0AK64KU=";
@@ -44,7 +44,7 @@ let
   #openmpi_4_0_2 = lib.upgradeOverride (openmpi.override args_) (oldAttrs: rec {
   openmpi_4_0_2 = lib.upgradeOverride (openmpi) (oldAttrs: rec {
     version = "4.0.2";
-    src = with stdenv.lib.versions; fetchurl {
+    src = with lib.versions; fetchurl {
       url = "https://www.open-mpi.org/software/ompi/v${major version}.${minor version}/downloads/${oldAttrs.pname}-${version}.tar.bz2";
       sha256 = "0ms0zvyxyy3pnx9qwib6zaljyp2b3ixny64xvq3czv3jpr8zf2wh";
     };

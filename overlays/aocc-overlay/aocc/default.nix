@@ -23,7 +23,7 @@ stdenv.mkDerivation {
   dontPatchELF = true;
 
   buildInputs = [ nix-patchtools ];
-  libs = stdenv.lib.makeLibraryPath ([
+  libs = lib.makeLibraryPath ([
     stdenv.cc.cc.lib /* libstdc++.so.6 */
     #llvmPackages_7.llvm # libLLVM.7.so
     stdenv.cc.cc # libm

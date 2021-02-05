@@ -1,4 +1,4 @@
-{ stdenv, fetchurl }:
+{ stdenv, lib, fetchurl }:
 stdenv.mkDerivation {
   name = "otf2-2.2";
   src = fetchurl {
@@ -7,7 +7,7 @@ stdenv.mkDerivation {
   };
   configureFlags = [
     #"--with-frontend-compiler-suite=(gcc|ibm|intel|pgi|studio)"
-    "${stdenv.lib.optionalString stdenv.cc.isIntel or false "--with-nocross-compiler-suite=intel"}"
+    "${lib.optionalString stdenv.cc.isIntel or false "--with-nocross-compiler-suite=intel"}"
   ];
 }
 

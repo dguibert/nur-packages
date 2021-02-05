@@ -1,4 +1,4 @@
-{ stdenv, requireFile
+{ stdenv, lib, requireFile
 , nix-patchtools
 , more
 , zlib
@@ -16,7 +16,7 @@
 }:
 
 let
-  variant = if (stdenv.lib.versionAtLeast "2018-1812" pgi_version)  then "" else "-nollvm";
+  variant = if (lib.versionAtLeast "2018-1812" pgi_version)  then "" else "-nollvm";
 in
 stdenv.mkDerivation {
   name = "openmpi-pgi-${version}";
@@ -31,7 +31,7 @@ stdenv.mkDerivation {
   buildInputs = [ nix-patchtools more file gcc ];
   propagatedBuildInputs = [ pgi ];
 
-  libs = stdenv.lib.makeLibraryPath [
+  libs = lib.makeLibraryPath [
     stdenv.cc.cc.lib /* libstdc++.so.6 */
     #llvmPackages_7.llvm # libLLVM.7.so
     stdenv.cc.cc # libm

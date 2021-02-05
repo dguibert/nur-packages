@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, libxml2, libedit, llvm, version, release_version, python
+{ stdenv, lib, fetchFromGitHub, cmake, libxml2, libedit, llvm, version, release_version, python
 , fixDarwinDylibNames
 , enableManpages ? false
 }:
@@ -15,14 +15,14 @@ let
       sha256 = "052j1nqbs14jinf1r4z1g94xzb57kafb2pbbw9r5rxbh687j4j44";
     };
     nativeBuildInputs = [ cmake python ]
-      ++ stdenv.lib.optional enableManpages python.pkgs.sphinx;
+      ++ lib.optional enableManpages python.pkgs.sphinx;
 
     buildInputs = [ libedit libxml2 llvm ]
-      ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+      ++ lib.optional stdenv.isDarwin fixDarwinDylibNames;
 
     cmakeFlags = [
       "-DCMAKE_CXX_FLAGS=-std=c++11"
-    ] ++ stdenv.lib.optionals enableManpages [
+    ] ++ lib.optionals enableManpages [
       "-DCLANG_INCLUDE_DOCS=ON"
       "-DLLVM_ENABLE_SPHINX=ON"
       "-DSPHINX_OUTPUT_MAN=ON"
@@ -39,7 +39,7 @@ let
 
       # Patch for standalone doc building
       sed -i '1s,^,find_package(Sphinx REQUIRED)\n,' docs/CMakeLists.txt
-    '' + stdenv.lib.optionalString stdenv.hostPlatform.isMusl ''
+    '' + lib.optionalString stdenv.hostPlatform.isMusl ''
       sed -i -e 's/lgcc_s/lgcc_eh/' lib/Driver/ToolChains/*.cpp
     '';
 
@@ -74,17 +74,17 @@ let
       isClang = true;
       langFortran = true;
       inherit llvm;
-    } // stdenv.lib.optionalAttrs stdenv.isLinux {
+    } // lib.optionalAttrs stdenv.isLinux {
       inherit gcc;
     };
 
     meta = {
       description = "A c, c++, objective-c, and objective-c++ frontend for the llvm compiler";
       homepage    = http://llvm.org/;
-      license     = stdenv.lib.licenses.ncsa;
-      platforms   = stdenv.lib.platforms.all;
+      license     = lib.licenses.ncsa;
+      platforms   = lib.platforms.all;
     };
-  } // stdenv.lib.optionalAttrs enableManpages {
+  } // lib.optionalAttrs enableManpages {
     name = "clang-manpages-${version}";
 
     buildPhase = ''

@@ -8,8 +8,8 @@
 , modName ? "${modPrefix}${pkgName}/${pkgVersion}.lua"
 , modLoad ? []
 , modPrereq ? []
-, modConflict ? [pkgName] ++ stdenv.lib.optional (modPrefix != "") (modPrefix + pkgName)
-, modEnv ? builtins.replaceStrings ["-"] ["_"] (stdenv.lib.toUpper pkgName)
+, modConflict ? [pkgName] ++ lib.optional (modPrefix != "") (modPrefix + pkgName)
+, modEnv ? builtins.replaceStrings ["-"] ["_"] (lib.toUpper pkgName)
 , modPath ? ""
 , addLDLibraryPath ? false
 , addCFlags ? true
@@ -32,7 +32,7 @@ stdenv.mkDerivation {
   inherit pkgName pkgVersion modPrefix modName modLoad modPrereq modConflict modEnv modPath addLDLibraryPath addCFlags;
 
   # sort of hacky, duplicating cc-wrapper:
-  nixInfix = stdenv.lib.replaceStrings ["-"] ["_"] stdenv.targetPlatform.config;
+  nixInfix = lib.replaceStrings ["-"] ["_"] stdenv.targetPlatform.config;
 
   passthru = {
     inherit pkg modName;

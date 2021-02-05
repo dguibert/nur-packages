@@ -1,4 +1,4 @@
-{ stdenv, fetchannex, gcc, file
+{ stdenv, lib, fetchannex, gcc, file
 , cpio, rpm
 , patchelf
 , version ? "2019.0.117"
@@ -14,7 +14,7 @@ let
     "intel-mkl-cluster*"
     "intel-mkl-common*"
     "intel-mkl-core*"
-  #] ++ stdenv.lib.optionals (stdenv.lib.versionOlder "2017.99.999" version) [ ""
+  #] ++ lib.optionals (lib.versionOlder "2017.99.999" version) [ ""
   ];
 
   extract = pattern: ''
@@ -42,8 +42,8 @@ self = stdenv.mkDerivation rec {
     export build=$PWD
     mkdir $out
     cd $out
-    echo "${stdenv.lib.concatStringsSep "+" components_}"
-    ${stdenv.lib.concatMapStringsSep "\n" extract components_}
+    echo "${lib.concatStringsSep "+" components_}"
+    ${lib.concatMapStringsSep "\n" extract components_}
 
     mv ${preinstDir}/* .
     rm -rf opt
@@ -97,14 +97,14 @@ self = stdenv.mkDerivation rec {
     isIntel = true;
     hardeningUnsupportedFlags = [ "stackprotector" ];
     langFortran = true;
-  } // stdenv.lib.optionalAttrs stdenv.isLinux {
+  } // lib.optionalAttrs stdenv.isLinux {
     inherit gcc;
   };
 
   meta = {
     description = "Intel mkl library ${version}";
-    maintainers = [ stdenv.lib.maintainers.dguibert ];
-    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ lib.maintainers.dguibert ];
+    platforms = lib.platforms.linux;
   };
 };
 in self

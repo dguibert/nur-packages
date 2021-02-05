@@ -37,7 +37,7 @@ let
         ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
         ln -s "${libraries.compiler-rt.out}/lib" "$rsrc/lib"
         echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
-      '' + stdenv.lib.optionalString stdenv.targetPlatform.isLinux ''
+      '' + lib.optionalString stdenv.targetPlatform.isLinux ''
         echo "--gcc-toolchain=${tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
       '';
       wrapCCWith = { cc

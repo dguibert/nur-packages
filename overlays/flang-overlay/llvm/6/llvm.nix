@@ -20,12 +20,12 @@
 }:
 
 let
-  inherit (stdenv.lib) optional optionals optionalString;
+  inherit (lib) optional optionals optionalString;
 
   #src = fetch "llvm" "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn";
 
   # Used when creating a version-suffixed symlink of libLLVM.dylib
-  shortVersion = with stdenv.lib;
+  shortVersion = with lib;
     concatStringsSep "." (take 2 (splitString "." release_version));
 
 in stdenv.mkDerivation (rec {
@@ -152,11 +152,11 @@ in stdenv.mkDerivation (rec {
   meta = {
     description = "Collection of modular and reusable compiler and toolchain technologies";
     homepage    = http://llvm.org/;
-    license     = stdenv.lib.licenses.ncsa;
-    maintainers = with stdenv.lib.maintainers; [ lovek323 raskin dtzWill ];
-    platforms   = stdenv.lib.platforms.all;
+    license     = lib.licenses.ncsa;
+    maintainers = with lib.maintainers; [ lovek323 raskin dtzWill ];
+    platforms   = lib.platforms.all;
   };
-} // stdenv.lib.optionalAttrs enableManpages {
+} // lib.optionalAttrs enableManpages {
   name = "llvm-manpages-${version}";
 
   buildPhase = ''

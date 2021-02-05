@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub
+{ stdenv, lib, fetchFromGitHub
 , openmpi
 , mpi ? openmpi
 , suffix ? ""
@@ -17,11 +17,11 @@ stdenv.mkDerivation {
   buildInputs = [ mpi ];
 
   configurePhase = ''
-    ${stdenv.lib.optionalString stdenv.cc.isIntel or false ''
+    ${lib.optionalString stdenv.cc.isIntel or false ''
     export MACHINE=-xCORE-AVX2
     make MPICXX="mpiicpc -DUSE_MPI=1" SERCXX="icpc -DUSE_MPI=0" CXXFLAGS="-g -O3 $MACHINE -qopenmp -I. -Wall" LDFLAGS="-g -O3 $MACHINE -qopenmp"
     ''}
-    ${stdenv.lib.optionalString stdenv.cc.isGNU or false ''
+    ${lib.optionalString stdenv.cc.isGNU or false ''
     make MPICXX="mpicxx -DUSE_MPI=1" SERCXX="g++ -DUSE_MPI=0" CXXFLAGS="-g -O3 -fopenmp -I. -Wall" LDFLAGS="-g -O3 -fopenmp"
     ''}
   '';

@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, clang, openmp, llvm, version, python, flang_src, libpgmath 
+{ stdenv, lib, fetchFromGitHub, cmake, clang, openmp, llvm, version, python, flang_src, libpgmath
 , wrapCC
 }:
 
@@ -44,15 +44,15 @@ let
       isClang = true;
       langFortran = true;
       inherit llvm;
-    } // stdenv.lib.optionalAttrs stdenv.isLinux {
+    } // lib.optionalAttrs stdenv.isLinux {
       inherit gcc;
     };
 
     meta = {
       description = "A fortran frontend for the llvm compiler";
       homepage    = http://llvm.org/;
-      license     = stdenv.lib.licenses.ncsa;
-      platforms   = stdenv.lib.platforms.all;
+      license     = lib.licenses.ncsa;
+      platforms   = lib.platforms.all;
     };
   };
 in self

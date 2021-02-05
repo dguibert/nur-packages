@@ -1,4 +1,4 @@
-{ stdenv
+{ stdenv, lib
 , fetchurl
 , removeReferencesTo
 , cpp ? false
@@ -14,7 +14,7 @@
 # (--enable-unsupported could be used to force the build)
 assert !cpp || mpi == null;
 
-let inherit (stdenv.lib) optional optionals;
+let inherit (lib) optional optionals;
 
 in
 stdenv.mkDerivation rec {
@@ -68,9 +68,9 @@ stdenv.mkDerivation rec {
       applications to evolve in their use of HDF5. The HDF5 Technology suite includes tools and
       applications for managing, manipulating, viewing, and analyzing data in the HDF5 format.
     '';
-    license = stdenv.lib.licenses.bsd3; # Lawrence Berkeley National Labs BSD 3-Clause variant
+    license = lib.licenses.bsd3; # Lawrence Berkeley National Labs BSD 3-Clause variant
     homepage = https://www.hdfgroup.org/HDF5/;
-    platforms = stdenv.lib.platforms.unix;
+    platforms = lib.platforms.unix;
     broken = (gfortran != null) && stdenv.isDarwin;
   };
 }

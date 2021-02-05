@@ -1,4 +1,4 @@
-{ stdenv
+{ stdenv, lib
 , openmpi
 , mpi ? openmpi
 , caliper
@@ -16,11 +16,11 @@ stdenv.mkDerivation {
   phases = [ "buildPhase" ];
   buildPhase = ''
   set -x
-    ${stdenv.lib.optionalString stdenv.cc.isIntel or false ''
+    ${lib.optionalString stdenv.cc.isIntel or false ''
     mkdir -p $out/bin
     mpiicc -o $out/bin/mpiniapp-ping-pong $src -lcaliper-mpi -lcaliper -lcaliper-reader -lcaliper-common
     ''}
-    ${stdenv.lib.optionalString stdenv.cc.isGNU or false ''
+    ${lib.optionalString stdenv.cc.isGNU or false ''
     mkdir -p $out/bin
     mpicc -o $out/bin/mpiniapp-ping-pong $src -lcaliper-mpi -lcaliper -lcaliper-reader -lcaliper-common
     ''}

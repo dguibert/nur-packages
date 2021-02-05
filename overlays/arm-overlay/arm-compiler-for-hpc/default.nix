@@ -62,7 +62,7 @@ let
     dontStrip = true;
 
     buildInputs = [ nix-patchtools more cpio rpm ];
-    libs = stdenv.lib.makeLibraryPath ([
+    libs = lib.makeLibraryPath ([
       stdenv.cc.cc.lib /* libstdc++.so.6 */
       #llvmPackages_7.llvm # libLLVM.7.so
       stdenv.cc.cc # libm
@@ -82,7 +82,7 @@ let
       ls rpms
 
       mkdir $out; cd $out
-      ${stdenv.lib.concatMapStringsSep "\n" extract components}
+      ${lib.concatMapStringsSep "\n" extract components}
 
       set +xve
 
