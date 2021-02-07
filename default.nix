@@ -6,8 +6,7 @@
 # commands such as:
 #     nix-build -A mypackage
 
-{ versions ? import ./versions.nix
-, nixpkgs ? { outPath = versions.nixpkgs; revCount = 123456; shortRev = "gfedcba"; }
+{ nixpkgs ? { outPath = <nixpkgs>; revCount = 123456; shortRev = "gfedcba"; }
 , pkgs ? import nixpkgs {
 	overlays = [
 		(import ./overlays).default
