@@ -16,6 +16,7 @@
 , isIntel ? false
 , buildPackages ? {}
 , libcxx ? null
+, lib
 }:
 
 with stdenvNoCC.lib;

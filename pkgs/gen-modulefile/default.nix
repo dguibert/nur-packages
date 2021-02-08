@@ -13,6 +13,7 @@
 , modPath ? ""
 , addLDLibraryPath ? false
 , addCFlags ? true
+, lib
 }:
 
 let monopkg = if builtins.length pkg.outputs > 1
