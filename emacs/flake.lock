@@ -39,11 +39,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1609689018,
-        "narHash": "sha256-IlKZQItWQZabFDYI6L529TkJUmZkvMLIQYERNM1Xgv0=",
+        "lastModified": 1611493852,
+        "narHash": "sha256-6mVG5keS6tLwVYoROFT4OgIJ3MASn+ZMtACEk1nJXgU=",
         "owner": "dguibert",
         "repo": "nix",
-        "rev": "71425bbd4febc2c25513687839726563791c59da",
+        "rev": "bf3a46f21985c261a33f226c8000bc88ce9b1de6",
         "type": "github"
       },
       "original": {
@@ -76,11 +76,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1611859548,
-        "narHash": "sha256-FpvDn3Y13zdM41FxooWjfJtsl8PNLYemiLWRYEfQclw=",
+        "lastModified": 1612626287,
+        "narHash": "sha256-WYpyLM6Ieh2pwa8W+kFcQdIpuEhTXPeu/+2Y+2zbcIY=",
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "9ce722b21ce727503d46605bcb4f6163bf52aa36",
+        "rev": "cf820456ba659d24087d46ba537d0ac376afe49b",
         "type": "github"
       },
       "original": {
@@ -102,8 +102,8 @@
       },
       "locked": {
         "dir": "envs",
-        "lastModified": 1611768016,
-        "narHash": "sha256-LxBDohHt5AWHjfEQT1fn55UVWmdT4aHmXiml/ZP1tVY=",
+        "lastModified": 1612804766,
+        "narHash": "sha256-XYWYpVqA10VRTt7H8e8f7FERMavl8coPbfD7s0M3odc=",
         "type": "git",
         "url": "file:///home/dguibert/nur-packages?dir=envs"
       },

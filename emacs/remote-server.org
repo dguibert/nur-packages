@@ -1,0 +1,22 @@
+* remote server
+
+#+begin_src shell :session *client* :results output
+ssh spartan
+export PS1="\u@\h \w $ "
+hostname -I
+#+end_src
+
+#+RESULTS:
+: 
+: \[[00m\] Last login: Tue Feb  9 16:19:06 2021 from 10.197.222.28
+: ######################################################
+:                 Welcome on SPARTAN
+: ######################################################
+: [00m bguibertd@spartan0 ~ $ 10.197.222.131 10.10.0.1 10.20.0.1
+
+#+begin_src shell :session *client* :results output
+hostname
+#+end_src
+
+#+RESULTS:
+: spartan0
