@@ -6,7 +6,14 @@ key="${2:-data}"
 (
   umask 077
   if test -e "$encFile"; then
-    @sops@/bin/sops --extract "[\"$key\"]" -d "$encFile"
+    case "$key" in
+      data)
+        @sops@/bin/sops --extract "[\"$key\"]" -d "$encFile"
+        ;;
+      *)
+        echo "\"$(@sops@/bin/sops --extract "[\"$key\"]" -d "$encFile")\""
+        ;;
+    esac
   else
     echo "{ success=false; }"
   fi
