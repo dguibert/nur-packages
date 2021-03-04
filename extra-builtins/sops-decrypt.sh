@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+#set -x
 encFile="$1"
 key="${2:-data}"
 
