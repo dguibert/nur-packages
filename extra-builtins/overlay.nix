@@ -38,6 +38,12 @@ let
     wireguardtools = prev.wireguard-tools;
   };
 
+  wg_pubkey = makeProg {
+    name = "wg-pubkey";
+    src = ./wg-pubkey.sh;
+    wireguardtools = prev.wireguard-tools;
+  };
+
   sops_decrypt = makeProg {
     name = "sops-decrypt";
     src = ./sops-decrypt.sh;
@@ -72,6 +78,11 @@ in {
                else if exec != null
                then exec [ wg_keys name ]
                else { success=false; value={ privateKey = ""; publicKey = ""; }; };
+  wgPubKey_ = name: if builtins ? extraBuiltins && builtins.extraBuiltins ? wgPubKey
+               then builtins.extraBuiltins.wgPubKey name
+               else if exec != null
+               then exec [ wg_pubkey name ]
+               else "";
   isGitDecrypted_ = name: if builtins ? extraBuiltins && builtins.extraBuiltins ? isGitDecrypted
                then builtins.trace "isGitDecrypted_ => isGitDecrypted" builtins.extraBuiltins.isGitDecrypted name
                else if exec != null
@@ -95,6 +106,8 @@ in {
       pass = name: exec [ ${nix_pass} name ];
 
       wgKeys = name: exec [ ${wg_keys} name ];
+
+      wgPubKey = name: exec [ ${wg_pubkey} name ];
 
       isGitDecrypted = name: exec [ ${is_git_decrypted} name ];
 
