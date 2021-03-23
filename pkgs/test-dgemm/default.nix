@@ -11,7 +11,9 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    gcc -o $out/bin/test-dgemm $src -lopenblas
+    set -x
+    ''${CC:-gcc} -o $out/bin/test-dgemm $src -lopenblas
+    set +x
   '';
 
   buildInputs = [ openblas ];

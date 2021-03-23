@@ -55,7 +55,9 @@ final: prev: with final; {
   in builtins.trace "drvFlavor: ${drv}=${flavor}" flavor;
 
   compilers_line = stdenv: mpi: let
-    compiler_id = if (stdenv.cc.isIntel or false) then "intel" else "gnu";
+    compiler_id = if (stdenv.cc.isIntel or false) then "intel"
+      else if (stdenv.cc.isOneApi or false) then "oneapi"
+      else "gnu";
     mpi_id = if (mpi.isIntel or false) then "intel" else
              if (mpi != null) then "openmpi" else "none";
     line = {
@@ -63,6 +65,9 @@ final: prev: with final; {
         intel = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
         openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
         none = "CC=icc CXX=icpc F77=ifort FC=ifort";
+      };
+      oneapi = {
+        none = "CC=icx CXX=icpx F77=ifx F90=ifx";
       };
       gnu = {
         openmpi = "CC=${mpi}/bin/mpicc CXX=${mpi}/bin/mpicxx F77=${mpi}/bin/mpif77 FC=${mpi}/bin/mpif90";

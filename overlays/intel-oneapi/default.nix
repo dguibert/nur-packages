@@ -33,7 +33,6 @@ let
   #intel.oneapi.lin.itac,v=2021.1.1-42
   #intel.oneapi.lin.oneapi-common.licensing,v=2021.1.1-60
   #intel.oneapi.lin.oneapi-common.vars,v=2021.1.1-60
-  #intel.oneapi.lin.openmp,v=2021.1.1-189
   components = {
     mpi = [
       "intel.oneapi.lin.mpi.devel,v=*"#2021.1.1-76
@@ -47,6 +46,7 @@ let
       "intel.oneapi.lin.dpcpp-cpp-compiler-pro,v=*"#2021.1.1-189
       "intel.oneapi.lin.dpcpp-cpp-pro-fortran-compiler-common,v=*"#2021.1.1-189
       "intel.oneapi.lin.ifort-compiler,v=*"#2021.1.1-189
+      #intel.oneapi.lin.openmp,v=2021.1.1-189
     ];
   };
   # tbb', components='intel.oneapi.lin.tbb.devel', releases=releases, url_name='tbb_oneapi')
@@ -87,13 +87,7 @@ let
       sh $src --extract-folder oneapi -x
       cd oneapi/l_${url_name}_p_${version}.${release_build}_offline
     '';
-    #ls
-    #patchelf --set-interpreter ${stdenv.cc.libc}/lib/ld-linux-x86-64.so.2 ./bootstrapper
-    #patchelf --set-rpath "\$ORIGIN:${zlib}/lib:${stdenv.cc.cc.lib}/lib" ./bootstrapper
-    #ldd ./bootstrapper
-    #for lib in *.so; do
-    #  patchelf --set-rpath "\$ORIGIN:${zlib}/lib:${stdenv.cc.cc.lib}/lib" $lib
-    #done
+
     nativeBuildInputs= [ file patchelf ];
 
     dontPatchELF = true;
@@ -134,6 +128,9 @@ let
   };
 
   compilers_attrs = {
+    langFortran = true;
+    isOneApi = true;
+
     preFixup = ''
       mv _installdir/compiler/*/linux $out
       # Fixing man path
@@ -164,8 +161,45 @@ let
     '';
   };
 
+  wrapCCWith = { cc
+    , # This should be the only bintools runtime dep with this sort of logic. The
+      # Others should instead delegate to the next stage's choice with
+      # `targetPackages.stdenv.cc.bintools`. This one is different just to
+      # provide the default choice, avoiding infinite recursion.
+      bintools ? if pkgs.targetPlatform.isDarwin then pkgs.darwin.binutils else pkgs.binutils
+    , libc ? bintools.libc or pkgs.stdenv.cc.libc
+    , ...
+    } @ extraArgs:
+      pkgs.callPackage ./build-support/cc-wrapper (let self = {
+    nativeTools = pkgs.targetPlatform == pkgs.hostPlatform && pkgs.stdenv.cc.nativeTools or false;
+    nativeLibc = pkgs.targetPlatform == pkgs.hostPlatform && pkgs.stdenv.cc.nativeLibc or false;
+    nativePrefix = pkgs.stdenv.cc.nativePrefix or "";
+    noLibc = !self.nativeLibc && (self.libc == null);
 
-in {
+    isGNU = cc.isGNU or false;
+    isClang = cc.isClang or false;
+    isIntel = false;
+    isOneApi = true;
+
+    inherit cc bintools libc;
+  } // extraArgs; in self);
+
+  mkExtraBuildCommands = release_version: cc: ''
+    rsrc="$out/resource-root"
+    mkdir "$rsrc"
+
+    if test ! -e ${cc}/lib/clang/${release_version}; then
+      exit 1
+    fi
+
+    ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
+    ln -s "${cc}/lib" "$rsrc/lib"
+    echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
+  '' + prev.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
+    echo "--gcc-toolchain=${gccForLibs} -B${gccForLibs}" >> $out/nix-support/cc-cflags
+  '';
+
+in rec {
 ### For quick turnaround debugging, copy instead of install
 ### copytree('/opt/intel/oneapi/compiler', path.join(prefix, 'compiler'),
 ###          symlinks=True)
@@ -186,15 +220,35 @@ in {
 ### Try to patch all files, patchelf will do nothing if
 ### file should not be patched
 ##subprocess.call(['patchelf', '--set-rpath', rpath, file])
-  oneapiPackages_2021_1_0 = {
-    unwrapped = oneapiPackage {
-      name = "compilers";
-      version = "2021.1.0";
-    } compilers_attrs;
+  oneapiPackages_2021_1_0 = with oneapiPackages_2021_1_0; {
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.1.0"; } compilers_attrs;
 
-    mpi = oneapiPackage {
-      name = "mpi";
-      version = "2021.1.1";
-    } mpi_attrs;
+    compilers = wrapCCWith {
+      cc = unwrapped;
+      #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
+      extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped;
+    };
+
+    mpi = oneapiPackage { name = "mpi"; version = "2021.1.1"; } mpi_attrs;
+
+    /* Return a modified stdenv that uses Intel compilers */
+    stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
+      mkDerivation = args: stdenv_.mkDerivation (args // {
+        CC="icx";
+        CXX="icpx";
+        FC="ifort";
+        F77="ifx";
+        F90="ifx";
+    #    postFixup = "${args.postFixup or ""}" + ''
+    #    set -x
+    #    storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
+    #    find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+    #    storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
+    #    find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+    #    set +x
+    #    '';
+      });
+    };
+
   };
 }
