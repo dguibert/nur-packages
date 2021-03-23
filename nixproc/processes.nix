@@ -10,8 +10,13 @@
 }:
 
 let
-  constructors = import ../../services-agnostic/constructors.nix {
-    inherit pkgs stateDir runtimeDir logDir tmpDir cacheDir forceDisableUserChange processManager;
+  spoolDir = "${stateDir}/spool";
+  libDir = "${stateDir}/lib";
+
+  #constructors = import ../../services-agnostic/constructors.nix {
+  constructors = import <nix-processmgmt-services/services-agnostic/constructors.nix> {
+    nix-processmgmt = <nix-processmgmt>;
+    inherit pkgs stateDir runtimeDir logDir tmpDir cacheDir spoolDir libDir forceDisableUserChange processManager;
   };
 
   instanceSuffix = "";
