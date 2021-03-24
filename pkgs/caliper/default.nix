@@ -48,12 +48,13 @@ let
 
 in
 
-stdenv.mkDerivation {
-  name = "caliper-2.1.1";
+stdenv.mkDerivation rec {
+  pname = "caliper";
+  version = "2.3.0";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
-    rev = "refs/tags/v2.3.0";
+    rev = "refs/tags/v${version}";
     sha256 = "sha256-MRjcEeOWA5jO0nBxvAUUAzq9nwGwVq3lE6vQFBdrljc=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ];
