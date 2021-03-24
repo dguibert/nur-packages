@@ -68,8 +68,20 @@ let
     #self._url_name, version, release['build'])";
 
     extract = pattern: ''
-      7za l    packages/${pattern}/cupPayload.cup
-      7za x -y packages/${pattern}/cupPayload.cup
+      case "${pattern}" in
+      *runtime*)
+        mkdir -p runtime; cd runtime
+        7za l    ../packages/${pattern}/cupPayload.cup
+        7za x -y ../packages/${pattern}/cupPayload.cup
+        cd -
+        ;;
+      *)
+        mkdir -p out; cd out
+        7za l    ../packages/${pattern}/cupPayload.cup
+        7za x -y ../packages/${pattern}/cupPayload.cup
+        cd -
+        ;;
+      esac
     '';
   in prev.stdenv.mkDerivation ({
     inherit pname version;
@@ -106,9 +118,14 @@ let
   } // attrs);
 
   mpi_attrs = {
+    outputs = [ "out" "runtime" ];
+
     preFixup = ''
-      mv _installdir/mpi/* $out
-      for f in $(find $out -type f -executable); do
+      mv out/_installdir/mpi/* $out
+
+      mv runtime/_installdir/mpi/* $runtime
+
+      for f in $(find $out $runtime -type f -executable); do
         type="$(file -b --mime-type $f)"
         case "$type" in
         "application/executable"|"application/x-executable")
@@ -124,6 +141,10 @@ let
           ;;
         esac
       done
+
+      (cd $runtime; find -type d -exec mkdir -vp $out/{} \; )
+      (cd $runtime; find -type f -exec ln -vsf $runtime/{} $out/{} \; )
+
     '';
   };
 
@@ -131,33 +152,41 @@ let
     langFortran = true;
     isOneApi = true;
 
+    outputs = [ "out" "runtime" ];
+
     preFixup = ''
-      mv _installdir/compiler/*/linux $out
+      mv out/_installdir/compiler/*/linux $out
+
+      mv runtime/_installdir/compiler/*/linux $runtime
       # Fixing man path
       rm -rf $out/documentation
       rm -rf $out/man
 
       echo "Patching rpath and interpreter..."
-      for f in $(find $out/bin -type f -executable); do
+      for f in $(find $out/bin $runtime/bin -type f -executable); do
           echo "    Patching executable: $f"
-          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64:${zlib}/lib $f || true
+          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:${zlib}/lib:$runtime/lib:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
       done
-      for f in $(find $out/lib $out/compiler -type f -executable); do
+      for f in $(find $out/lib $out/compiler $runtime/lib $runtime/compiler -type f -executable); do
         type="$(file -b --mime-type $f)"
         case "$type" in
         "application/executable"|"application/x-executable")
           echo "    Patching executable: $f"
-          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
+          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
           ;;
         "application/x-sharedlib"|"application/x-pie-executable")
           echo "    Patching library   : $f"
-          patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
+          patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
           ;;
         *)
           echo "Not Patching           : $f ($type)"
           ;;
         esac
       done
+
+      (cd $runtime; find -type d -exec mkdir -vp  $out/{} \; )
+      (cd $runtime; find -type f -exec ln -vsf $runtime/{} $out/{} \; )
+      (cd $runtime/compiler/lib; ln -sv intel64_lin intel64)
     '';
   };
 
@@ -184,7 +213,7 @@ let
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-  mkExtraBuildCommands = release_version: cc: ''
+  mkExtraBuildCommands = release_version: cc: runtime: ''
     rsrc="$out/resource-root"
     mkdir "$rsrc"
 
@@ -193,8 +222,9 @@ let
     fi
 
     ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
-    ln -s "${cc}/lib" "$rsrc/lib"
+    ln -s "${runtime}/lib" "$rsrc/lib"
     echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
+    echo "-L=${runtime}/lib" >> $out/nix-support/cc-cflags
   '' + prev.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
     echo "--gcc-toolchain=${gccForLibs} -B${gccForLibs}" >> $out/nix-support/cc-cflags
   '';
@@ -226,7 +256,8 @@ in rec {
     compilers = wrapCCWith {
       cc = unwrapped;
       #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
-      extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped;
+      extraPackages = [ unwrapped.runtime ];
+      extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped unwrapped.runtime;
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.1.1"; } mpi_attrs;
@@ -236,17 +267,18 @@ in rec {
       mkDerivation = args: stdenv_.mkDerivation (args // {
         CC="icx";
         CXX="icpx";
-        FC="ifort";
+        FC="ifx";
         F77="ifx";
         F90="ifx";
-    #    postFixup = "${args.postFixup or ""}" + ''
-    #    set -x
-    #    storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-    #    find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-    #    storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-    #    find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-    #    set +x
-    #    '';
+        #phases = (args.phases or []) ++ [ "fixupPhase" ];
+        #postFixup = "${args.postFixup or ""}" + ''
+        #set -x
+        #storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
+        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+        #storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
+        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
+        #set +x
+        #'';
       });
     };
 
