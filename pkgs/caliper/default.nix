@@ -50,12 +50,12 @@ in
 
 stdenv.mkDerivation rec {
   pname = "caliper";
-  version = "2.3.0";
+  version = "2.5.0";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
     rev = "refs/tags/v${version}";
-    sha256 = "sha256-MRjcEeOWA5jO0nBxvAUUAzq9nwGwVq3lE6vQFBdrljc=";
+    sha256 = "sha256-Tvgahy9xASdTuPLL1v4JbOIoAy5WVtdMQHEhiy3fLVM=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ];
   nativeBuildInputs = [ cmake python git ];
