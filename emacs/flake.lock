@@ -75,11 +75,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1614271709,
-        "narHash": "sha256-uVoHxAwbuQ7Fjq3aVoRBISq+Rtu5IggWO+er0qomS3A=",
+        "lastModified": 1616263597,
+        "narHash": "sha256-+yU5W3X7Yyn7YPX+1Xy69Fh73PZf8Sxb+I4qsqVUXPg=",
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "461acf08415577f757ba18c87dde94c34d5a29f5",
+        "rev": "8f10a4e9e191141028bfcb4ccf4064790cc4ef31",
         "type": "github"
       },
       "original": {
@@ -102,8 +102,11 @@
       },
       "locked": {
         "dir": "envs",
-        "lastModified": 1614931983,
-        "narHash": "sha256-liuOlmBhfqAB+1jluCoSOUadlczQvKHt4ppUlSt3wr4=",
+        "lastModified": 1616682080,
+        "narHash": "sha256-gD7d7pUjx0EeYoH09t1TgJRCcrsnr+oggW0h/R6NTzo=",
+        "ref": "master",
+        "rev": "be7be9cb9a3a9a3c998cebd9043b04e40bdfb1cf",
+        "revCount": 550,
         "type": "git",
         "url": "file:///home/dguibert/nur-packages?dir=envs"
       },
