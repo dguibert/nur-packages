@@ -47,12 +47,20 @@ final: prev: with prev; let
       notmuch
 
       ivy
+      ivy-rich
       org-bullets
       rainbow-delimiters
 
       general
+
+      hydra
+
+      projectile
+      magit
+      counsel-projectile
     ]) ++ [
       notmuch   # From main packages set
+      ripgrep
       #my-mode
     ]);
 
