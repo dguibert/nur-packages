@@ -87,7 +87,7 @@ with lib;
       ;;
     esac
 
-    eval "$(${pkgs.coreutils}/bin/dircolors)"
+    eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
     export BASE16_SHELL_SET_BACKGROUND=false
     source ${config.lib.base16.base16template "shell"}
 

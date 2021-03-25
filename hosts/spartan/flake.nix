@@ -58,6 +58,7 @@
             overlays.arm
             overlays.pgi
             (import ../../envs/overlay.nix nixpkgs)
+            (import ../../emacs/overlay.nix)
             self.overlay
           ];
           config.allowUnfree = true;
