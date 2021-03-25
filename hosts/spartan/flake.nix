@@ -177,5 +177,8 @@
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
       };
     };
+
+    # This is highly advised, and will prevent many possible mistakes
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
   };
 }
