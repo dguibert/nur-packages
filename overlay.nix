@@ -39,7 +39,6 @@ final: prev: with final; {
 
   caliper-cuda = final.caliper.override {
     enableCuda = true;
-    nvidia_x11 = linuxPackages.nvidia_x11;
   };
 
   drvFlavor = drv: let

@@ -27,7 +27,6 @@
 #vtune	Intel VTune annotation bindings	VTune
 , enableCuda ? false
 , cudatoolkit
-, nvidia_x11 ? null
 , lib
 }:
 
@@ -62,7 +61,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-Tvgahy9xASdTuPLL1v4JbOIoAy5WVtdMQHEhiy3fLVM=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ]
-  ++ lib.optional enableCuda [ cudatoolkit nvidia_x11 ]
+  ++ lib.optional enableCuda [ cudatoolkit ]
   ;
   nativeBuildInputs = [ cmake python git ];
 
