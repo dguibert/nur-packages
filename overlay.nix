@@ -37,6 +37,11 @@ final: prev: with final; {
     inherit (final) dyninst;
   };
 
+  caliper-cuda = final.caliper.override {
+    enableCuda = true;
+    nvidia_x11 = linuxPackages.nvidia_x11;
+  };
+
   drvFlavor = drv: let
     isIntel = drv.cc ? isIntel && drv.cc.isIntel;
     isClang = drv.cc ? isClang && drv.cc.isClang;
@@ -81,7 +86,7 @@ final: prev: with final; {
   cubew = final.callPackage ./pkgs/cubew { };
   cubelib = final.callPackage ./pkgs/cubelib { };
   cubegui = final.callPackage ./pkgs/cubegui { inherit (final) cubelib; };
-  ddt = final.callPackage ./pkgs/ddt { };
+  arm-forge = libsForQt5.callPackage ./pkgs/arm-forge { };
 
   dwm = prev.dwm.override {patches = [
     ./pkgs/dwm/0001-dwm-pertag-20170513-ceac8c9.patch

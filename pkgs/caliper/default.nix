@@ -25,6 +25,10 @@
 , dyninst
 #nvprof	NVidia NVProf annotation bindings	CUDA
 #vtune	Intel VTune annotation bindings	VTune
+, enableCuda ? false
+, cudatoolkit
+, nvidia_x11 ? null
+, lib
 }:
 
 ## Service	CMake flags
@@ -57,7 +61,9 @@ stdenv.mkDerivation rec {
     rev = "refs/tags/v${version}";
     sha256 = "sha256-Tvgahy9xASdTuPLL1v4JbOIoAy5WVtdMQHEhiy3fLVM=";
   };
-  buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ];
+  buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ]
+  ++ lib.optional enableCuda [ cudatoolkit nvidia_x11 ]
+  ;
   nativeBuildInputs = [ cmake python git ];
 
   preConfigure = ''
@@ -81,6 +87,9 @@ stdenv.mkDerivation rec {
     "-DWITH_FORTRAN=ON"
     "-DBUILD_DOCS=ON"
 
-    ];
+  ]
+  ++ lib.optional enableCuda [ "-DWITH_NVTX=ON" "-DWITH_CUPTI=ON"
+    "-DCUPTI_INCLUDE_DIR=${cudatoolkit}/extras/CUPTI/include"
+  ];
 }
 
