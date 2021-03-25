@@ -37,7 +37,7 @@ final: prev: with prev; let
       evil
       evil-leader
       evil-collection
-      evil-magit
+      #evil-magit
       evil-matchit
       evil-numbers
       evil-surround
