@@ -271,6 +271,7 @@ final: prev: with final; {
   python38 = prev.python38.override { packageOverrides = final.pythonOverrides; };
 
   pythonOverrides = python-self: python-super: with python-self; {
+    hatchet = callPackage ./pkgs/py-hatchet {};
     pyslurm = final.lib.upgradeOverride python-super.pyslurm (oldAttrs: rec {
       name = "${oldAttrs.pname}-${version}";
       version = "19-05-0";
