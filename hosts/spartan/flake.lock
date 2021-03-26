@@ -20,7 +20,9 @@
       "inputs": {
         "flake-compat": "flake-compat",
         "naersk": "naersk",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "utils": "utils"
       },
       "locked": {
@@ -70,11 +72,11 @@
     },
     "flake-utils_2": {
       "locked": {
-        "lastModified": 1605370193,
-        "narHash": "sha256-YyMTf3URDL/otKdKgtoMChu4vfVL3vCMkRqpGifhUn0=",
+        "lastModified": 1614513358,
+        "narHash": "sha256-LakhOx3S1dRjnh0b5Dg3mbZyH0ToC9I8Y2wKSkBaTzU=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "5021eac20303a61fafe17224c087f5519baed54d",
+        "rev": "5466c5bbece17adaab2d82fae80b46e807611bf3",
         "type": "github"
       },
       "original": {
@@ -148,28 +150,13 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1610942247,
-        "narHash": "sha256-PKo1ATAlC6BmfYSRmX0TVmNoFbrec+A5OKcabGEu2yU=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "7d71001b796340b219d1bfa8552c81995017544a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1616263597,
-        "narHash": "sha256-+yU5W3X7Yyn7YPX+1Xy69Fh73PZf8Sxb+I4qsqVUXPg=",
-        "owner": "dguibert",
-        "repo": "nixpkgs",
-        "rev": "8f10a4e9e191141028bfcb4ccf4064790cc4ef31",
-        "type": "github"
+        "lastModified": 1616744113,
+        "narHash": "sha256-higD61XStQoQS+Vls9G8FtAONCeENMnVins5o3thUKs=",
+        "ref": "pu-sandbox",
+        "rev": "5af5cf76e0f6352774ed195dd9bdac0276db78cc",
+        "revCount": 278628,
+        "type": "git",
+        "url": "file:///home/dguibert/code/nixpkgs"
       },
       "original": {
         "owner": "dguibert",
@@ -189,12 +176,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1606854373,
-        "narHash": "sha256-8YjxDka5oxTygy3liDCoVYm3pzT+Ty/+Qr1baBehfsg=",
-        "owner": "dguibert",
-        "repo": "nur-packages",
-        "rev": "2c52203916f4e753554d7d3e25861d568439eec5",
-        "type": "github"
+        "lastModified": 1616744281,
+        "narHash": "sha256-ZyknhmibCw9FNuAQHV7EamJrejy53A5hBEoNyNe6yVw=",
+        "type": "git",
+        "url": "file:///home/dguibert/nur-packages"
       },
       "original": {
         "owner": "dguibert",
@@ -210,7 +195,7 @@
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",
         "nix": "nix",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
         "nur_dguibert": "nur_dguibert"
       }
     },

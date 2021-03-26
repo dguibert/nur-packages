@@ -22,6 +22,8 @@
     base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
     # For accessing `deploy-rs`'s utility Nix functions
     deploy-rs.url = "github:serokell/deploy-rs";
+    #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs
@@ -85,7 +87,7 @@
         experimental-features = nix-command flakes ca-references recursive-nix
 
         extra-platforms = armv7l-linux i686-linux
-        builders = ssh://spartan501; ssh://spartan501 x86_64-linux - 16 1 benchmark,big-parallel,recursive-nix
+        builders = ssh://spartan401; ssh://spartan401 x86_64-linux - 16 16 benchmark,big-parallel,recursive-nix
       '';
     in
       "${nixConf}/opt";

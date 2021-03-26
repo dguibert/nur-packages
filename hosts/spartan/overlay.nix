@@ -18,6 +18,10 @@ in {
       ../../pkgs/nix-unshare.patch
     ];
   });
+  fish = tryUpstream prev.fish (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   #libuv = tryUpstream prev.libuv (attrs: {
   #  doCheck = false;
   #  doInstallCheck=false;
