@@ -218,3 +218,7 @@
 (setq tramp-verbose 10)
 
 (use-package org-download)
+
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
