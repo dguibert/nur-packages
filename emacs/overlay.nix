@@ -58,9 +58,13 @@ final: prev: with prev; let
       projectile
       magit
       counsel-projectile
+
+      org-download
     ]) ++ [
       notmuch   # From main packages set
       ripgrep
+
+      xclip
       #my-mode
     ]);
 

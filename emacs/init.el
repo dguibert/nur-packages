@@ -216,3 +216,5 @@
 ;;(setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
 (setq tramp-default-method "ssh")
 (setq tramp-verbose 10)
+
+(use-package org-download)
