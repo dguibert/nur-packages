@@ -64,6 +64,10 @@ final: prev: with prev; let
 
       org-roam
       org-roam-bibtex
+
+      org-noter
+      org-noter-pdftools
+      org-pdftools
     ]) ++ [
       notmuch   # From main packages set
       ripgrep
