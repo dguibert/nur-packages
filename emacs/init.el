@@ -270,3 +270,9 @@
 (use-package visual-fill-column)
 ;  :hook (org-mode . efs/org-mode-visual-fill))
 
+(use-package org-roam)
+(use-package org-roam-bibtex
+  :after org-roam
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :config
+  (require 'org-ref)) ; optional: if Org Ref is not loaded anywhere else, load it here

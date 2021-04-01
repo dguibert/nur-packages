@@ -62,6 +62,8 @@ final: prev: with prev; let
       org-download
       visual-fill-column
 
+      org-roam
+      org-roam-bibtex
     ]) ++ [
       notmuch   # From main packages set
       ripgrep
