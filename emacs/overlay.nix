@@ -60,6 +60,8 @@ final: prev: with prev; let
       counsel-projectile
 
       org-download
+      visual-fill-column
+
     ]) ++ [
       notmuch   # From main packages set
       ripgrep
