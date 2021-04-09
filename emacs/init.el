@@ -36,6 +36,12 @@
 (global-hl-line-mode t)
 ;;(set-fringe-mode 10) ; Give some breathing room
 
+; notmuch
+(setq mail-specify-envelope-from t) ; Settings to work with msmtp
+(setq message-sendmail-envelope-from 'header)
+(setq mail-envelope-from 'header)
+(setq send-mail-function 'sendmail-send-it)
+
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit) ;; Make ESC quit prompts
 
 (use-package all-the-icons)
@@ -318,3 +324,4 @@ With a prefix ARG, remove start location."
                            (org-noter--pretty-print-location location))))))))
   (with-eval-after-load 'pdf-annot
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+
