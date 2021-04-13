@@ -214,8 +214,10 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 ;;(setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
-(setq tramp-default-method "ssh")
-(setq tramp-verbose 10)
+;(setq tramp-default-method "sshx")
+(customize-set-variable 'tramp-default-method "sshx" "")
+;(setq tramp-verbose 10)
+(customize-set-variable 'tramp-verbose 1 "Enable remote command traces")
 
 (use-package org-download)
 
