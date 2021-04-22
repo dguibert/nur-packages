@@ -36,12 +36,6 @@
 (global-hl-line-mode t)
 ;;(set-fringe-mode 10) ; Give some breathing room
 
-; notmuch
-(setq mail-specify-envelope-from t) ; Settings to work with msmtp
-(setq message-sendmail-envelope-from 'header)
-(setq mail-envelope-from 'header)
-(setq send-mail-function 'sendmail-send-it)
-
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit) ;; Make ESC quit prompts
 
 (use-package all-the-icons)
@@ -131,7 +125,20 @@
   :init (evil-collection-init)
   )
 
+; notmuch
+(setq mail-specify-envelope-from t) ; Settings to work with msmtp
+(setq message-sendmail-envelope-from 'header)
+(setq mail-envelope-from 'header)
+(setq send-mail-function 'sendmail-send-it)
+
 (use-package notmuch)
+(define-key notmuch-show-mode-map "d"
+  (lambda ()
+    "toggle deleted tag for message"
+    (interactive)
+    (if (member "deleted" (notmuch-show-get-tags))
+        (notmuch-show-tag (list "-deleted -inbox"))
+      (notmuch-show-tag (list "+deleted")))))
 
 (use-package ivy
   :diminish
@@ -220,6 +227,7 @@
 (customize-set-variable 'tramp-verbose 1 "Enable remote command traces")
 
 (use-package org-download)
+(use-package ob-async)
 
 (add-hook 'org-mode-hook
           (lambda ()

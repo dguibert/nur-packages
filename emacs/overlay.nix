@@ -60,6 +60,7 @@ final: prev: with prev; let
       counsel-projectile
 
       org-download
+      ob-async
       visual-fill-column
 
       org-roam
