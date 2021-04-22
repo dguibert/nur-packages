@@ -9,18 +9,17 @@
 , pkgconfig
 , cubew, cubelib
 , autoreconfHook
-, libstdcxxHook
 }:
 
 stdenv.mkDerivation {
-  name = "score-p-5.0";
+  name = "score-p-7.0";
   src = fetchurl {
-    url = "http://www.vi-hps.org/cms/upload/packages/scorep/scorep-5.0.tar.gz";
-    sha256 = "1q9kfv1h4sm5k7gzf4cbdsp2fdc0s3myz8v4aazgz4pwmi762l86";
+    url = "http://perftools.pages.jsc.fz-juelich.de/cicd/scorep/tags/scorep-7.0/scorep-7.0.tar.gz";
+    sha256 = "sha256-aPJKaOtvlOrs9QDhdEj1ZgMZRt6rdPLLoHLug2ivCZY=";
   };
   buildInputs = [ otf2 mpi which gfortran zlib pkgconfig cubew cubelib /*opari*/
   ];
-  nativeBuildInputs = [ autoreconfHook libstdcxxHook ];
+  nativeBuildInputs = [ autoreconfHook ];
   configureFlags = [
     "${lib.optionalString stdenv.cc.isIntel or false "--with-nocross-compiler-suite=intel"}"
     #--with-mpi=(bullxmpi|hp|ibmpoe|intel|intel2|intel3|intelpoe|lam|mpibull2|mpich|mpich2|mpich3|openmpi|platform|scali|sgimpt|sgimptwrapper|sun)
