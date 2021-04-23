@@ -4,7 +4,7 @@
   # To update all inputs:
   # $ nix flake update --recreate-lock-file
   inputs = {
-    nixpkgs.url          = "github:dguibert/nixpkgs/pu";
+    nixpkgs.url          = "github:dguibert/nixpkgs/pu-cluster";
 
     nix.url              = "github:dguibert/nix/pu";
     nix.inputs.nixpkgs.follows = "nixpkgs";
