@@ -57,11 +57,11 @@
     },
     "flake-utils": {
       "locked": {
-        "lastModified": 1614513358,
-        "narHash": "sha256-LakhOx3S1dRjnh0b5Dg3mbZyH0ToC9I8Y2wKSkBaTzU=",
+        "lastModified": 1618868421,
+        "narHash": "sha256-vyoJhLV6cJ8/tWz+l9HZLIkb9Rd9esE7p+0RL6zDR6Y=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "5466c5bbece17adaab2d82fae80b46e807611bf3",
+        "rev": "eed214942bcfb3a8cc09eb3b28ca7d7221e44a94",
         "type": "github"
       },
       "original": {
@@ -72,11 +72,11 @@
     },
     "flake-utils_2": {
       "locked": {
-        "lastModified": 1614513358,
-        "narHash": "sha256-LakhOx3S1dRjnh0b5Dg3mbZyH0ToC9I8Y2wKSkBaTzU=",
+        "lastModified": 1605370193,
+        "narHash": "sha256-YyMTf3URDL/otKdKgtoMChu4vfVL3vCMkRqpGifhUn0=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "5466c5bbece17adaab2d82fae80b46e807611bf3",
+        "rev": "5021eac20303a61fafe17224c087f5519baed54d",
         "type": "github"
       },
       "original": {
@@ -150,17 +150,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1616744113,
-        "narHash": "sha256-higD61XStQoQS+Vls9G8FtAONCeENMnVins5o3thUKs=",
-        "ref": "pu-sandbox",
-        "rev": "5af5cf76e0f6352774ed195dd9bdac0276db78cc",
-        "revCount": 278628,
-        "type": "git",
-        "url": "file:///home/dguibert/code/nixpkgs"
+        "lastModified": 1619161117,
+        "narHash": "sha256-1w18zwHM5na9/muK2IcYcwu1vnWj6XSx2aORspOApLo=",
+        "owner": "dguibert",
+        "repo": "nixpkgs",
+        "rev": "9911462a2fa187ed0fd5a0d23817b731b46805ab",
+        "type": "github"
       },
       "original": {
         "owner": "dguibert",
-        "ref": "pu",
+        "ref": "pu-cluster",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -176,10 +175,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1616744281,
-        "narHash": "sha256-ZyknhmibCw9FNuAQHV7EamJrejy53A5hBEoNyNe6yVw=",
-        "type": "git",
-        "url": "file:///home/dguibert/nur-packages"
+        "lastModified": 1606854373,
+        "narHash": "sha256-8YjxDka5oxTygy3liDCoVYm3pzT+Ty/+Qr1baBehfsg=",
+        "owner": "dguibert",
+        "repo": "nur-packages",
+        "rev": "2c52203916f4e753554d7d3e25861d568439eec5",
+        "type": "github"
       },
       "original": {
         "owner": "dguibert",
