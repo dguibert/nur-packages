@@ -75,6 +75,23 @@ in {
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
       pyslurm = python-super.pyslurm_19_05_0.override { slurm=final.slurm_19_05_5; };
+      cryptography = lib.upgradeOverride python-super.cryptography (o: with o; rec {
+        version = "3.4.7"; # Also update the hash in vectors.nix
+
+        src = python-super.fetchPypi {
+          inherit pname version;
+          sha256= "sha256-PRDegRbSVkljGXfLN9psvdLW+g4CgdAUpbfTNyVcpxM=";
+        };
+
+        cargoDeps = prev.rustPlatform.fetchCargoTarball {
+          inherit src;
+          sourceRoot = "${pname}-${version}/${cargoRoot}";
+          name = "${pname}-${version}";
+          sha256 = "sha256-wlD5aICI040I1k2Y0C3hetHO8orfGwvJpRwqS/ys2tQ=";
+        };
+
+
+      });
       annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
         version = "1.3.1";
 

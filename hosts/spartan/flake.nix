@@ -87,7 +87,7 @@
         experimental-features = nix-command flakes ca-references recursive-nix
 
         extra-platforms = armv7l-linux i686-linux
-        builders = ssh://spartan401; ssh://spartan401 x86_64-linux - 16 16 benchmark,big-parallel,recursive-nix
+        builders = ssh://spartan506; ssh://spartan506 x86_64-linux - 16 16 benchmark,big-parallel,recursive-nix
       '';
     in
       "${nixConf}/opt";
@@ -171,7 +171,7 @@
                "rm -f ~/software; ln -sfd ${profilePath} ~/software";
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/software";
       };
-      profiles.bguibertd-hm = {
+      profiles.hm-bguibertd = {
         user = "bguibertd";
         sshUser = "bguibertd";
         path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
