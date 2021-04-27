@@ -86,8 +86,7 @@
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
         experimental-features = nix-command flakes ca-references recursive-nix
 
-        extra-platforms = armv7l-linux i686-linux
-        builders = ssh://spartan506; ssh://spartan506 x86_64-linux - 16 16 benchmark,big-parallel,recursive-nix
+        builders = @/tmp/nix--home_nfs-bguibertd-machines
       '';
     in
       "${nixConf}/opt";
@@ -114,12 +113,7 @@
         #!${runtimeShell}
         set -x
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        ##export NIX_REMOTE=local?root=$HOME/${name}/
-        ###FIXME export NIX_CONF_DIR=${nixStore}/etc
-        ##export NIX_CONF_DIR=${NIX_CONF_DIR}
-        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        ##export NIX_STATE_DIR=${nixStore}/var
         export PATH=${defPkgs.nix}/bin:$PATH
         $@
       '');
@@ -132,11 +126,7 @@
       ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        ##export NIX_REMOTE=local?root=$HOME/${name}/
-        ###export NIX_CONF_DIR=${nixStore}/etc
-        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        ##export NIX_STATE_DIR=${nixStore}/var
         unset TMP TMPDIR TEMPDIR TEMP
         unset NIX_PATH
 

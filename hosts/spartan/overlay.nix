@@ -22,6 +22,10 @@ in {
     doCheck = false;
     doInstallCheck=false;
   });
+  coreutils = prev.coreutils.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   #libuv = tryUpstream prev.libuv (attrs: {
   #  doCheck = false;
   #  doInstallCheck=false;
