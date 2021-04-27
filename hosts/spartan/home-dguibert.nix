@@ -159,10 +159,8 @@ with lib;
     #nix-repl
     pstree
 
-    screen
     #teamviewer
     tig
-    lsof
     #haskellPackages.nix-deploy
     htop
     tree
@@ -180,6 +178,7 @@ with lib;
     todo-txt-cli
     ctags
     dvtm
+    abduco
     gnupg1compat
 
     nix
@@ -204,7 +203,7 @@ with lib;
     # testing (removed 20171122)
     #Mitos
     #MemAxes
-    python3
+    #python3
   ];
 
   programs.direnv.enable = true;

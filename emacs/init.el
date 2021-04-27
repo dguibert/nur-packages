@@ -238,6 +238,18 @@
   (variable-pitch-mode 1)
   (visual-line-mode 1))
 
+; https://emacs.stackexchange.com/a/63562
+(defun ek/babel-ansi ()
+  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char beg)
+      (when (looking-at org-babel-result-regexp)
+        (let ((end (org-babel-result-end))
+              (ansi-color-context-region nil))
+          (ansi-color-apply-on-region beg end))))))
+
+(add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+
 ;; Org Mode Configuration ------------------------------------------------------
 
 (defun efs/org-font-setup ()
