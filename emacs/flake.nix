@@ -48,6 +48,7 @@
       in [
         my-texlive
         my-emacs
+        gnuplot
       ];
     };
   })) // rec {

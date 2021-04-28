@@ -61,6 +61,7 @@ final: prev: with prev; let
 
       org-download
       ob-async
+      gnuplot
       visual-fill-column
 
       org-roam
