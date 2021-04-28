@@ -4,8 +4,9 @@
   inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
   inputs.nix.url              = "github:dguibert/nix/pu";
   inputs.flake-utils.url      = "github:numtide/flake-utils";
+  inputs.sops-nix.url = "github:Mic92/sops-nix";
 
-  outputs = { self, nixpkgs, nix, flake-utils }: let
+  outputs = { self, nixpkgs, nix, flake-utils, sops-nix }: let
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
@@ -29,9 +30,8 @@
 
     legacyPackages = nixpkgsFor system;
 
-    devShell = pkgs.mkEnv {
-      name = "nix";
-      buildInputs = with pkgs; [ pkgs.nix jq ];
+    devShell = pkgs.callPackage ./shell.nix {
+      inherit (sops-nix.packages.${system}) sops-pgp-hook ssh-to-pgp;
     };
 
     checks = {
