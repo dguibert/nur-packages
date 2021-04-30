@@ -125,13 +125,30 @@
   :init (evil-collection-init)
   )
 
-; notmuch
-(setq mail-specify-envelope-from t) ; Settings to work with msmtp
-(setq message-sendmail-envelope-from 'header)
-(setq mail-envelope-from 'header)
-(setq send-mail-function 'sendmail-send-it)
-
-(use-package notmuch)
+(use-package notmuch
+  :init
+  ;(setq message-directory "~/Maildir")
+  (setq send-mail-function 'sendmail-send-it)
+  ;; Send from correct email account
+  (setq message-sendmail-f-is-eval 't)
+  ; sendmail: cannot use both --from and --read-envelope-from
+  ;(setq message-sendmail-extra-arguments '("--read-envelope-from"))
+  (setq mail-specify-envelope-from 't)
+  (setq mail-envelope-from 'header)
+  (setq message-sendmail-envelope-from 'header)
+  ;; Setting proper from, fixes i-did-not-set--mail-host-address--so-tickle-me
+  (setq mail-host-address "orsin.net")
+  (setq user-full-name "David Guibert")
+  :config
+  (setq notmuch-show-logo nil)
+  ;; Writing email
+  (setq message-default-mail-headers "Cc: \nBcc: \n") ;; Always show BCC
+  (setq notmuch-always-prompt-for-sender 't)
+  ;;; PGP Encryption
+  ;(add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
+  ;(setq notmuch-crypto-process-mime t)
+  ;; Saving sent mail in folders depending on from
+)
 (define-key notmuch-show-mode-map "d"
   (lambda ()
     "toggle deleted tag for message"
@@ -368,3 +385,5 @@ With a prefix ARG, remove start location."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(require 'private "~/.emacs.d/private.el")
