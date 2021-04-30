@@ -196,19 +196,6 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package gnuplot)
-;;; languages to execute/edit
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((python . t)
-   ;(plantuml . t)
-   (shell . t)
-   (org . t)
-   (gnuplot . t)
-   ;; other languages..
-   ))
-;;; execute block evaluation without confirmation
-(setq org-confirm-babel-evaluate nil)
-
 (use-package hydra)
 
 (defhydra hydra-text-scale (:timeout 4)
@@ -248,6 +235,8 @@
 (use-package org-download)
 (use-package ob-async)
 
+;; Org Mode Configuration ------------------------------------------------------
+
 (add-hook 'org-mode-hook
           (lambda ()
             (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
@@ -268,8 +257,6 @@
           (ansi-color-apply-on-region beg end))))))
 
 (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-
-;; Org Mode Configuration ------------------------------------------------------
 
 (defun efs/org-font-setup ()
   ;; Replace list hyphen with dot
@@ -297,11 +284,48 @@
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
-(use-package org
+(use-package org :ensure t
   :hook (org-mode . efs/org-mode-setup)
-  :config
+  :init
+  ;; Proper code blocks
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  ;; Babel languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python  . t)
+     (shell   . t)
+     ;(C       . t)
+     ;(C++     . t)
+     ;(fortran . t)
+     ;(awk     . t)
+     (gnuplot . t)
+     (latex   . t)
+     (emacs-lisp . t)))
+  ;;; execute block evaluation without confirmation
+  ;(setq org-confirm-babel-evaluate nil)
   (setq org-ellipsis " ▾")
-  (efs/org-font-setup))
+  ;; Agenda
+  (setq org-log-done t)
+  ;; Encoding
+  (setq org-export-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (set-charset-priority 'unicode)
+  (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+  ;; Don't allow editing of folded regions
+  (setq org-catch-invisible-edits 'error)
+  ;; Start agenda on Monday
+  (setq org-agenda-start-on-weekday 1)
+  ;; Enable indentation view, does not effect file
+  (setq org-startup-indented t)
+  ;; Attachments
+  (setq org-id-method (quote uuidgen))
+  (setq org-attach-directory "attach/")
+  (efs/org-font-setup)
+  :bind
+  (("\C-ca" . org-agenda)
+   ("\C-cl" . org-store-link))
+)
 
 (use-package org-bullets
   :after org
