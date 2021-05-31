@@ -249,6 +249,7 @@ in {
     };
 
     # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17818/l_mpi_2019.11.319.tgz
+    # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17836/l_mpi_2019.12.320.tgz
 
     intelPackages_2020 = final.intelPackages_2020_0_166;
 
