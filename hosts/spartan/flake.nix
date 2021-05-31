@@ -154,13 +154,13 @@
 
     deploy.nodes.spartan = {
       hostname = "spartan";
-      profiles.software = rec {
-        user = "bguibertd";
-        sshUser = "bguibertd";
-        path = deploy-rs.lib.x86_64-linux.activate.custom self.legacyPackages.x86_64-linux.slash_software._modulefiles
-               "rm -f ~/software; ln -sfd ${profilePath} ~/software";
-        profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/software";
-      };
+      #profiles.software = rec {
+      #  user = "bguibertd";
+      #  sshUser = "bguibertd";
+      #  path = deploy-rs.lib.x86_64-linux.activate.custom self.legacyPackages.x86_64-linux.slash_software._modulefiles
+      #         "rm -f ~/software; ln -sfd ${profilePath} ~/software";
+      #  profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/software";
+      #};
       profiles.hm-bguibertd = {
         user = "bguibertd";
         sshUser = "bguibertd";
