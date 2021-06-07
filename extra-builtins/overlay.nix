@@ -92,7 +92,7 @@ in {
   sopsDecrypt_ = name: key: if builtins ? extraBuiltins && builtins.extraBuiltins ? sopsDecrypt
                then builtins.trace "sopsDecrypt_ => sopsDecrypt" builtins.extraBuiltins.sopsDecrypt name key
                else if exec != null
-               then builtins.trace "sopsDecrypt_ => exec" exec [ sops_decrypt name key]
+               then builtins.trace "sopsDecrypt_ => exec ${sops_decrypt.outPath} ${name} ${key}" exec [ sops_decrypt.outPath name key]
                else builtins.trace "sopsDecrypt_ => false" { success=false; };
 
   sshSignHost_ = ca: hostname: realms: type: if builtins ? extraBuiltins && builtins.extraBuiltins ? sshSignHost
