@@ -10,5 +10,7 @@ rec {
   pgi = import ./pgi-overlay;
 
   extra-builtins = import ../extra-builtins/overlay.nix;
+
+  envs = import ../envs/overlay.nix;
 }
 

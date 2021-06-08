@@ -18,6 +18,7 @@
           self.overlays.arm
           self.overlays.pgi
           self.overlays.extra-builtins
+          (self.overlays.envs nixpkgs)
           nix.overlay
         ];
         config.allowUnfree = true;
