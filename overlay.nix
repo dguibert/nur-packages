@@ -259,6 +259,7 @@ final: prev: with final; {
     openmpi
     openmpi_2_0_2
     openmpi_4_0_2
+    openmpi_4_1_1
   ;
 
   osu-micro-benchmarks = final.callPackage ./pkgs/osu-micro-benchmarks { };
