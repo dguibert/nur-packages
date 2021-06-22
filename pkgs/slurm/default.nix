@@ -1,17 +1,18 @@
-{ stdenv, fetchFromGitHub, libtool, curl
-, python, munge, perl, pam, openssl, zlib, shadow, coreutils
+{ lib, stdenv, fetchFromGitHub, pkg-config, libtool, curl
+, python3, munge, perl, pam, zlib, shadow, coreutils
 , ncurses, libmysqlclient, gtk2, lua, hwloc, numactl
-, readline, freeipmi, libssh2, xorg, lz4, rdma-core, nixosTests
+, readline, freeipmi, xorg, lz4, rdma-core, nixosTests
+, pmix
 # enable internal X11 support via libssh2
 , enableX11 ? true
-, pmix
 
-, lib
+, openssl
+, libssh2
 , slurm
 }@args:
 
 let
-  args_ = builtins.removeAttrs args ["lib" "slurm" "openssl" "libssh2" "python" ];
+  args_ = builtins.removeAttrs args [ "slurm" "openssl" "libssh2" "python" ];
   slurm' = slurm.override args_;
 in rec {
   slurm_17_02_11 = slurm'.overrideAttrs (oldAttrs: {
@@ -117,5 +118,20 @@ in rec {
 
   });
 
-  slurm = slurm_19_05_5;
+  slurm_20_11_7 = lib.upgradeOverride slurm' (oldAttrs: rec {
+    version = "20.11.7.1";
+
+    # N.B. We use github release tags instead of https://www.schedmd.com/downloads.php
+    # because the latter does not keep older releases.
+    src = fetchFromGitHub {
+      owner = "SchedMD";
+      repo = "slurm";
+      # The release tags use - instead of .
+      rev = "${oldAttrs.pname}-${builtins.replaceStrings ["."] ["-"] version}";
+      sha256 = "0ril6k4dj96qhx5x7r4nc2ghp7n9700808731v4qn9yvcslqzg9a";
+    };
+
+  });
+
+  slurm = slurm_20_11_7;
 }
