@@ -70,6 +70,8 @@ final: prev: with prev; let
       org-noter
       org-noter-pdftools
       org-pdftools
+
+      cmake-mode
     ]) ++ [
       notmuch   # From main packages set
       ripgrep

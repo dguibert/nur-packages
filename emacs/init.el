@@ -144,6 +144,11 @@
   ;; Writing email
   (setq message-default-mail-headers "Cc: \nBcc: \n") ;; Always show BCC
   (setq notmuch-always-prompt-for-sender 't)
+  ;; postponed message is put in the following draft directory
+  (setq message-auto-save-directory "~/Maildir/draft")
+  (setq message-kill-buffer-on-exit t)
+  ;; change the directory to store the sent mail
+  ;(setq message-directory "~/mail/")
   ;;; PGP Encryption
   ;(add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
   ;(setq notmuch-crypto-process-mime t)
@@ -390,6 +395,8 @@ With a prefix ARG, remove start location."
   (with-eval-after-load 'pdf-annot
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
+(use-package cmake-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -411,3 +418,6 @@ With a prefix ARG, remove start location."
  )
 
 (require 'private "~/.emacs.d/private.el")
+
+(savehist-mode 1)
+(setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
