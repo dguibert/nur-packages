@@ -9,6 +9,7 @@ rec {
   arm = import ./arm-overlay;
   pgi = import ./pgi-overlay;
 
+  emacs = import ../emacs/overlay.nix;
   extra-builtins = import ../extra-builtins/overlay.nix;
 }
 
