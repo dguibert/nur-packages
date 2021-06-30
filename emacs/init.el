@@ -142,7 +142,7 @@
   :config
   (setq notmuch-show-logo nil)
   ;; Writing email
-  (setq message-default-mail-headers "Cc: \nBcc: \n") ;; Always show BCC
+  ;;(setq message-default-mail-headers "Cc: \nBcc: \n") ;; Always show BCC
   (setq notmuch-always-prompt-for-sender 't)
   ;; postponed message is put in the following draft directory
   (setq message-auto-save-directory "~/Maildir/draft")
