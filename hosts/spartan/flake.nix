@@ -40,6 +40,10 @@
             nix.overlay
             (final: prev: {
               nixStore = (self.overlay final prev).nixStore;
+              nix = prev.nix.overrideAttrs (attrs: {
+                doCheck = false;
+                doInstallCheck=false;
+              });
             })
           ];
           config.allowUnfree = true;
