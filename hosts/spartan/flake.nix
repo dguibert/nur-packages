@@ -9,9 +9,6 @@
     nix.url              = "github:dguibert/nix/pu";
     nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    nur_dguibert.url     = "github:dguibert/nur-packages/pu";
-    nur_dguibert.inputs.nix.follows = "nix";
-    nur_dguibert.inputs.nixpkgs.follows = "nixpkgs";
     #nur_dguibert_envs.url= "github:dguibert/nur-packages/pu?dir=envs";
     #nur_dguibert_envs.url= "/home/dguibert/nur-packages?dir=envs";
     flake-utils.url = "github:numtide/flake-utils";
@@ -27,7 +24,6 @@
   };
 
   outputs = { self, nixpkgs
-            , nur_dguibert
             , nix
             , flake-utils
             , home-manager
