@@ -311,7 +311,9 @@
   ;(setq org-confirm-babel-evaluate nil)
   (setq org-ellipsis " ▾")
   ;; Agenda
-  (setq org-log-done t)
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
   ;; Encoding
   (setq org-export-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
@@ -327,6 +329,10 @@
   (setq org-id-method (quote uuidgen))
   (setq org-attach-directory "attach/")
   (efs/org-font-setup)
+
+  (setq org-agenda-files
+        '("~/Documents/org/notes.org"
+          ))
   :bind
   (("\C-ca" . org-agenda)
    ("\C-cl" . org-store-link))
