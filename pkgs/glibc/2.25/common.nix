@@ -30,7 +30,7 @@
 , bison
 }:
 
-{ name
+{ pname
 , withLinuxHeaders ? false
 , profilingLibraries ? false
 , withGd ? false
@@ -156,7 +156,8 @@ stdenv.mkDerivation ({
 // (removeAttrs args [ "withLinuxHeaders" "withGd" ]) //
 
 {
-  name = name + "-${version}${patchSuffix}";
+  inherit pname;
+  version = "${version}${patchSuffix}";
 
   src = fetchurl {
     url = "mirror://gnu/glibc/glibc-${version}.tar.xz";
