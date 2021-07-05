@@ -19,7 +19,7 @@
 , lib
 }:
 
-with stdenvNoCC.lib;
+with lib;
 
 assert nativeTools -> !propagateDoc && nativePrefix != "";
 assert !nativeTools ->
