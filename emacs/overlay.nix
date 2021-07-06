@@ -68,8 +68,7 @@ final: prev: with prev; let
       org-roam-bibtex
 
       org-noter
-      org-noter-pdftools
-      org-pdftools
+      org-ref
 
       cmake-mode
     ]) ++ [
@@ -78,6 +77,7 @@ final: prev: with prev; let
 
       xclip
       #my-mode
+      sqlite.bin
     ]);
 
 in {

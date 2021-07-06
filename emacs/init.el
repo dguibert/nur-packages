@@ -352,54 +352,124 @@
 (use-package visual-fill-column)
 ;  :hook (org-mode . efs/org-mode-visual-fill))
 
-(use-package org-roam)
+; https://rgoswami.me/posts/org-note-workflow/
+; https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
+(use-package org-roam
+  :hook (org-load . org-roam-mode)
+  :commands (org-roam-buffer-toggle-display
+             org-roam-find-file
+             org-roam-graph
+             org-roam-insert
+             org-roam-switch-to-buffer
+             org-roam-dailies-date
+             org-roam-dailies-today
+             org-roam-dailies-tomorrow
+             org-roam-dailies-yesterday)
+  :bind (:map org-roam-mode-map
+                (("C-c n l" . org-roam)
+                 ("C-c n f" . org-roam-find-file)
+                 ("C-c n g" . org-roam-graph))
+         :map org-mode-map
+                (("C-c n i" . org-roam-insert)))
+  :config
+  (setq org-roam-directory (concat (getenv "HOME") "/Documents/roam/")
+        org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
+        org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
+        org-roam-completion-system 'default
+        org-roam-capture-templates '(("d" "default" plain
+                                      (function org-roam--capture-get-point)
+                                      "%?"
+                                      :file-name "${slug}"
+                                      :head "#+title: ${title}\n#+date: %U\n#+roam_alias: \n#+roam_tags: \n\n"
+                                      :unnarrowed t))
+        )
+
+  ;; Normally, the org-roam buffer doesn't open until you explicitly call
+  ;; `org-roam'. If `+org-roam-open-buffer-on-find-file' is non-nil, the
+  ;; org-roam buffer will be opened for you when you use `org-roam-find-file'
+  ;; (but not `find-file', to limit the scope of this behavior).
+  (add-hook 'find-file-hook
+    (defun +org-roam-open-buffer-maybe-h ()
+      (and +org-roam-open-buffer-on-find-file
+           (memq 'org-roam-buffer--update-maybe post-command-hook)
+           (not (window-parameter nil 'window-side)) ; don't proc for popups
+           (not (eq 'visible (org-roam-buffer--visibility)))
+           (with-current-buffer (window-buffer)
+             (org-roam-buffer--get-create)))))
+
+  ;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
+  ;; makes it easier to distinguish among other org buffers.
+(add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode)
+)
+
+;; Since the org module lazy loads org-protocol (waits until an org URL is
+;; detected), we can safely chain `org-roam-protocol' to it.
+(use-package org-roam-protocol
+  :after org-protocol)
+
 (use-package org-roam-bibtex
-  :after org-roam
+  :after (org-roam)
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
-  (require 'org-ref)) ; optional: if Org Ref is not loaded anywhere else, load it here
+  (setq org-roam-bibtex-preformat-keywords
+        '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+  (setq orb-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "${slug}"
+           :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
+
+- tags ::
+- keywords :: ${keywords}
+
+\n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
+
+           :unnarrowed t))))
 
 (use-package org-noter
-  :after org
-  :ensure t
+  :after (:any org pdf-view)
   :config
-  (require 'org-noter-pdftools))
+  (setq
+   ;; The WM can handle splits
+   org-noter-notes-window-location 'other-frame
+   ;; Please stop opening frames
+   org-noter-always-create-frame nil
+   ;; I want to see the whole file
+   org-noter-hide-other nil
+   ;; Everything is relative to the main notes file
+   ;org-noter-notes-search-path (list org_notes)
+   )
+  )
 
-(use-package org-pdftools
-  :hook (org-mode . org-pdftools-setup-link))
+;;;; Actually start using templates
+;;(after! org-capture
+;;        ;; Firefox and Chrome
+;;        (add-to-list 'org-capture-templates
+;;                     '("P" "Protocol" entry ; key, name, type
+;;                       (file+headline +org-capture-notes-file "Inbox") ; target
+;;                       "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?"
+;;                       :prepend t ; properties
+;;                       :kill-buffer t))
+;;        (add-to-list 'org-capture-templates
+;;                     '("L" "Protocol Link" entry
+;;                       (file+headline +org-capture-notes-file "Inbox")
+;;                       "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
+;;                       :prepend t
+;;                       :kill-buffer t))
+;;        )
 
-(use-package org-noter-pdftools
-  :after org-noter
+(use-package org-ref
   :config
-  ;; Add a function to ensure precise note is inserted
-  (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
-    (interactive "P")
-    (org-noter--with-valid-session
-     (let ((org-noter-insert-note-no-questions (if toggle-no-questions
-                                                   (not org-noter-insert-note-no-questions)
-                                                 org-noter-insert-note-no-questions))
-           (org-pdftools-use-isearch-link t)
-           (org-pdftools-use-freestyle-annot t))
-       (org-noter-insert-note (org-noter--get-precise-info)))))
+  (setq
+   org-ref-completion-library 'org-ref-ivy-cite
+   org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
+   org-ref-default-bibliography (list "/home/dguibert/Documents/bib.bib")
+   org-ref-bibliography-notes "/home/dguibert/Documents/notes/bibnotes.org"
+   org-ref-note-title-format "* TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
+   org-ref-notes-directory "/home/dguibert/Documents/notes"
+   org-ref-notes-function 'orb-edit-notes
+   ))
 
-  ;; fix https://github.com/weirdNox/org-noter/pull/93/commits/f8349ae7575e599f375de1be6be2d0d5de4e6cbf
-  (defun org-noter-set-start-location (&optional arg)
-    "When opening a session with this document, go to the current location.
-With a prefix ARG, remove start location."
-    (interactive "P")
-    (org-noter--with-valid-session
-     (let ((inhibit-read-only t)
-           (ast (org-noter--parse-root))
-           (location (org-noter--doc-approx-location (when (called-interactively-p 'any) 'interactive))))
-       (with-current-buffer (org-noter--session-notes-buffer session)
-         (org-with-wide-buffer
-          (goto-char (org-element-property :begin ast))
-          (if arg
-              (org-entry-delete nil org-noter-property-note-location)
-            (org-entry-put nil org-noter-property-note-location
-                           (org-noter--pretty-print-location location))))))))
-  (with-eval-after-load 'pdf-annot
-    (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
 (use-package cmake-mode)
 
