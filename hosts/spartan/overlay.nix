@@ -9,6 +9,10 @@ in {
   #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
   nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
+  nixStable = tryUpstream prev.nixStable (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   nix = tryUpstream prev.nix (o: {
     doCheck = false;
     doInstallCheck=false;
