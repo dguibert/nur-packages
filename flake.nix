@@ -14,6 +14,7 @@
           self.overlays.aocc
           self.overlays.flang
           self.overlays.intel-compilers
+          self.overlays.intel-oneapi
           self.overlays.arm
           self.overlays.pgi
           self.overlays.extra-builtins
