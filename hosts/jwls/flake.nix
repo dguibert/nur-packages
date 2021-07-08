@@ -4,16 +4,11 @@
   # To update all inputs:
   # $ nix flake update --recreate-lock-file
   inputs = {
-    nixpkgs.url          = "github:dguibert/nixpkgs/pu-sandbox"; # autogen> RPATH of binary /p/home/jusers/guibert1/shared/nix/store/sz2zsddmdxznnrgrbqi5wygbyv4dxcp9-autogen-5.18.16-bin/bin/columns contains a forbidden reference to /tmp/nix-build-autogen-5.18.16.drv-0/
+    nixpkgs.url          = "github:dguibert/nixpkgs/pu-cluster"; # autogen> RPATH of binary /p/home/jusers/guibert1/shared/nix/store/sz2zsddmdxznnrgrbqi5wygbyv4dxcp9-autogen-5.18.16-bin/bin/columns contains a forbidden reference to /tmp/nix-build-autogen-5.18.16.drv-0/
 
     nix.url              = "github:dguibert/nix/pu";
     nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    nur_dguibert.url     = "github:dguibert/nur-packages/pu";
-    nur_dguibert.inputs.nix.follows = "nix";
-    nur_dguibert.inputs.nixpkgs.follows = "nixpkgs";
-    #nur_dguibert_envs.url= "github:dguibert/nur-packages/pu?dir=envs";
-    #nur_dguibert_envs.url= "/home/dguibert/nur-packages?dir=envs";
     flake-utils.url = "github:numtide/flake-utils";
 
     home-manager. url    = "github:dguibert/home-manager/pu";
@@ -22,10 +17,10 @@
     base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
     # For accessing `deploy-rs`'s utility Nix functions
     deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs
-            , nur_dguibert
             , nix
             , flake-utils
             , home-manager
