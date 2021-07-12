@@ -78,8 +78,9 @@
   in rec {
     overlay =  import ./inti-overlay.nix;
 
-    devShell.aarch64-linux = with defaultPkgsFor.aarch64-linux; mkEnv rec {
+    devShell.aarch64-linux = with defaultPkgsFor.aarch64-linux; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       buildInputs = [ defaultPkgsFor.aarch64-linux.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}

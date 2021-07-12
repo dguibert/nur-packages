@@ -55,8 +55,9 @@
   in rec {
     overlay =  import ./dibona-overlay.nix;
 
-    devShell.aarch64-linux = with nixpkgsFor.aarch64-linux; mkEnv rec {
+    devShell.aarch64-linux = with nixpkgsFor.aarch64-linux; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       buildInputs = [ nixpkgsFor.aarch64-linux.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}

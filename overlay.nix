@@ -209,23 +209,6 @@ final: prev: with final; {
 
   maqao = final.callPackage ./pkgs/maqao { };
 
-  mkEnv = { name ? "env"
-          , buildInputs ? []
-          , ...
-        }@args: let name_=name;
-                    args_ = builtins.removeAttrs args [ "name" "buildInputs" "shellHook" ];
-        in builtins.trace "mkEnv-${name}" prev.stdenv.mkDerivation (rec {
-    name = "${name_}-env";
-    phases = [ "buildPhase" ];
-    postBuild = "ln -s ${env} $out";
-    env = prev.buildEnv { name = name; paths = buildInputs; ignoreCollisions = true; };
-    inherit buildInputs;
-    shellHook = ''
-      export ENVRC=${name_}
-      source ~/.bashrc
-    '' + (args.shellHook or "");
-  } // args_);
-
   modulefile = final.callPackage ./pkgs/gen-modulefile { };
 
   must = final.callPackage ./pkgs/must { inherit (final) dyninst; };

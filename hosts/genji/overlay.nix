@@ -9,15 +9,26 @@ in {
   #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
   nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
+  nixStable = tryUpstream prev.nixStable (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   nix = tryUpstream prev.nix (o: {
     doCheck = false;
     doInstallCheck=false;
     patches = (o.patches or []) ++ [
       ../../pkgs/nix-dont-remove-lustre-xattr.patch
-      # dont apply
-      #../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
+      ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
       ../../pkgs/nix-unshare.patch
     ];
+  });
+  fish = tryUpstream prev.fish (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  coreutils = prev.coreutils.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
   });
   #libuv = tryUpstream prev.libuv (attrs: {
   #  doCheck = false;

@@ -55,8 +55,9 @@
   in rec {
     overlay = import ./aloy-overlay.nix;
 
-    devShell.x86_64-linux = with nixpkgsFor.x86_64-linux; mkEnv rec {
+    devShell.x86_64-linux = with nixpkgsFor.x86_64-linux; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       buildInputs = [ nixpkgsFor.x86_64-linux.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}

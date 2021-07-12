@@ -75,8 +75,9 @@
             (final: prev: { nixStore = (overlay final prev).nixStore; })
           ];
         };
-      in with pkgs; mkEnv rec {
+      in with pkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       buildInputs = [ pkgs.nix jq ];
       shellHook = ''
         export XDG_CACHE_HOME=$HOME/.cache/${name}

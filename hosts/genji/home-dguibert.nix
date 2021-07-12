@@ -37,6 +37,15 @@ with lib;
     export NIX_IGNORE_SYMLINK_STORE=1 # aloy
 
     export PATH=$HOME/bin:$PATH
+    #export LD_LIBRARY_PATH=${pkgs.sssd}/lib:$LD_LIBRARY_PATH
+
+    case $HOSTNAME in
+      spartan0)
+      ;;
+      spartan*)
+      export TMP=/dev/shm; export TMPDIR=$TMP; export TEMP=$TMP; export TEMPDIR=$TMP
+      ;;
+    esac
   '';
 
 
@@ -78,7 +87,7 @@ with lib;
       ;;
     esac
 
-    eval "$(${pkgs.coreutils}/bin/dircolors)"
+    eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
     export BASE16_SHELL_SET_BACKGROUND=false
     source ${config.lib.base16.base16template "shell"}
 
@@ -135,7 +144,7 @@ with lib;
   # ✗ 1    dguibert@vbox-57nvj72 ~ $ systemctl --user status
   # Failed to read server status: Process org.freedesktop.systemd1 exited with status 1
   # ✗ 130    dguibert@vbox-57nvj72 ~ $ export XDG_RUNTIME_DIR=/run/user/$(id -u)
-  #home.sessionVariables.XDG_RUNTIME_DIR="/run/user/$(id -u)";
+  home.sessionVariables.XDG_RUNTIME_DIR="/run/user/$(id -u)";
 
   # Fix stupid java applications like android studio
   home.sessionVariables._JAVA_AWT_WM_NONREPARENTING = "1";
@@ -157,10 +166,8 @@ with lib;
     #nix-repl
     pstree
 
-    screen
     #teamviewer
     tig
-    lsof
     #haskellPackages.nix-deploy
     htop
     tree
@@ -178,6 +185,7 @@ with lib;
     todo-txt-cli
     ctags
     dvtm
+    abduco
     gnupg1compat
 
     nix
@@ -202,7 +210,7 @@ with lib;
     # testing (removed 20171122)
     #Mitos
     #MemAxes
-    python3
+    #python3
   ];
 
   programs.direnv.enable = true;

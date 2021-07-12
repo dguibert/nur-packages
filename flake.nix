@@ -30,8 +30,9 @@
 
     legacyPackages = nixpkgsFor system;
 
-    devShell = pkgs.mkEnv {
+    devShell = pkgs.mkShell {
       name = "nix";
+      ENVRC = "nix";
       buildInputs = with pkgs; [ pkgs.nix jq ];
     };
 

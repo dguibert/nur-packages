@@ -106,29 +106,22 @@
         #!${runtimeShell}
         set -x
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        ##export NIX_REMOTE=local?root=$HOME/${name}/
-        ###FIXME export NIX_CONF_DIR=${nixStore}/etc
-        ##export NIX_CONF_DIR=${NIX_CONF_DIR}
-        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        ##export NIX_STATE_DIR=${nixStore}/var
         export PATH=${defPkgs.nix}/bin:$PATH
         $@
       '');
     };
 
-    devShell = with defPkgs; mkEnv rec {
+    devShell = with defPkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ defPkgs.nix jq
+      ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      nativeBuildInputs = [ defPkgs.nix jq
         deploy-rs.packages.${system}.deploy-rs
       ];
       shellHook = ''
+        export ENVRC=${name}
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        ##export NIX_REMOTE=local?root=$HOME/${name}/
-        ###export NIX_CONF_DIR=${nixStore}/etc
-        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        ##export NIX_STATE_DIR=${nixStore}/var
         unset TMP TMPDIR TEMPDIR TEMP
         unset NIX_PATH
 

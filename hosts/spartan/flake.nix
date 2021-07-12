@@ -117,12 +117,14 @@
       '');
     };
 
-    devShell = with defPkgs; mkEnv rec {
+    devShell = with defPkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ defPkgs.nix jq
+      ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      nativeBuildInputs = [ defPkgs.nix jq
         deploy-rs.packages.${system}.deploy-rs
       ];
       shellHook = ''
+        export ENVRC=${name}
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         export NIX_STORE=${nixStore}/store
         unset TMP TMPDIR TEMPDIR TEMP

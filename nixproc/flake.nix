@@ -47,8 +47,9 @@
 
     legacyPackages = pkgs;
 
-    devShell = pkgs.mkEnv {
+    devShell = pkgs.mkShell {
       name = "nixproc";
+      ENVRC = "nixproc";
       buildInputs = with pkgs; [ pkgs.nix jq
         nixproc.common
         nixproc.systemd

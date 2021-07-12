@@ -42,8 +42,9 @@
 
     legacyPackages = pkgs;
 
-    devShell = pkgs.mkEnv {
+    devShell = pkgs.mkShell {
       name = "env";
+      ENVRC = "env";
       buildInputs = with pkgs; [ pkgs.nix jq ];
     };
   })) // rec {

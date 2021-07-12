@@ -6,9 +6,12 @@ final: prev: with final; let
     #then (isBroken drv) # should fail and use our override
     #else drv.overrideAttrs attrs;
 in {
-  #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
   nixStore = builtins.trace "nixStore=/p/project/prcoe08/guibert1/nix" "/p/project/prcoe08/guibert1/nix";
 
+  nixStable = tryUpstream prev.nixStable (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   nix = tryUpstream prev.nix (o: {
     doCheck = false;
     doInstallCheck=false;
@@ -17,6 +20,10 @@ in {
       ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
       ../../pkgs/nix-unshare.patch
     ];
+  });
+  fish = tryUpstream prev.fish (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
   });
   #libuv = tryUpstream prev.libuv (attrs: {
   #  doCheck = false;

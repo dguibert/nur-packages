@@ -42,8 +42,9 @@
 
     legacyPackages = pkgs;
 
-    devShell = pkgs.mkEnv {
+    devShell = pkgs.mkShell {
       name = "emacs";
+      ENVRC = "emacs";
       buildInputs = with pkgs; let
       in [
         my-texlive

@@ -1,11 +1,10 @@
-
 {
   description = "A flake for building my NUR packages on GENJI";
 
   # To update all inputs:
   # $ nix flake update --recreate-lock-file
   inputs = {
-    nixpkgs.url          = "github:dguibert/nixpkgs/pu-sandbox";
+    nixpkgs.url          = "github:dguibert/nixpkgs/pu-cluster";
 
     nix.url              = "github:dguibert/nix/pu";
     nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -18,6 +17,8 @@
     base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
     # For accessing `deploy-rs`'s utility Nix functions
     deploy-rs.url = "github:serokell/deploy-rs";
+    #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs
@@ -37,6 +38,10 @@
             nix.overlay
             (final: prev: {
               nixStore = (self.overlay final prev).nixStore;
+              nix = prev.nix.overrideAttrs (attrs: {
+                doCheck = false;
+                doInstallCheck=false;
+              });
             })
           ];
           config.allowUnfree = true;
@@ -53,6 +58,7 @@
             overlays.arm
             overlays.pgi
             (import ../../envs/overlay.nix nixpkgs)
+            (import ../../emacs/overlay.nix)
             self.overlay
           ];
           config.allowUnfree = true;
@@ -78,7 +84,6 @@
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
         experimental-features = nix-command flakes ca-references recursive-nix
 
-        extra-platforms = armv7l-linux i686-linux
       #  builders = ssh://spartan501; ssh://spartan501 x86_64-linux - 16 1 benchmark,big-parallel,recursive-nix
       '';
     in
@@ -106,29 +111,22 @@
         #!${runtimeShell}
         set -x
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        ##export NIX_REMOTE=local?root=$HOME/${name}/
-        ###FIXME export NIX_CONF_DIR=${nixStore}/etc
-        ##export NIX_CONF_DIR=${NIX_CONF_DIR}
-        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        ##export NIX_STATE_DIR=${nixStore}/var
         export PATH=${defPkgs.nix}/bin:$PATH
         $@
       '');
     };
 
-    devShell = with defPkgs; mkEnv rec {
+    devShell = with defPkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      buildInputs = [ defPkgs.nix jq
+      ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
+      nativeBuildInputs = [ defPkgs.nix jq
         deploy-rs.packages.${system}.deploy-rs
       ];
       shellHook = ''
+        export ENVRC=${name}
         export XDG_CACHE_HOME=$HOME/.cache/${name}
-        ##export NIX_REMOTE=local?root=$HOME/${name}/
-        ###export NIX_CONF_DIR=${nixStore}/etc
-        ##export NIX_LOG_DIR=${nixStore}/var/log/nix
         export NIX_STORE=${nixStore}/store
-        ##export NIX_STATE_DIR=${nixStore}/var
         unset TMP TMPDIR TEMPDIR TEMP
         unset NIX_PATH
 
@@ -156,14 +154,14 @@
 
     deploy.nodes.genji = {
       hostname = "genji";
-      profiles.software = rec {
-        user = "bguibertd";
-        sshUser = "bguibertd";
-        path = deploy-rs.lib.x86_64-linux.activate.custom self.legacyPackages.x86_64-linux.slash_software._modulefiles
-               "rm -f ~/software; ln -sfd ${profilePath} ~/software";
-        profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/software";
-      };
-      profiles.bguibertd-hm = {
+      #profiles.software = rec {
+      #  user = "bguibertd";
+      #  sshUser = "bguibertd";
+      #  path = deploy-rs.lib.x86_64-linux.activate.custom self.legacyPackages.x86_64-linux.slash_software._modulefiles
+      #         "rm -f ~/software; ln -sfd ${profilePath} ~/software";
+      #  profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/software";
+      #};
+      profiles.hm-bguibertd = {
         user = "bguibertd";
         sshUser = "bguibertd";
         path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
@@ -174,6 +172,5 @@
 
     # This is highly advised, and will prevent many possible mistakes
     checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-
   };
 }
