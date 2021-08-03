@@ -3,7 +3,8 @@ let
   releases = {
     "mpi.2021.1.1" = { irc_id=17397; build=76; dir_name="mpi"; };
     "mpi.2021.2.0" = { irc_id=17729; build=215; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17729/l_mpi_oneapi_p_2021.2.0.215_offline.sh
-    "mpi.2021.3.0" = { irc_id=17947; build=294; dir_name="mpi"; };  # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17947/l_mpi_oneapi_p_2021.3.0.294_offline.sh
+    "mpi.2021.3.0" = { irc_id=17947; build=294; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17947/l_mpi_oneapi_p_2021.3.0.294_offline.sh
+    "mpi.2021.3.1" = { irc_id=18016; build=315; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/18016/l_mpi_oneapi_p_2021.3.1.315_offline.sh
 
     #"tbb.'2021.1.1': {'irc_id': '17378', build: '119'}}
     # mkl.'2021.1.1': {'irc_id': '17402', build: '52'}}
@@ -12,18 +13,20 @@ let
     ## https://software.intel.com/content/www/us/en/develop/tools/oneapi/hpc-toolkit/download.html?operatingsystem=linux&distributions=webdownload&options=offline
     "compilers.2021.1.0" = { irc_id=17427; build=2684; dir_name="compiler"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/17427/l_HPCKit_p_2021.1.1.2684_offline.sh
     "compilers.2021.2.0" = { irc_id=17764; build=2997; dir_name="compiler"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/17764/l_HPCKit_p_2021.2.0.2997_offline.sh
-    # https://registrationcenter-download.intel.com/akdlm/irc_nas/17977/l_BaseKit_p_2021.3.0.3219_offline.sh
+    "compilers.2021.3.0" = { irc_id=17912; build=3230; dir_name="compiler"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/17912/l_HPCKit_p_2021.3.0.3230_offline.sh
   };
   versions = {
     "mpi.2021.1.1" = { sha256="8b7693a156c6fc6269637bef586a8fd3ea6610cac2aae4e7f48c1fbb601625fe"; url_name="mpi_oneapi"; };
     "mpi.2021.2.0" = { sha256="sha256-0NTN0R7a/y5yheOPU33vzP8443owZ8AvSvQ6NimtSqM="; url_name="mpi_oneapi"; };
     "mpi.2021.3.0" = { sha256="sha256-BMSPhk7kxyOxtMpi8r6owE1dfj3hkXH9YrF4aLx5vDY="; url_name="mpi_oneapi"; };
+    "mpi.2021.3.1" = { sha256="sha256-g3asb+bSdtob6K2qJo03sxNt3dLAHtCPdf0cRJYHXTo="; url_name="mpi_oneapi"; };
 
     # tbb version('2021.1.1', sha256='535290e3910a9d906a730b24af212afa231523cf13a668d480bade5f2a01b53b'
     #mkl.version('2021.1.1', sha256='818b6bd9a6c116f4578cda3151da0612ec9c3ce8b2c8a64730d625ce5b13cc0c', expand=False)
 
     "compilers.2021.1.0" = { sha256="666b1002de3eab4b6f3770c42bcf708743ac74efeba4c05b0834095ef27a11b9"; url_name="HPCKit"; };
     "compilers.2021.2.0" = { sha256="sha256-WrxH4zqXQVwi2pGEYLuQbcrShVIzrjg/ztpWZSJWLEo="; url_name="HPCKit"; };
+    "compilers.2021.3.0" = { sha256="sha256-G3zjpPRGyUnEUkg+snC9twzNuEO/VeQLvsZO925OYz4="; url_name="HPCKit"; };
   };
 
   #intel.installer.oneapi.linux.installer,v=4.0.4-261
@@ -316,21 +319,12 @@ in rec {
         FC="ifx";
         F77="ifx";
         F90="ifx";
-        #phases = (args.phases or []) ++ [ "fixupPhase" ];
-        #postFixup = "${args.postFixup or ""}" + ''
-        #set -x
-        #storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-        #storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-        #set +x
-        #'';
       });
     };
   };
 
   oneapiPackages_2021_3_0 = with oneapiPackages_2021_3_0; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.2.0"; } compilers_attrs;
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } compilers_attrs;
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -349,15 +343,30 @@ in rec {
         FC="ifx";
         F77="ifx";
         F90="ifx";
-        #phases = (args.phases or []) ++ [ "fixupPhase" ];
-        #postFixup = "${args.postFixup or ""}" + ''
-        #set -x
-        #storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-        #storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-        #set +x
-        #'';
+      });
+    };
+  };
+
+  oneapiPackages_2021_3_1 = with oneapiPackages_2021_3_1; {
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } compilers_attrs;
+
+    compilers = wrapCCWith {
+      cc = unwrapped;
+      #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
+      extraPackages = [ unwrapped.runtime ];
+      extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped unwrapped.runtime;
+    };
+
+    mpi = oneapiPackage { name = "mpi"; version = "2021.3.1"; } mpi_attrs;
+
+    /* Return a modified stdenv that uses Intel compilers */
+    stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
+      mkDerivation = args: stdenv_.mkDerivation (args // {
+        CC="icx";
+        CXX="icpx";
+        FC="ifx";
+        F77="ifx";
+        F90="ifx";
       });
     };
   };
