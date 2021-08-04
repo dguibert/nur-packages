@@ -32,7 +32,7 @@
     legacyPackages = nixpkgsFor system;
 
     devShell = pkgs.callPackage ./shell.nix {
-      inherit (sops-nix.packages.${system}) sops-pgp-hook ssh-to-pgp;
+      inherit (sops-nix.packages.${system}) sops-import-keys-hook ssh-to-pgp;
     };
 
     checks = {

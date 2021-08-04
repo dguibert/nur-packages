@@ -1,14 +1,14 @@
 { pkgs ? import <nixpkgs> { }
 , ssh-to-pgp
-, sops-pgp-hook
+, sops-import-keys-hook
 }:
 with pkgs;
 
-mkEnv rec {
+mkShell rec {
   name = "nur";
+  ENVRC = "nur";
 
   # imports all files ending in .asc/.gpg and sets $SOPS_PGP_FP.
-  SOPS_PGP_FP = "";
   sopsPGPKeyDirs = [
   #  #"./keys/hosts"
   #  #"./keys/users"
@@ -22,7 +22,7 @@ mkEnv rec {
     "./keys/users/dguibert.asc"
   ];
   buildInputs = [
-    sops-pgp-hook
+    sops-import-keys-hook
     ssh-to-pgp
 
     jq
@@ -34,6 +34,5 @@ mkEnv rec {
 
     export SHELL=${bashInteractive}/bin/bash
 
-    sopsPGPHook
   '';
 }
