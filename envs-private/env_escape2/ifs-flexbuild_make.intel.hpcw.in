@@ -1,0 +1,147 @@
+# File: make.intel.sk4
+
+COMPSYS = hpcw
+
+OMP  = -qopenmp -qopenmp-threadprivate compat
+OMP += -fpic
+
+# build_nemo nemo.cfg may use $(OMP) from environment
+export OMP
+
+FC = @MPI_Fortran_COMPILER@ -g $(OMP) -convert big_endian -traceback
+FCFLAGS += -I@INSTALL_DIR@/include -I@HDF5_DIR@/include/shared
+FCFLAGS += -module $(DOT_MODULE)
+FCFLAGS += -Wp,-w0 # no fpp warnings about -Undefs
+FCFLAGS += -diag-disable=7713 # no messages about "This statement function has not been used"
+
+FCFREE  = -free
+FCFIXED = -nofree
+
+# These should come from top level setup file
+AVXMODE="-g -march=core-avx2 -fimf-use-svml=false"      #
+AVXMODE2="-g -march=core-avx2 -fimf-use-svml=false"
+AVXMODE_EXT="-g -march=core-avx2 -fimf-use-svml=false"
+
+export AVXMODE
+export AVXMODE2
+export AVXMODE_EXT
+
+INTELOPT  = -O2 $(AVXMODE)
+INTELOPT += -assume byterecl -align array64byte,all
+INTELOPT += -fpe0 -fp-model source -fp-model precise   -ftz
+INTELOPT += -fp-speculation safe
+INTELOPT += -finline-functions -finline-limit=1500 -Winline
+
+export INTELOPT
+
+FCOPTS += $(INTELOPT)
+
+LD = $(FC)
+LDFLAGS = -Wl,--as-needed -Wl,-export-dynamic
+LDFLAGS += -Wl,--cref
+
+CC = @MPI_C_COMPILER@ -g -traceback
+COPTS += -O2 $(AVXMODE)
+
+CXX = @MPI_CXX_COMPILER@ -pthread -g -std=gnu++14
+CXXFLAGS += -std=c++11
+CXXOPTS += -O2
+CXXOPTS += $(AVXMODE)
+CXXLD = $(CXX) $(OMP)
+#CXXLDFLAGS = -rdynamic
+CXXLDFLAGS =-Wl,--copy-dt-needed-entries
+
+OOPSLD = $(CXXLD)
+OOPSLDFLAGS = $(CXXLDFLAGS)
+
+AUTODBL_OPTS = -real-size 64 -double-size 64
+
+DEFS += -DINTEL
+
+#LIBMKL_TBB  = -mkl=sequential
+
+ifeq ($(SINGLE),no)
+  FFTW=-lfftw3
+else
+  FFTW=-lfftw3f
+endif
+
+EXTLIBS = \
+        -lnetcdff -lnetcdf \
+        -lhdf5_hl -lhdf5hl_fortran -lhdf5 \
+	$(FFTW) \
+	@BLAS_LIBRARIES_LIBS@ @LAPACK_LIBRARIES_LIBS@ \
+        -lz -lcurl -lm -lrt -ldl
+
+
+
+
+
+
+
+#=== from Mikko (meant for RAPS16+mods originally)
+
+%/fcgeneralized_gamma.o: private FCFLAGS += -O0 $(AVXMODE2) # Removes NaNs ?
+%/surfseb_ctl_mod.o: private FCFLAGS += $(AVXMODE2) # Removes NaNs ?
+
+%/mwave_cpfrac.o: private FCFLAGS += -no-fma # Removes internal compiler error ?
+%/radinatl.o: private FCFLAGS += -no-fma  # Removes internal compiler error ?
+%/rttov_integrate_tl.o: private FCFLAGS += -no-fma  # Removes internal compiler error ?
+%/waven.o: private FCFLAGS += -no-fma  # Removes internal compiler error ?
+
+# 2018 Beta U1 workarounds
+%/srfsn_lwexp_mod.o: private FCFLAGS += $(AVXMODE2)
+%/srfsn_lwimpsad_mod.o: private FCFLAGS += -O0 $(AVXMODE2)
+%/asre1ad_mod.o: private FCFLAGS += $(AVXMODE2)
+%/yownodepool.F90: private FCFLAGS += $(AVXMODE2)
+%/sdissip_jan.o: private FCFLAGS += $(AVXMODE2)
+%/mpl_read_mod.o: private FCFLAGS += $(AVXMODE2)
+%/incli1.o: private FCFLAGS += $(AVXMODE2)
+%/mpbcastsarin.o: private FCFLAGS += $(AVXMODE2)
+%/mpexchng.o: private FCFLAGS += $(AVXMODE2)
+%/inirp.o: private FCFLAGS += -O0
+
+# Compile optimizations
+#%/cloudsc.o: private FCFLAGS += -O3 -qno-openmp-simd
+%/cloudsc.o: private FCFLAGS += -O3
+%/laitli.o: private FCFLAGS += -O3 -qopt-prefetch=0
+%/laitri.o: private FCFLAGS += -O3
+%/cloudvar.o: private FCFLAGS += -O3
+%/radiation_mcica_sw.o: private FCFLAGS += -O2 -vecabi=cmdtarget
+%/radiation_cloud_generator.o: private FCFLAGS += -O2 -vecabi=cmdtarget
+%/radintg.o: private FCFLAGS += -O3
+%/radiation_aerosol_optics.o: private FCFLAGS += -O3
+%/larmes.o: private FCFLAGS += -O3
+
+#%.o: private FCFLAGS += -O1
+
+#ifeq ($(RAPS_SUPPORT),yes)
+#-- Intel v18 with RAPS-support HAD issues
+
+#%/fv_gradient.o: private UNDEFS += -UWITH_ATLAS
+##	touch $@
+
+%/gp_derivatives.o: private UNDEFS += -UWITH_ATLAS
+#	touch $@
+
+#%/suorog.o: private UNDEFS += -UWITH_ATLAS
+
+#%/master.o: private DEFS += -DONT_REGISTER_FCKIT_HANDLER
+#endif
+
+
+%/supert.o: private FCFLAGS += -heap-arrays
+%/spectral_fields_mod.o: private FCFLAGS += -heap-arrays
+%/control_vectors_oper_mod.o: private FCFLAGS += -heap-arrays
+
+
+
+# Migrated from R17 - still seams a problem uin 18u1
+%/radiation_cloud_generator.o: private FCFLAGS += -O2 $(AVXMODE2)
+%/rebind.o: private COPTS += -std=gnu99
+%/lwcad.o: private FCFLAGS += -O3 -qopt-prefetch=0
+%/laitriad.o: private FCFLAGS += -O3 -qopt-prefetch=0
+%/lwvdr.o: private FCFLAGS += -O3 -qopt-prefetch=0
+%/lwvdrad.o: private FCFLAGS += -O3 -qopt-prefetch=0
+%/lwctl.o: private FCFLAGS += -O3 -qopt-prefetch=0
+%/lwvdrtl.o: private FCFLAGS += -O3 -qopt-prefetch=0

@@ -16,6 +16,7 @@ final: prev: let
 
   # envNames :: [ string ]
   envNames =  getSubDirectories ./.;
+  privateEnvNames =  getSubDirectories ../envs-private;
   # hostNames :: [ string ]
   hostNames = getSubDirectories ../hosts;
 
@@ -25,6 +26,14 @@ final: prev: let
   mkExtend = final: name:
     builtins.trace "mkExtend for ${name}"
     final.envExtend(import (./. + "/${name}"));
+
+  loadPrivateEnv = final: name:
+    let
+      env_private = final.sopsDecrypt_ (../envs-private + "/${name}/default-sec.nix")  "data";
+      loaded = env_private.success or true;
+    in if loaded
+       then (builtins.trace "loaded encrypted ${../envs-private + "/${name}/default-sec.nix"} (${toString loaded})" final.envExtend(env_private))
+       else (builtins.trace "use dummy        ${../envs-private + "/${name}/default-sec.nix"} (${toString loaded})" final.envExtend(final: prev: {}));
 
   # Compiler Environments with curtom mk function
   mkExtendsAttrs = {
@@ -267,7 +276,7 @@ in with final; {
     # but autoconf has a fix in lib/autoconf/fortran.m4 since 2003-10-08
     # http://www.susaaland.dk/sharedoc/autoconf-2.59/ChangeLog
     postConfigure = (oldAttrs.postConfigure or "")
-      + final.userEnv.lib.optionalString (final.userEnv.cc.isIntel or false) ''
+      + final.lib.optionalString (final.userEnv.cc.isIntel or false) ''
         echo "debug: |${toString (final.userEnv.cc.isIntel or false)}|"
         echo "PATCHING config.status"
         find -name config.status | xargs -n 1 --verbose sed -i -e "s@lib\"'@/lib'@"
@@ -314,7 +323,8 @@ in with final; {
   }));
 
 }
-// (keysToAttrs (mkHostExtend final) hostNames)
-// (keysToAttrs (mkExtend final) envNames)
-// (keysToAttrs (callMkExtend final) (builtins.attrNames mkExtendsAttrs))
+// (keysToAttrs (mkHostExtend   final) hostNames)
+// (keysToAttrs (mkExtend       final) envNames)
+// (keysToAttrs (callMkExtend   final) (builtins.attrNames mkExtendsAttrs))
+// (keysToAttrs (loadPrivateEnv final) privateEnvNames)
 

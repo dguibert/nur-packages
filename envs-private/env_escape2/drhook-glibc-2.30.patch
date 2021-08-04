@@ -1,0 +1,16 @@
+--- RAPS18/ifsaux/support/drhook.c.orig	2020-09-30 23:17:59.264017742 +0200
++++ RAPS18/ifsaux/support/drhook.c	2020-09-30 23:20:19.690230480 +0200
+@@ -569,10 +569,13 @@
+ #define SYS_gettid __NR_gettid
+ #endif
+ 
++// https://github.com/ncbi/ncbi-vdb/issues/21#issuecomment-549140609
++#if !defined(_GNU_SOURCE) || !defined(__GLIBC__) || __GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 30)
+ static pid_t gettid() {
+   pid_t tid = syscall(SYS_gettid);
+   return tid;
+ }
++#endif
+ 
+ // Fortran callable : CALL GETTID_C(ITID) where INTEGER(KIND=4) :: ITID
+

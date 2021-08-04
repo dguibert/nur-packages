@@ -1,0 +1,63 @@
+#---------------------------------------------------------------------
+# Configuration File:  nemo.cfg
+#---------------------------------------------------------------------
+#
+#  Purpose: Build configuration file for an linux build of
+#           Nemo.
+#
+#  Owner:
+#
+
+# --------------------------------------------------------------------
+# File header
+# --------------------------------------------------------------------
+
+cfg::type                                   ext
+cfg::version                                1.0
+
+# --------------------------------------------------------------------
+# Compiler options.
+# --------------------------------------------------------------------
+
+########################################################################
+# General options:
+# C interop flags:
+#   UNDERSCORE      = Fortran routine names decorated with trailing
+#                     underscore
+#   LOWERCASE       = Fortran routine names converted to lowercase
+########################################################################
+bld::tool::fc      @fc@ -g -traceback -convert big_endian $(OMP)
+#bld::tool::fflags  -c -O2 -fp-model precise -nowarn -r8
+#bld::tool::fflags  -c -O0 -fp-model precise -nowarn -r8 -heap-arrays
+#bld::tool::fflags  -c -O1 -r8
+bld::tool::fflags  -c -r8 $(INTELOPT) -no-fma
+#bld::tool::fflags  -c -O1 -fp-model precise -nowarn -r8
+#bld::tool::fflags::nemoassimsrc::VAR_SRC::BAL::bkg_bal.F90  -c -O0 -fp-model precise -nowarn -r8 -g -traceback
+bld::tool::cc      @cc@
+%fppkeys_bufr      HAS_BUFR
+%fppkeys_arch      LINUX REAL8 key_mpp key_mpp_mpi key_mpi_isend key_has_lapack key_dr_hook
+bld::tool::ld      %bld::tool::fc
+bld::tool::ldflags  -lz -lcurl -lm -lrt -ldl
+#bld::tool::ldflags -mkl=sequential -lz -lcurl -lm -lrt -ldl
+#bld::tool::ldflags -lz -lcurl -lm -lrt -ldl
+bld::tool::ar      ar
+
+########################################################################
+# NetCDF
+########################################################################
+
+bld::tool::ldflags      %bld::tool::ldflags -lnetcdf -lnetcdff
+
+########################################################################
+# GRIB_API
+########################################################################
+
+bld::tool::ldflags      %bld::tool::ldflags $(ECCODES_LIB)
+
+########################################################################
+# DrHook
+########################################################################
+
+bld::tool::ldflags      %bld::tool::ldflags $(IFSAUXLIB)
+
+bld::tool::fflags       %bld::tool::fflags $(IFSAUXINC)

@@ -1,0 +1,96 @@
+# File: make.gnu.linuxbox
+
+COMPSYS = hpcw
+
+OMP = -fopenmp
+#OMP =
+export OMP
+
+#-- Comment out (one of the) next line(s) and this is check-bounds -executable
+#--CHECKB = -finit-real=snan -fcheck=bounds
+#CHECKB = -fcheck=array-temps,mem,pointer
+#CHECKB = -fcheck=array-temps -Warray-temporaries
+
+AVXMODE = -mavx
+
+INSTALL_DIR = $(out)
+
+BMPATH = $(INSTALL_DIR)/bin:$(PATH)
+
+FC = @fc@ -g $(OMP) -fbacktrace -fconvert=big-endian
+FCFLAGS += -J $(DOT_MODULE) # place modules in $(DOT_MODULE) -dir
+FCFLAGS += -cpp -fno-second-underscore
+FCFLAGS += -fno-range-check
+FCFLAGS += -std=gnu
+FCFLAGS += -I${subst :, -I,$(CPATH)}
+
+ifneq ($(CHECKB),)
+FCOPTS += -O0
+FCOPTS += $(CHECKB)
+else
+#FCOPTS += -O0
+#FCOPTS += -O1
+FCOPTS += -O2
+FCOPTS += $(AVXMODE)
+endif
+
+FCFREE  = -ffree-form -ffree-line-length-0
+FCFIXED = -ffixed-form
+
+LD = $(FC)
+LDFLAGS = -Wl,--as-needed -Wl,-export-dynamic
+LDFLAGS += -ffast-math
+
+CC = @cc@ -g
+COPTS += -O2
+COPTS += $(AVXMODE)
+
+CXX = @cxx@ -pthread -g
+CXXFLAGS += -std=c++11
+CXXOPTS += -O2
+CXXOPTS += $(AVXMODE)
+CXXLD = $(CXX) $(OMP)
+CXXLDFLAGS = -fbacktrace -fconvert=big-endian # need in fact export GFORTRAN_CONVERT_UNIT=big_endian -- now in bin/model .. hardwired
+
+OOPSLD = $(CXXLD)
+OOPSLDFLAGS = $(CXXLDFLAGS) @oopsldflags@
+OOPSLDLIBS = $(OOPSLDLIBS_EXTRA)
+
+AUTODBL_OPTS = -fdefault-real-8 -fdefault-double-8
+
+#BLAS = -Wl,-rpath=/usr/lib64 -L/usr/lib64 -llapack -lblas
+#BLAS = -Wl,-rpath=/usr/lib -L/usr/lib -llapack -lblas
+#BLAS = -L$(INSTALL_DIR)/lib -llapack -lblas
+BLAS = -llapack -lblas
+
+export BLAS
+
+ifeq ($(SINGLE),no)
+  FFTW=-lfftw3
+else
+  FFTW=-lfftw3f
+endif
+
+EXTLIBS = \
+	-lparmetis -lmetis \
+	$(FFTW) $(BLAS) \
+	-lnetcdff -lnetcdf \
+	-lhdf5_hl -lhdf5hl_fortran -lhdf5 -lz -lcurl -lm -lrt -ldl
+
+#	-lsupc++  would also suffice
+
+#%/ec_meminfo.o: FCFLAGS += -O0 -g -fcheck=bounds
+
+ifneq ($(CHECKB),)
+# Exclude these from array bound checks ("superfluos")
+# Run with nundefld=1
+ifs/adiab/cpg_drv.o: private CHECKB =
+ifs/phys_radi/radintg.o: private CHECKB =
+ifs/adiab/call_sl.o: private CHECKB =
+ifs/phys_ec/ec_phys_drv.o: private CHECKB =
+ifs/phys_ec/ec_phys.o: private CHECKB =
+surf/module/surfexcdriver_ctl_mod.o: private CHECKB =
+endif
+
+%/drhook.o: private CFLAGS += -fstack-check
+%/env.o: private CFLAGS += -fstack-check
