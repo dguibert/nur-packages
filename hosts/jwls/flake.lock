@@ -26,11 +26,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1625248509,
-        "narHash": "sha256-G721I9brAMCkZKXIFsgOQ1JCZ9Rj9DM7QSm0pvpQldc=",
+        "lastModified": 1628068208,
+        "narHash": "sha256-akJBkj6os4bjO1drhketJvXNC21yPuy4ufL2pyius4M=",
         "owner": "serokell",
         "repo": "deploy-rs",
-        "rev": "364ef202e400e4c941e18833ca38fa848ac5a148",
+        "rev": "d72174307d5b88ec24cc2e69e875228fe3d642ed",
         "type": "github"
       },
       "original": {
@@ -77,13 +77,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1625688074,
-        "narHash": "sha256-NG0cn/PQgTJ45aSNgQqYTf4kmi01BhZ5O/lq3KUiBxc=",
-        "ref": "pu",
-        "rev": "22747c7a0eb4525b127ad647229e580b5170bf90",
-        "revCount": 1582,
-        "type": "git",
-        "url": "file:///home/dguibert/code/home-manager"
+        "lastModified": 1628072134,
+        "narHash": "sha256-vGQrLOW2KSNvokhKVmaaNx8dzVKxCyREiafrAtR0/88=",
+        "owner": "dguibert",
+        "repo": "home-manager",
+        "rev": "c71f1a56099ec0c78ab5ea6a277f01ac8fb81510",
+        "type": "github"
       },
       "original": {
         "owner": "dguibert",
@@ -138,11 +137,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1625232828,
-        "narHash": "sha256-PGwg0LIvpLzWP+L++EV4x1a5ZepqC2Xxa5Aplfw8EsQ=",
+        "lastModified": 1628064894,
+        "narHash": "sha256-iPO4nmfjQqRUkbZmbL44yFVI0l3dnVkLyzwtuaP+ckk=",
         "owner": "dguibert",
         "repo": "nix",
-        "rev": "9ab799a3fe26198e82346f46efae718dd294e545",
+        "rev": "0f435b61aec9cc8375c7f846d73a1fead73a330d",
         "type": "github"
       },
       "original": {
@@ -154,11 +153,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1625499042,
-        "narHash": "sha256-CoXa3VV9kZtuc26oDMxc9rKvT0QTF8CfSRUQZSi7m/0=",
+        "lastModified": 1628072532,
+        "narHash": "sha256-4RZmqlo4mf36VqGrYxO2uH2T9X6NQmSBKMoixAfHJtk=",
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "4f7dc4ddd94a62c645f15e78954c269333706935",
+        "rev": "2f1442987ce42831b2eba38da514e2a0ad8a45cd",
         "type": "github"
       },
       "original": {
