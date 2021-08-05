@@ -168,7 +168,7 @@ let
     langFortran = true;
     isOneApi = true;
 
-    outputs = [ "out" "runtime" ];
+    outputs = [ "out" "runtime" ]; # FIXME runtime
 
     preFixup = ''
       mv out/_installdir/compiler/*/linux $out
@@ -181,18 +181,20 @@ let
       echo "Patching rpath and interpreter..."
       for f in $(find $out/bin $runtime/bin -type f -executable); do
           echo "    Patching executable: $f"
-          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:${zlib}/lib:$runtime/lib:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
+          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:${zlib}/lib:$runtime/lib:$runtime/compiler/lib/intel64_lin:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
       done
-      for f in $(find $out/lib $out/compiler $runtime/lib $runtime/compiler -type f -executable); do
+      for f in $(find $out/lib $out/compiler $runtime/lib $runtime/compiler -type f -executable) \
+               $(find $out/lib $out/compiler $runtime/lib $runtime/compiler -type f -name \*.so\*) \
+      ; do
         type="$(file -b --mime-type $f)"
         case "$type" in
         "application/executable"|"application/x-executable")
           echo "    Patching executable: $f"
-          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
+          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64_lin:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64  $f || true
           ;;
         "application/x-sharedlib"|"application/x-pie-executable")
           echo "    Patching library   : $f"
-          patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
+          patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64_lin:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64  $f || true
           ;;
         *)
           echo "Not Patching           : $f ($type)"
@@ -234,6 +236,8 @@ let
     mkdir "$rsrc"
 
     if test ! -e ${cc}/lib/clang/${release_version}; then
+      echo "error: ${cc}/lib/clang/${release_version} does not exists"
+      ls ${cc}/lib/clang/
       exit 1
     fi
 
@@ -330,7 +334,7 @@ in rec {
       cc = unwrapped;
       #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
       extraPackages = [ unwrapped.runtime ];
-      extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped unwrapped.runtime;
+      extraBuildCommands = mkExtraBuildCommands "13.0.0" unwrapped unwrapped.runtime;
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.3.0"; } mpi_attrs;
@@ -354,7 +358,7 @@ in rec {
       cc = unwrapped;
       #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
       extraPackages = [ unwrapped.runtime ];
-      extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped unwrapped.runtime;
+      extraBuildCommands = mkExtraBuildCommands "13.0.0" unwrapped unwrapped.runtime;
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.3.1"; } mpi_attrs;
