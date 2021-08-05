@@ -355,9 +355,11 @@
 ; https://rgoswami.me/posts/org-note-workflow/
 ; https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
 (use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
   :hook (org-load . org-roam-mode)
   :commands (org-roam-buffer-toggle-display
-             org-roam-find-file
              org-roam-graph
              org-roam-insert
              org-roam-switch-to-buffer
@@ -365,41 +367,23 @@
              org-roam-dailies-today
              org-roam-dailies-tomorrow
              org-roam-dailies-yesterday)
-  :bind (:map org-roam-mode-map
-                (("C-c n l" . org-roam)
-                 ("C-c n f" . org-roam-find-file)
-                 ("C-c n g" . org-roam-graph))
-         :map org-mode-map
-                (("C-c n i" . org-roam-insert)))
+  :bind
+  (("C-c n l" . org-roam-buffer-toggle)
+   ("C-c n f" . org-roam-node-find)
+   ("C-c n i" . org-roam-node-insert)
+   ("C-c n g" . org-roam-graph)
+   :map org-mode-map
+   ("C-M-i"    . completion-at-point))
+  :custom
+  (org-roam-directory (concat (getenv "HOME") "/Documents/roam/"))
+  (org-roam-completion-everywhere t) ; M-x completion-at-point (roam:Node)
   :config
-  (setq org-roam-directory (concat (getenv "HOME") "/Documents/roam/")
-        org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
+  (setq org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
         org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
         org-roam-completion-system 'default
-        org-roam-capture-templates '(("d" "default" plain
-                                      (function org-roam--capture-get-point)
-                                      "%?"
-                                      :file-name "${slug}"
-                                      :head "#+title: ${title}\n#+date: %U\n#+roam_alias: \n#+roam_tags: \n\n"
-                                      :unnarrowed t))
         )
 
-  ;; Normally, the org-roam buffer doesn't open until you explicitly call
-  ;; `org-roam'. If `+org-roam-open-buffer-on-find-file' is non-nil, the
-  ;; org-roam buffer will be opened for you when you use `org-roam-find-file'
-  ;; (but not `find-file', to limit the scope of this behavior).
-  (add-hook 'find-file-hook
-    (defun +org-roam-open-buffer-maybe-h ()
-      (and +org-roam-open-buffer-on-find-file
-           (memq 'org-roam-buffer--update-maybe post-command-hook)
-           (not (window-parameter nil 'window-side)) ; don't proc for popups
-           (not (eq 'visible (org-roam-buffer--visibility)))
-           (with-current-buffer (window-buffer)
-             (org-roam-buffer--get-create)))))
-
-  ;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
-  ;; makes it easier to distinguish among other org buffers.
-(add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode)
+  (org-roam-setup)
 )
 
 ;; Since the org module lazy loads org-protocol (waits until an org URL is
