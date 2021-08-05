@@ -84,7 +84,7 @@
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
         experimental-features = nix-command flakes ca-references recursive-nix
 
-      #  builders = ssh://spartan501; ssh://spartan501 x86_64-linux - 16 1 benchmark,big-parallel,recursive-nix
+        builders = @/tmp/nix--home_nfs-bguibertd-machines
       '';
     in
       "${nixConf}/opt";
@@ -165,7 +165,7 @@
         user = "bguibertd";
         sshUser = "bguibertd";
         path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
-               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix ./activate";
+               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix HOME_MANAGER_BACKUP_EXT=bak ./activate";
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
       };
     };
