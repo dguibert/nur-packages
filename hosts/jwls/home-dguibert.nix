@@ -19,12 +19,6 @@ with lib;
       '';
     };
   };
-  nixpkgs.overlays = [
-    (import ./overlay.nix)
-    (final: prev: {
-      pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
-    })
-  ];
   services.gpg-agent.pinentryFlavor = lib.mkForce "curses";
 
   programs.home-manager.enable = true;
@@ -78,7 +72,7 @@ with lib;
       ;;
     esac
 
-    eval "$(${pkgs.coreutils}/bin/dircolors)"
+    eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
     export BASE16_SHELL_SET_BACKGROUND=false
     source ${config.lib.base16.base16template "shell"}
 
@@ -157,10 +151,8 @@ with lib;
     #nix-repl
     pstree
 
-    screen
     #teamviewer
     tig
-    lsof
     #haskellPackages.nix-deploy
     htop
     tree
@@ -178,6 +170,7 @@ with lib;
     todo-txt-cli
     ctags
     dvtm
+    abduco
     gnupg1compat
 
     nix
@@ -190,7 +183,7 @@ with lib;
       LANG=C ${diffutils}/bin/diff -u "$1" "$2"
       exit 0
     '')
-    python3Packages.datalad
+    python38Packages.datalad # error: boto-2.49.0 not supported for interpreter python3.9
     subversion
     tig
     jq

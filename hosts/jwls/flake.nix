@@ -54,6 +54,9 @@
             overlays.pgi
             (import ../../envs/overlay.nix nixpkgs)
             self.overlay
+            (final: prev: {
+              pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
+            })
           ];
           config.allowUnfree = true;
         };
