@@ -358,15 +358,6 @@
   :ensure t
   :init
   (setq org-roam-v2-ack t)
-  :hook (org-load . org-roam-mode)
-  :commands (org-roam-buffer-toggle-display
-             org-roam-graph
-             org-roam-insert
-             org-roam-switch-to-buffer
-             org-roam-dailies-date
-             org-roam-dailies-today
-             org-roam-dailies-tomorrow
-             org-roam-dailies-yesterday)
   :bind
   (("C-c n l" . org-roam-buffer-toggle)
    ("C-c n f" . org-roam-node-find)
@@ -377,10 +368,14 @@
   :custom
   (org-roam-directory (concat (getenv "HOME") "/Documents/roam/"))
   (org-roam-completion-everywhere t) ; M-x completion-at-point (roam:Node)
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)))
   :config
   (setq org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
         org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
-        org-roam-completion-system 'default
         )
 
   (org-roam-setup)
