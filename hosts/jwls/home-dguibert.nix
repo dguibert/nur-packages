@@ -192,6 +192,8 @@ with lib;
     htop
     tree
 
+    nxsession
+
     # testing (removed 20171122)
     #Mitos
     #MemAxes

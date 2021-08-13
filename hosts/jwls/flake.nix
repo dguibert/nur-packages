@@ -18,6 +18,8 @@
     # For accessing `deploy-rs`'s utility Nix functions
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+
+    nxsession.url              = "github:dguibert/nxsession";
   };
 
   outputs = { self, nixpkgs
@@ -26,6 +28,7 @@
             , home-manager
             , base16-nix
             , deploy-rs
+            , nxsession
             }@flakes: let
 
       # Memoize nixpkgs for different platforms for efficiency.
@@ -57,6 +60,7 @@
             (final: prev: {
               pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
             })
+            nxsession.overlay
           ];
           config.allowUnfree = true;
         };
