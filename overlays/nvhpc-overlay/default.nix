@@ -21,9 +21,9 @@ let
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-  nvhpcPackages = { version, sha256 }: rec {
+  nvhpcPackages = { version, url, sha256 }: rec {
     unwrapped = prev.callPackage ./nvhpc {
-      inherit version sha256;
+      inherit version url sha256;
     };
     nvhpc = wrapCCWith rec {
       cc = unwrapped;
@@ -41,11 +41,18 @@ in
 {
   nvhpcPackages_20_9 = nvhpcPackages {
     version="20.9";
+    url = "https://developer.download.nvidia.com/hpc-sdk/20.9/nvhpc_2020_209_Linux_x86_64_cuda_11.0.tar.gz";
     sha256 ="0n7xdyqzsixsyahk604akn5z5dpyzyw1c6jk7mgiaj0v5rv7v84g";
   };
   nvhpcPackages_21_5 = nvhpcPackages {
     version="21.5";
+    url = "https://developer.download.nvidia.com/hpc-sdk/21.5/nvhpc_2021_215_Linux_x86_64_cuda_11.3.tar.gz";
     sha256 ="0bahwqfqz5j93s9gifsbgdbr1wafc6np4hlhrbjvv7q9cbbcs966";
+  };
+  nvhpcPackages_21_7 = nvhpcPackages {
+    version="21.7";
+    url = "https://developer.download.nvidia.com/hpc-sdk/21.7/nvhpc_2021_217_Linux_x86_64_cuda_11.4.tar.gz";
+    sha256 ="sha256-4gYuC09W9LMe2I0I+MufNxvy8vsMWaBrJHODPHQsi3U=";
   };
 }
 

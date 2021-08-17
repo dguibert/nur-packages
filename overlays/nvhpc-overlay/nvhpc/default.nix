@@ -1,28 +1,30 @@
 { stdenv, fetchurl
+, lib
 , nix-patchtools
 , more
 , zlib
 , ncurses
 , libxml2
-, version
-, sha256
 , glibc
 , file
 , gcc
+, flock
+
+, url
+, version
+, sha256
 }:
 
 stdenv.mkDerivation {
   name = "nvhpc-${version}";
   src = fetchurl {
-    #url = "https://developer.download.nvidia.com/hpc-sdk/20.9/nvhpc_2020_209_Linux_x86_64_cuda_11.0.tar.gz";
-    url = "https://developer.download.nvidia.com/hpc-sdk/21.5/nvhpc_2021_215_Linux_x86_64_cuda_11.3.tar.gz";
-    inherit sha256;
+    inherit url sha256;
   };
   dontPatchELF = true;
   dontStrip = true;
 
-  buildInputs = [ nix-patchtools more file gcc ];
-  libs = stdenv.lib.makeLibraryPath [
+  buildInputs = [ nix-patchtools more file gcc flock /* for makelocalrc */ ];
+  libs = lib.makeLibraryPath [
     stdenv.cc.cc.lib /* libstdc++.so.6 */
     #llvmPackages_7.llvm # libLLVM.7.so
     stdenv.cc.cc # libm
@@ -33,22 +35,25 @@ stdenv.mkDerivation {
     #"${placeholder "out"}/lib"
   ];
   installPhase = ''
-    mkdir $out
     ## Set these environment variables for a silent install
     ## Valid silent install options:
-    export PGI_SILENT=true
-    export PGI_ACCEPT_EULA="accept"
-    export PGI_INSTALL_DIR=$out
+    export NVHPC_SILENT=true
+    export NVHPC_ACCEPT_EULA="accept"
+    export NVHPC_INSTALL_DIR=$out
+    export NVHPC_INSTALL_TYPE="single"
 
+    mkdir prefix
     cd install_components
     LINUXPART=$(cat .parts/Linux_x86_64)
     for i in $LINUXPART ; do
-      tar cf - $i | ( cd $out; tar --no-same-owner -xf - )
+      tar cf - $i | ( cd ../prefix/; tar --no-same-owner -xf - )
     done
+    cd ..
 
-    for d in $(cd $out/Linux_x86_64/*/; ls); do
-      ln -s $out/Linux_x86_64/*/$d $out/$d
-    done
+    # TODO install each component:
+    # comm_libs  compilers  cuda  examples  math_libs  profilers  REDIST
+
+    mv prefix/Linux_x86_64/*/compilers $out
 
     # Hack around lack of libtinfo in NixOS
     #ln -s ${ncurses.out}/lib/libncursesw.so.6 $out/lib/libtinfo.so.5
@@ -79,14 +84,16 @@ stdenv.mkDerivation {
     find $out -empty -delete || true
     #rm $out/*/*/lib/libnuma.so*
     # generate localrc
-    $out/bin/makelocalrc -x $out/linux*/* -d $out/bin
+    sed -i -e "s/^target=.*/target=Linux_x86_64/" $out/bin/makelocalrc
+    $out/bin/makelocalrc -x $out
     echo "set DEFSTDOBJDIR=${glibc}/lib;" >> $out/bin/localrc
 
     # https://github.com/easybuilders/easybuild-easyblocks/issues/1493
-    cat > $out/bin/siterc <<EOF
-# replace unknown switch -pthread with -lpthread
-switch -pthread is replace(-lpthread) positional(linker);
-EOF
+    # pgcc-Error-RC file /nix/store/dn3lqas9fr5y5qymw8ay0pj10rc9fwq5-nvhpc-21.5/bin/siterc line 2: switch -pthread already exists
+    ##     cat > $out/bin/siterc <<EOF
+    ## # replace unknown switch -pthread with -lpthread
+    ## switch -pthread is replace(-lpthread) positional(linker);
+    ## EOF
   '';
   passthru = {
     isClang = false;
