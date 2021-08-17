@@ -134,6 +134,7 @@ let
   } // attrs);
 
   mpi_attrs = {
+    isIntel = true;
     outputs = [ "out" "runtime" ];
 
     preFixup = ''
@@ -160,6 +161,9 @@ let
 
       (cd $runtime; find -type d -exec mkdir -vp $out/{} \; )
       (cd $runtime; find -type f -exec ln -vsf $runtime/{} $out/{} \; )
+
+      # TODO handle debug/debug_mt/release_mt
+      ln -s $out/lib/release/* $out/lib
 
     '';
   };
@@ -205,7 +209,13 @@ let
       (cd $runtime; find -type d -exec mkdir -vp  $out/{} \; )
       (cd $runtime; find -type f -exec ln -vsf $runtime/{} $out/{} \; )
       (cd $runtime/compiler/lib; ln -sv intel64_lin intel64)
+
+      # FIXME
+      mv $out/bin/clang%2B%2B $out/bin/clang++
     '';
+    passthru = {
+      hardeningUnsupportedFlags = [ "stackprotector" ];
+    };
   };
 
   wrapCCWith = { cc
@@ -224,7 +234,7 @@ let
     noLibc = !self.nativeLibc && (self.libc == null);
 
     isGNU = cc.isGNU or false;
-    isClang = cc.isClang or false;
+    isClang = true;
     isIntel = false;
     isOneApi = true;
 
@@ -248,6 +258,19 @@ let
   '' + prev.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
     echo "--gcc-toolchain=${gccForLibs} -B${gccForLibs}" >> $out/nix-support/cc-cflags
   '';
+
+  mkStdEnv = compilers:  let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
+    mkDerivation = args: stdenv_.mkDerivation (args // {
+      CC="icx";
+      CXX="icpx";
+      FC="ifx";
+      F77="ifx";
+      F90="ifx";
+      I_MPI_CC="icx";
+      I_MPI_CXX="icpx";
+      I_MPI_FC="ifx";
+    });
+  };
 
 in rec {
 ### For quick turnaround debugging, copy instead of install
@@ -276,31 +299,14 @@ in rec {
     compilers = wrapCCWith {
       cc = unwrapped;
       #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
-      extraPackages = [ unwrapped.runtime ];
+      extraPackages = [ unwrapped.runtime gcc /* for ifx */];
       extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped unwrapped.runtime;
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.1.1"; } mpi_attrs;
 
     /* Return a modified stdenv that uses Intel compilers */
-    stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
-      mkDerivation = args: stdenv_.mkDerivation (args // {
-        CC="icx";
-        CXX="icpx";
-        FC="ifx";
-        F77="ifx";
-        F90="ifx";
-        #phases = (args.phases or []) ++ [ "fixupPhase" ];
-        #postFixup = "${args.postFixup or ""}" + ''
-        #set -x
-        #storeId=$(echo "${compilers}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-        #storeId=$(echo "${unwrapped}" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
-        #find $out -type f -print0 | xargs -0 sed -i -e  "s|$NIX_STORE/$storeId-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g"
-        #set +x
-        #'';
-      });
-    };
+    stdenv = mkStdEnv compilers;
   };
 
   oneapiPackages_2021_2_0 = with oneapiPackages_2021_2_0; {
@@ -309,22 +315,14 @@ in rec {
     compilers = wrapCCWith {
       cc = unwrapped;
       #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
-      extraPackages = [ unwrapped.runtime ];
+      extraPackages = [ unwrapped.runtime gcc /* for ifx */];
       extraBuildCommands = mkExtraBuildCommands "12.0.0" unwrapped unwrapped.runtime;
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.2.0"; } mpi_attrs;
 
     /* Return a modified stdenv that uses Intel compilers */
-    stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
-      mkDerivation = args: stdenv_.mkDerivation (args // {
-        CC="icx";
-        CXX="icpx";
-        FC="ifx";
-        F77="ifx";
-        F90="ifx";
-      });
-    };
+    stdenv = mkStdEnv compilers;
   };
 
   oneapiPackages_2021_3_0 = with oneapiPackages_2021_3_0; {
@@ -333,22 +331,14 @@ in rec {
     compilers = wrapCCWith {
       cc = unwrapped;
       #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
-      extraPackages = [ unwrapped.runtime ];
+      extraPackages = [ unwrapped.runtime gcc /* for ifx */];
       extraBuildCommands = mkExtraBuildCommands "13.0.0" unwrapped unwrapped.runtime;
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.3.0"; } mpi_attrs;
 
     /* Return a modified stdenv that uses Intel compilers */
-    stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
-      mkDerivation = args: stdenv_.mkDerivation (args // {
-        CC="icx";
-        CXX="icpx";
-        FC="ifx";
-        F77="ifx";
-        F90="ifx";
-      });
-    };
+    stdenv = mkStdEnv compilers;
   };
 
   oneapiPackages_2021_3_1 = with oneapiPackages_2021_3_1; {
@@ -357,21 +347,13 @@ in rec {
     compilers = wrapCCWith {
       cc = unwrapped;
       #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
-      extraPackages = [ unwrapped.runtime ];
+      extraPackages = [ unwrapped.runtime gcc /* for ifx */];
       extraBuildCommands = mkExtraBuildCommands "13.0.0" unwrapped unwrapped.runtime;
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.3.1"; } mpi_attrs;
 
     /* Return a modified stdenv that uses Intel compilers */
-    stdenv = let stdenv_=pkgs.overrideCC pkgs.stdenv compilers; in stdenv_ // {
-      mkDerivation = args: stdenv_.mkDerivation (args // {
-        CC="icx";
-        CXX="icpx";
-        FC="ifx";
-        F77="ifx";
-        F90="ifx";
-      });
-    };
+    stdenv = mkStdEnv compilers;
   };
 }
