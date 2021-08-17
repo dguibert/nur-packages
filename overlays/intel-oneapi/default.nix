@@ -272,6 +272,19 @@ let
     });
   };
 
+  mkLegacyStdEnv = compilers:  let stdenv_=pkgs.overrideCC pkgs.stdenv (compilers // { isIntel = true;}); in stdenv_ // {
+    mkDerivation = args: stdenv_.mkDerivation (args // {
+      CC="icc";
+      CXX="icpc";
+      FC="ifort";
+      F77="ifort";
+      F90="ifort";
+      I_MPI_CC="icc";
+      I_MPI_CXX="icpc";
+      I_MPI_FC="ifort";
+    });
+  };
+
 in rec {
 ### For quick turnaround debugging, copy instead of install
 ### copytree('/opt/intel/oneapi/compiler', path.join(prefix, 'compiler'),
@@ -307,6 +320,7 @@ in rec {
 
     /* Return a modified stdenv that uses Intel compilers */
     stdenv = mkStdEnv compilers;
+    legacyStdenv = mkLegacyStdEnv compilers;
   };
 
   oneapiPackages_2021_2_0 = with oneapiPackages_2021_2_0; {
@@ -323,6 +337,7 @@ in rec {
 
     /* Return a modified stdenv that uses Intel compilers */
     stdenv = mkStdEnv compilers;
+    legacyStdenv = mkLegacyStdEnv compilers;
   };
 
   oneapiPackages_2021_3_0 = with oneapiPackages_2021_3_0; {
@@ -339,6 +354,7 @@ in rec {
 
     /* Return a modified stdenv that uses Intel compilers */
     stdenv = mkStdEnv compilers;
+    legacyStdenv = mkLegacyStdEnv compilers;
   };
 
   oneapiPackages_2021_3_1 = with oneapiPackages_2021_3_1; {
@@ -355,5 +371,6 @@ in rec {
 
     /* Return a modified stdenv that uses Intel compilers */
     stdenv = mkStdEnv compilers;
+    legacyStdenv = mkLegacyStdEnv compilers;
   };
 }

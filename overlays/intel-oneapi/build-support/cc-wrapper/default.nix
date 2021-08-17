@@ -254,7 +254,6 @@ stdenv.mkDerivation {
       fi
       if [ -e $ccPath/intel64/icpc ]; then
         wrap ${targetPrefix}icpc $wrapper $ccPath/intel64/icpc
-        export named_cc=${targetPrefix}icpc
       fi
 
 
@@ -289,13 +288,12 @@ stdenv.mkDerivation {
         wrap ifx $wrapper $ccPath/ifx
         export named_fc=${targetPrefix}ifx
       fi
-      if [ -e $ccPath/${targetPrefix}ifort ]; then
+      if [ -e $ccPath/ifort ]; then
         wrap ifort $wrapper $ccPath/ifort
         export named_fc=${targetPrefix}ifort
       fi
-      if [ -e $ccPath/intel64${targetPrefix}ifort ]; then
+      if [ -e $ccPath/intel64/ifort ]; then
         wrap ifort $wrapper $ccPath/intel64/ifort
-        export named_fc=${targetPrefix}ifort
       fi
     ''
 
