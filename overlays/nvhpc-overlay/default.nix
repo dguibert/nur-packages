@@ -17,6 +17,7 @@ let
 
     isGNU = cc.isGNU or false;
     isClang = cc.isClang or false;
+    libcxx = null;
 
     inherit cc bintools libc;
   } // extraArgs; in self);

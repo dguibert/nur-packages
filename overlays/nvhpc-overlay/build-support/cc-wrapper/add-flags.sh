@@ -28,7 +28,7 @@ for var in "${var_templates_bool[@]}"; do
 done
 
 # `-B@out@/bin' forces cc to use ld-wrapper.sh when calling ld.
-NIX_CFLAGS_COMPILE_@suffixSalt@="-B@out@/bin/ $NIX_CFLAGS_COMPILE_@suffixSalt@"
+#NIX_CFLAGS_COMPILE_@suffixSalt@="-B@out@/bin/ $NIX_CFLAGS_COMPILE_@suffixSalt@"
 
 # Export and assign separately in order that a failing $(..) will fail
 # the script.

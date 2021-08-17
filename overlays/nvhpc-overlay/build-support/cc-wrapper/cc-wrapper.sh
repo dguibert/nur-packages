@@ -187,6 +187,9 @@ if [ "$cc1" = 1 ]; then
   extraBefore=()
 fi
 
+# TODO in upstream build-support/setup-hooks/reproducible-builds.sh
+extraAfter=($(echo ${extraAfter+"${extraAfter[@]}"} | @gnused@/bin/sed -e "s@ -frandom-seed=[^ ]\+@@"))
+
 # Optionally print debug info.
 if (( "${NIX_DEBUG:-0}" >= 1 )); then
     # Old bash workaround, see ld-wrapper for explanation.

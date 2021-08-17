@@ -14,7 +14,7 @@
 , nativeTools, noLibc ? false, nativeLibc, nativePrefix ? ""
 , propagateDoc ? cc != null && cc ? man
 , extraTools ? [], extraPackages ? [], extraBuildCommands ? ""
-, isGNU ? false, isClang ? cc.isClang or false, gnugrep ? null
+, isGNU ? false, isClang ? cc.isClang or false, gnugrep ? null, gnused ? null
 , buildPackages ? {}
 , libcxx ? null
 }:
@@ -49,12 +49,6 @@ let
 
   # The wrapper scripts use 'cat' and 'grep', so we may need coreutils.
   coreutils_bin = if nativeTools then "" else getBin coreutils;
-
-  default_cxx_stdlib_compile = if (targetPlatform.isLinux && !(cc.isGNU or false) && !nativeTools && cc ? gcc) && !(targetPlatform.useLLVM or false) then
-    "-isystem $(echo -n ${cc.gcc}/include/c++/*) -isystem $(echo -n ${cc.gcc}/include/c++/*)/${targetPlatform.config}"
-  else if targetPlatform.isDarwin && (libcxx != null) && (cc.isClang or false) && !(targetPlatform.useLLVM or false) then
-    "-isystem ${libcxx}/include/c++/v1"
-  else "";
 
   # The "suffix salt" is a arbitrary string added in the end of env vars
   # defined by cc-wrapper's hooks so that multiple cc-wrappers can be used
@@ -181,6 +175,7 @@ stdenv.mkDerivation {
         local wrapper="$2"
         export prog="$3"
         export use_response_file_by_default=${if isClang then "1" else "0"}
+        export gnused=${gnused}
         substituteAll "$wrapper" "$out/bin/$dst"
         chmod +x "$out/bin/$dst"
       }
@@ -331,7 +326,7 @@ stdenv.mkDerivation {
     ##
     + optionalString useGccForLibs ''
 
-      echo "-B${gccForLibs}/lib/gcc/${targetPlatform.config}/${gccForLibs.version}" >> $out/nix-support/cc-cflags
+      #echo "-B${gccForLibs}/lib/gcc/${targetPlatform.config}/${gccForLibs.version}" >> $out/nix-support/cc-cflags
       echo "-L${gccForLibs}/lib/gcc/${targetPlatform.config}/${gccForLibs.version}" >> $out/nix-support/cc-ldflags
       echo "-L${gccForLibs.lib}/${targetPlatform.config}/lib" >> $out/nix-support/cc-ldflags
     ''
@@ -369,7 +364,7 @@ stdenv.mkDerivation {
     + optionalString (libc != null) (''
       touch "$out/nix-support/libc-cflags"
       touch "$out/nix-support/libc-ldflags"
-      echo "-B${libc_lib}${libc.libdir or "/lib/"}" >> $out/nix-support/libc-crt1-cflags
+      #echo "-B${libc_lib}${libc.libdir or "/lib/"}" >> $out/nix-support/libc-crt1-cflags
     '' + optionalString (!(cc.langD or false)) ''
       echo "-idirafter ${libc_dev}${libc.incdir or "/include"}" >> $out/nix-support/libc-cflags
     '' + optionalString (isGNU && (!(cc.langD or false))) ''
@@ -418,22 +413,22 @@ stdenv.mkDerivation {
     + optionalString (!nativeTools) ''
       if [ -e "${cc_solib}/lib64" -a ! -L "${cc_solib}/lib64" ]; then
         ccLDFlags+=" -L${cc_solib}/lib64"
-        ccCFlags+=" -B${cc_solib}/lib64"
+        #ccCFlags+=" -B${cc_solib}/lib64"
       fi
       ccLDFlags+=" -L${cc_solib}/lib"
-      ccCFlags+=" -B${cc_solib}/lib"
+      #ccCFlags+=" -B${cc_solib}/lib"
 
     '' + optionalString cc.langAda or false ''
       touch "$out/nix-support/gnat-cflags"
       touch "$out/nix-support/gnat-ldflags"
       basePath=$(echo $cc/lib/*/*/*)
-      ccCFlags+=" -B$basePath -I$basePath/adainclude"
+      #ccCFlags+=" -B$basePath -I$basePath/adainclude"
       gnatCFlags="-I$basePath/adainclude -I$basePath/adalib"
 
       echo "$gnatCFlags" >> $out/nix-support/gnat-cflags
     '' + ''
       echo "$ccLDFlags" >> $out/nix-support/cc-ldflags
-      echo "$ccCFlags" >> $out/nix-support/cc-cflags
+      #echo "$ccCFlags" >> $out/nix-support/cc-cflags
     '' + optionalString (targetPlatform.isDarwin && (libcxx != null) && (cc.isClang or false)) ''
       echo " -L${lib.getLib libcxx}/lib" >> $out/nix-support/cc-ldflags
     ''
@@ -445,7 +440,7 @@ stdenv.mkDerivation {
       ln -s ${cc.man} $man
       ln -s ${cc.info} $info
     '' + optionalString (cc.langD or false) ''
-      echo "-B${zlib}${zlib.libdir or "/lib/"}" >> $out/nix-support/libc-cflags
+      #echo "-B${zlib}${zlib.libdir or "/lib/"}" >> $out/nix-support/libc-cflags
     ''
 
     ##
@@ -518,6 +513,14 @@ stdenv.mkDerivation {
       for isa in avr5 avr3 avr4 avr6 avr25 avr31 avr35 avr51 avrxmega2 avrxmega4 avrxmega5 avrxmega6 avrxmega7 tiny-stack; do
         echo "-B${getLib libc}/avr/lib/$isa" >> $out/nix-support/libc-crt1-cflags
       done
+    ''
+
+    + optionalString stdenv.targetPlatform.isDarwin ''
+        echo "-arch ${targetPlatform.darwinArch}" >> $out/nix-support/cc-cflags
+    ''
+
+    + optionalString targetPlatform.isAndroid ''
+      echo "-D__ANDROID_API__=${targetPlatform.sdkVer}" >> $out/nix-support/cc-cflags
     ''
 
     # There are a few tools (to name one libstdcxx5) which do not work

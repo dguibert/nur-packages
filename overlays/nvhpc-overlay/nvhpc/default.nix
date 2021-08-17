@@ -52,8 +52,9 @@ stdenv.mkDerivation {
 
     # TODO install each component:
     # comm_libs  compilers  cuda  examples  math_libs  profilers  REDIST
-
-    mv prefix/Linux_x86_64/*/compilers $out
+    mkdir -p $out/Linux_x86_64/${version}
+    mv prefix/Linux_x86_64/${version}/compilers $out/Linux_x86_64/${version}/
+    ln -s $out/Linux_x86_64/${version}/compilers/* $out/
 
     # Hack around lack of libtinfo in NixOS
     #ln -s ${ncurses.out}/lib/libncursesw.so.6 $out/lib/libtinfo.so.5
@@ -87,6 +88,7 @@ stdenv.mkDerivation {
     sed -i -e "s/^target=.*/target=Linux_x86_64/" $out/bin/makelocalrc
     $out/bin/makelocalrc -x $out
     echo "set DEFSTDOBJDIR=${glibc}/lib;" >> $out/bin/localrc
+    # set NOSWITCHERROR=1;’ # https://forums.developer.nvidia.com/t/pgcc-error-unknown-switch-wall/130833
 
     # https://github.com/easybuilders/easybuild-easyblocks/issues/1493
     # pgcc-Error-RC file /nix/store/dn3lqas9fr5y5qymw8ay0pj10rc9fwq5-nvhpc-21.5/bin/siterc line 2: switch -pthread already exists
@@ -98,6 +100,6 @@ stdenv.mkDerivation {
   passthru = {
     isClang = false;
     langFortran = true;
-    hardeningUnsupportedFlags = [ "all" "stackprotector" ];
+    hardeningUnsupportedFlags = [ "fortify" "stackprotector" "pie" "pic" "strictoverflow" "format" ];
   };
 }

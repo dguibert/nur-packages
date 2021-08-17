@@ -2,8 +2,9 @@
 # This should ensure that it is deterministic across rebuilds of the same
 # derivation and not easily collide with other builds.
 # We also truncate the hash so that it cannot cause reference cycles.
-export NIX_CFLAGS_COMPILE+=" -frandom-seed=$(
-    outbase="${out##*/}"
-    randomseed="${outbase:0:10}"
-    echo $randomseed
-)"
+# FIXME pgcc don't support this flags
+#export NIX_CFLAGS_COMPILE+=" -frandom-seed=$(
+#    outbase="${out##*/}"
+#    randomseed="${outbase:0:10}"
+#    echo $randomseed
+#)"
