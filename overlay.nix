@@ -72,6 +72,8 @@ final: prev: with final; {
       };
       oneapi = {
         none = "CC=icx CXX=icpx F77=ifx F90=ifx";
+        openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
+        intel = "CC=mpicc CXX=mpicxx F77=mpifc FC=mpifc";
       };
       gnu = {
         openmpi = "CC=${mpi}/bin/mpicc CXX=${mpi}/bin/mpicxx F77=${mpi}/bin/mpif77 FC=${mpi}/bin/mpif90";
