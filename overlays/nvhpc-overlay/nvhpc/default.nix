@@ -92,10 +92,12 @@ stdenv.mkDerivation {
 
     # https://github.com/easybuilders/easybuild-easyblocks/issues/1493
     # pgcc-Error-RC file /nix/store/dn3lqas9fr5y5qymw8ay0pj10rc9fwq5-nvhpc-21.5/bin/siterc line 2: switch -pthread already exists
-    ##     cat > $out/bin/siterc <<EOF
-    ## # replace unknown switch -pthread with -lpthread
-    ## switch -pthread is replace(-lpthread) positional(linker);
-    ## EOF
+    ${lib.optionalString (!lib.versionAtLeast version "21.7") ''
+      cat > $out/bin/siterc <<EOF
+switch -idirafter arg is shorthand(-I \$arg);
+EOF
+    # switch -pthread is replace(-lpthread) positional(linker);
+    ''}
   '';
   passthru = {
     isClang = false;

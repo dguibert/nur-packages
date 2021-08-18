@@ -17,16 +17,17 @@ let
 
     isGNU = cc.isGNU or false;
     isClang = cc.isClang or false;
-    libcxx = null;
 
     inherit cc bintools libc;
   } // extraArgs; in self);
 
-  nvhpcPackages = { version, url, sha256 }: rec {
+  nvhpcPackages = { version, url, sha256, ... }@args: let
+      args_ = builtins.removeAttrs args ["version" "url" "sha256"];
+    in rec {
     unwrapped = prev.callPackage ./nvhpc {
       inherit version url sha256;
     };
-    nvhpc = wrapCCWith rec {
+    nvhpc = wrapCCWith (rec {
       cc = unwrapped;
       extraPackages = [
       ];
@@ -34,7 +35,7 @@ let
       ccLDFlags+=" -L${prev.numactl}/lib -rpath,${prev.numactl}/lib"
       echo "$ccLDFlags" > $out/nix-support/cc-ldflags
       '';
-    };
+    } // args_);
     stdenv = prev.overrideCC prev.stdenv nvhpc;
   };
 
@@ -54,6 +55,7 @@ in
     version="21.7";
     url = "https://developer.download.nvidia.com/hpc-sdk/21.7/nvhpc_2021_217_Linux_x86_64_cuda_11.4.tar.gz";
     sha256 ="sha256-4gYuC09W9LMe2I0I+MufNxvy8vsMWaBrJHODPHQsi3U=";
+    libcxx = null;
   };
 }
 
