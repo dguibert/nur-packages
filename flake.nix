@@ -17,6 +17,7 @@
           self.overlays.intel-oneapi
           self.overlays.arm
           self.overlays.pgi
+          self.overlays.nvhpc
           self.overlays.extra-builtins
           nix.overlay
         ];
