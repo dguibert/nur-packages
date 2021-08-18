@@ -8,6 +8,8 @@
 , lib
 , libffi_3_2
 , elfutils
+
+, rocm-runtime
 }:
 
 stdenv.mkDerivation {
@@ -35,6 +37,8 @@ stdenv.mkDerivation {
   ] ++ lib.optionals (lib.versionAtLeast version "2.0.0") [
    libffi_3_2
    elfutils
+  ] ++ lib.optionals (lib.versionAtLeast version "3.1.0") [
+    rocm-runtime
   ]);
   installPhase = ''
     mkdir $out

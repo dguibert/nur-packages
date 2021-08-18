@@ -29,6 +29,13 @@ let
       ${prev.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -Wl,-rpath ${flang}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
       rsrc="$out/resource-root"
       mkdir "$rsrc"
+
+      if test ! -e ${cc}/lib/clang/${release_version}; then
+        echo "error: ${cc}/lib/clang/${release_version} does not exists"
+        ls ${cc}/lib/clang/
+        exit 1
+      fi
+
       ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
       ln -s "${cc}/lib" "$rsrc/lib"
       echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
@@ -84,5 +91,12 @@ in
     gcc = final.gcc9.cc;
     version="2.1.0";
     sha256 ="084xgg6xnrjrzl1iyqyrb51f7x2jnmpzdd39ad81dn10db99b405";
+  };
+
+  aoccPackages_310 = aoccPackages {
+    release_version = "12.0.0";
+    gcc = final.gcc10.cc;
+    version="3.1.0";
+    sha256 ="033davymqa7ir4r1w2pwr5y9w42nd5npj32w8iggw1h58d510j0r";
   };
 }
