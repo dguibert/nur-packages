@@ -22,9 +22,9 @@
 }@args:
 
 let
-  args_ = builtins.removeAttrs args [ "lib" "openmpi" "enableSlurm" "slurm" ];
+  args_ = builtins.removeAttrs args [ "lib" "openmpi" "enableSlurm" "slurm" "fetchpatch" ];
 
-  openmpi_2_0_2 = lib.upgradeOverride (openmpi) (oldAttrs: rec {
+  openmpi_2_0_2 = lib.upgradeOverride (openmpi.override args_) (oldAttrs: rec {
     version = "2.0.2";
     src = with lib.versions; fetchurl {
       url = "https://www.open-mpi.org/software/ompi/v${major version}.${minor version}/downloads/${oldAttrs.pname}-${version}.tar.gz";
@@ -45,8 +45,7 @@ let
     ;
   });
 
-  #openmpi_4_0_2 = lib.upgradeOverride (openmpi.override args_) (oldAttrs: rec {
-  openmpi_4_0_2 = lib.upgradeOverride (openmpi) (oldAttrs: rec {
+  openmpi_4_0_2 = lib.upgradeOverride (openmpi.override args_) (oldAttrs: rec {
     version = "4.0.2";
     src = with lib.versions; fetchurl {
       url = "https://www.open-mpi.org/software/ompi/v${major version}.${minor version}/downloads/${oldAttrs.pname}-${version}.tar.bz2";
@@ -65,8 +64,8 @@ let
 
   });
 
-  #openmpi_4_1_1 = lib.upgradeOverride (openmpi.override args_) (oldAttrs: rec {
-  openmpi_4_1_1 = lib.upgradeOverride (openmpi) (oldAttrs: rec {
+  openmpi_4_1_1 = lib.upgradeOverride (openmpi.override args_) (oldAttrs: rec {
+  #openmpi_4_1_1 = lib.upgradeOverride (openmpi) (oldAttrs: rec {
     version = "4.1.1";
     src = with lib.versions; fetchurl {
       url = "https://www.open-mpi.org/software/ompi/v${major version}.${minor version}/downloads/${oldAttrs.pname}-${version}.tar.bz2";
