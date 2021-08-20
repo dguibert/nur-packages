@@ -4,6 +4,7 @@
 , url
 , sha256
 , preinstDir ? "compilers_and_libraries_${version}/linux"
+, gcc
 }:
 
 stdenv.mkDerivation rec {
@@ -34,7 +35,7 @@ stdenv.mkDerivation rec {
         ;;
       "application/x-sharedlib"|"application/x-pie-executable")
         echo "Patching library: $f"
-        patchelf --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib:${stdenv.cc.cc.lib}/lib $f || true
+        patchelf --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib:${gcc.cc.lib}/lib $f || true
         ;;
       *)
         echo "$f ($type) not patched"

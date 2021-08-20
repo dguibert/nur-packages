@@ -6,7 +6,7 @@ let
       , comp_url, comp_sha256 ? ""
       , mpi_url, mpi_sha256 ? "", mpi_version ? version
       , redist_url, redist_sha256 ? ""
-      , gcc ? pkgs.gcc7
+      , gcc ? pkgs.gcc
       , pkgs ? final
       }:
       let
@@ -33,7 +33,7 @@ let
       } // extraArgs; in self);
 
       self = with self; (if (comp_url != null) then {
-        redist = pkgs.callPackage ./redist.nix { inherit version; url=redist_url; sha256=redist_sha256; };
+        redist = pkgs.callPackage ./redist.nix { inherit version gcc; url=redist_url; sha256=redist_sha256; };
         unwrapped = pkgs.callPackage ./compiler.nix { inherit version gcc; url=comp_url; sha256=comp_sha256; };
 
         mkl = pkgs.callPackage ./mkl.nix { inherit version gcc redist mpi; url=comp_url; sha256=comp_sha256; };
@@ -128,7 +128,7 @@ in {
       mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d1";
       redist_url="https://software.intel.com/sites/default/files/managed/7a/1e/l_comp_lib_2018.5.274_comp.for_redist.tgz";
       redist_sha256="0i1h2dc7w3bhk5m7hkqvz1ffhrhgkx294b3r73hzs32hnjgbvqrg";
-      gcc = prev.gcc7;
+      gcc =prev.gcc7;
     };
     intelPackages_2018 = final.intelPackages_2018_5_274;
 
@@ -141,7 +141,7 @@ in {
       redist_sha256 = "6218ea4176373cd21c41465a1f406d133c28a2c1301590aa1661243dd68c28fc";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13584/l_mpi_2019.0.117.tgz";
       mpi_sha256 = "025ww7qa03mbbs35fb63g4x8qm67i49bflm9g8ripxhskks07d6z";
-      gcc = prev.gcc7;
+      gcc =prev.gcc7;
     };
 
     intelPackages_2019_1_144 = intelPackages {
@@ -152,7 +152,7 @@ in {
       mpi_sha256 = "1kf3av1bzaa98p5h6wagc1ajjhvahlspbca26wqh6rdqnrfnmj6s";
       redist_url="https://software.intel.com/sites/default/files/managed/79/cd/l_comp_lib_2019.1.144_comp.for_redist.tgz";
       redist_sha256="05kd2lc2iyq3rgnbcalri86nf615n0c1ii21152yrfyxyhk60dxm";
-      gcc = prev.gcc7;
+      gcc =prev.gcc7;
     };
 
     intelPackages_2019_2_187 = intelPackages {
@@ -163,7 +163,7 @@ in {
       mpi_sha256 = "084bfw29swvpjm1lynl1pfj3y3v2j563k7lnvvvy7yay7f9hacva";
       redist_url="https://software.intel.com/sites/default/files/managed/95/e7/l_comp_lib_2019.2.187_comp.for_redist.tgz";
       redist_sha256="0sj0plax2bnid1qm1jqvijiflzfvs37vkfmg93mb7202g9fp7q77";
-      gcc = prev.gcc7;
+      #gcc =prev.gcc7;
     };
 
     intelPackages_2019_3_199 = intelPackages {
@@ -174,7 +174,7 @@ in {
       mpi_sha256 = "143951k7c3pj4jqi627j5whwiky5a57v3vjhf9wxwr1zhrn3812k";
       redist_url="https://software.intel.com/sites/default/files/managed/7f/23/l_comp_lib_2019.3.199_comp.for_redist.tgz";
       redist_sha256="06c3w65ir481bqnwbmd9nqigrhcb3qyxbmx2ympckygjiparwh05";
-      gcc = prev.gcc7;
+      #gcc =prev.gcc7;
     };
 
     intelPackages_2019_4_227 = intelPackages {
@@ -186,7 +186,7 @@ in {
       mpi_sha256 = "233a8660b92ecffd89fedd09f408da6ee140f97338c293146c9c080a154c5fcd";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15466/l_comp_lib_2019.4.227_comp.for_redist.tgz";
       redist_sha256="0f3lz0carshqi4nfpmdmi4kmndgml6prh9frf820sdg31w7khcbl";
-      gcc = prev.gcc7;
+      #gcc =prev.gcc7;
     };
 
     intelPackages_2019_5_281 = intelPackages {
@@ -197,10 +197,10 @@ in {
       mpi_sha256 = "1x0id0q8jyg177x6jc0lkw0mvs2jj5l8nkdwwlhv498k3w2xlncw";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15810/l_comp_lib_2019.5.281_comp.for_redist.tgz";
       redist_sha256="1jxyw8qvrvz66xvf7ng6maw5q13kbzhdynr2yrdqw5iqhiw8wsl3";
-      gcc = prev.gcc7;
+      gcc =prev.gcc7;
     };
 
-    intelPackages_2019 = final.intelPackages_2019_4_227;
+    intelPackages_2019 = final.intelPackages_2019_5_281;
 
     stdenvIntel = final.intelPackages_2019.stdenv;
 
@@ -209,10 +209,10 @@ in {
       comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16226/parallel_studio_xe_2020_professional_edition.tgz";
       comp_sha256 = "1b0mdxn3108454rxqca7z4dxkvqkrzf2mcc7rgchx9cds8cav378";
       mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/15838/l_mpi_2019.6.166.tgz";
-      mpi_sha256="0vnd32pws5kxyxkrbbbqbajx4mcfj51ld2wvbsg3mj8p26gyd6qi";
+      mpi_sha256="sha256-zxAC6qYIOJHbE0iRS5UHcYsRWOYD2uI0r2zCM/TBQGw=";
       redist_url="https://software.intel.com/sites/default/files/managed/8a/61/l_comp_lib_2020.0.166_comp.for_redist.tgz";
       redist_sha256="0l7k1hs9f0fwwf8r8syva7ysq7744r85v5sld708bkp0kwwdswah";
-      gcc = prev.gcc7;
+      #gcc =prev.gcc7;
     };
 
     intelPackages_2020_1_217 = intelPackages {
@@ -223,7 +223,7 @@ in {
       mpi_sha256="01wwmiqff5lad7cdi8i57bs3kiphpjfv52sxll1w0jpq4c03nf4h";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16526/l_comp_lib_2020.1.217_comp.for_redist.tgz";
       redist_sha256="13jdyakn09d923a8562jh0cjbnk3wxj8h8ph7926pz7kfcrk93l8";
-      gcc = prev.gcc7;
+      #gcc =prev.gcc7;
     };
 
     intelPackages_2020_2_254 = intelPackages {
@@ -234,7 +234,7 @@ in {
       mpi_sha256="fa163b4b79bd1b7509980c3e7ad81b354fc281a92f9cf2469bf4d323899567c0";
       redist_url="http://registrationcenter-download.intel.com/akdlm/irc_nas/16744/l_comp_lib_2020.2.254_comp.for_redist.tgz";
       redist_sha256="1cnsnzkd5izqjjcgh3nsnsw10ccdqdybh1v0xbjyd58vzg7hzlsp";
-      gcc = prev.gcc7;
+      #gcc =prev.gcc7;
     };
 
     intelPackages_2020_4_304 = intelPackages {
@@ -245,13 +245,13 @@ in {
       mpi_sha256="1rxj1gcy1yfhsz5gngd8nl8lpdb7savmx322wr2ncc2lvv15v2k1";
       redist_url="https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17113/l_comp_lib_2020.4.304_comp.for_redist.tgz";
       redist_sha256="1qy0b0ngv0annmrplmv0kinffpqd9vhi3bnyvlf6h5z5p4g8j6n6";
-      gcc = prev.gcc7;
+      #gcc =prev.gcc7;
     };
 
     # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17818/l_mpi_2019.11.319.tgz
     # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17836/l_mpi_2019.12.320.tgz
 
-    intelPackages_2020 = final.intelPackages_2020_0_166;
+    intelPackages_2020 = final.intelPackages_2020_4_304;
 
     helloIntel = prev.hello.override { stdenv = final.stdenvIntel; };
     miniapp-ping-pongIntel = prev.miniapp-ping-pong.override { stdenv = final.stdenvIntel;
