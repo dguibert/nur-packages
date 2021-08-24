@@ -71,6 +71,8 @@ final: prev: with prev; let
       org-ref
 
       cmake-mode
+
+      all-the-icons
     ]) ++ [
       notmuch   # From main packages set
       ripgrep
