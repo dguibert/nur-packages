@@ -9,17 +9,9 @@
 
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
-  #inputs.nur_dguibert_envs.url= "github:dguibert/nur-packages/pu?dir=envs";
-  inputs.nur_dguibert_envs.url= "git+file:///home/dguibert/nur-packages?dir=envs";
-  inputs.nur_dguibert_envs.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.nur_dguibert_envs.inputs.nix.follows = "nix";
-  inputs.nur_dguibert_envs.inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
-
-
   outputs = { self, nixpkgs
             , nix
             #, nix-ccache
-            , nur_dguibert_envs
             , flake-utils
             , ...
             }@flakes: let
@@ -28,13 +20,15 @@
         inherit system;
         overlays =  [
           nix.overlay
-          nur_dguibert_envs.overlay
-          nur_dguibert_envs.overlays.extra-builtins
+          overlays.default
+          overlays.extra-builtins
           self.overlay
         ];
         config.allowUnfree = true;
         config.psxe.licenseFile = "none"; #<secrets/lic>;
     };
+
+    overlays = import ../overlays;
 
   in (flake-utils.lib.eachDefaultSystem (system:
        let pkgs = nixpkgsFor system; in

@@ -54,43 +54,6 @@
         "type": "github"
       }
     },
-    "nix-ccache": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1592238424,
-        "narHash": "sha256-ysTi7+l+dE72ubCYv69S3gUFpzqWR+aI6P2GcXdZPKQ=",
-        "owner": "dguibert",
-        "repo": "nix-ccache",
-        "rev": "edea4b70204980cad6edcea495ec07fd71bc3353",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dguibert",
-        "ref": "pu",
-        "repo": "nix-ccache",
-        "type": "github"
-      }
-    },
-    "nixos-rocm": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1617981916,
-        "narHash": "sha256-jcJtZBpEbKyTH5nsVH4gJEWdBN7ViTHlEJ7zoN7qrPM=",
-        "owner": "nixos-rocm",
-        "repo": "nixos-rocm",
-        "rev": "b5b9be0c0caa2e36e488850bfb0cdf7ede055b32",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos-rocm",
-        "repo": "nixos-rocm",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1628496198,
@@ -107,36 +70,11 @@
         "type": "github"
       }
     },
-    "nur_dguibert_envs": {
-      "inputs": {
-        "nix": [
-          "nix"
-        ],
-        "nix-ccache": "nix-ccache",
-        "nixos-rocm": "nixos-rocm",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "dir": "envs",
-        "lastModified": 1628404736,
-        "narHash": "sha256-bzmlVGYPDQVoVwvTAWGILdcdKnFKSX6Xjs7hqKIazTY=",
-        "type": "git",
-        "url": "file:///home/dguibert/nur-packages?dir=envs"
-      },
-      "original": {
-        "dir": "envs",
-        "type": "git",
-        "url": "file:///home/dguibert/nur-packages?dir=envs"
-      }
-    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nix": "nix",
-        "nixpkgs": "nixpkgs",
-        "nur_dguibert_envs": "nur_dguibert_envs"
+        "nixpkgs": "nixpkgs"
       }
     }
   },
