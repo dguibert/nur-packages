@@ -343,6 +343,8 @@
    ("\C-cl" . org-store-link))
 )
 
+(use-package ol-notmuch)
+
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode)

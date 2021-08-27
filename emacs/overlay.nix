@@ -73,6 +73,8 @@ final: prev: with prev; let
       cmake-mode
 
       all-the-icons
+
+      org-contrib
     ]) ++ [
       notmuch   # From main packages set
       ripgrep
