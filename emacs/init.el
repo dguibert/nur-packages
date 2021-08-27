@@ -29,6 +29,11 @@
 (menu-bar-mode -1)
 ;(add-to-list 'default-frame-alist
 ;	       '(font . "Hack Nerd Font Mono-12"))
+; https://emacs.stackexchange.com/questions/3912/force-using-fixed-width-font-in-org-mode
+(setq solarized-use-variable-pitch nil
+      solarized-scale-org-headlines nil)
+
+
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
@@ -45,9 +50,9 @@
   (setq
     doom-themes-enable-bold t
     doom-themes-enable-italic t)
-  (load-theme 'doom-vibrant t)
+  ;(load-theme 'doom-vibrant t)
   ;(load-theme 'doom-solarized-light t)
-  ;(load-theme 'doom-solarized-dark t)
+  (load-theme 'doom-solarized-dark t)
   ;(if (boundp 'scroll-bar-mode)
   ;  (load-theme 'doom-solarized-dark t)
   ;  (load-theme 'doom-solarized-light t)
