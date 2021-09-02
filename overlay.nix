@@ -42,45 +42,37 @@ final: prev: with final; {
   };
 
   drvFlavor = drv: let
-    isIntel = drv.cc ? isIntel && drv.cc.isIntel;
-    isClang = drv.cc ? isClang && drv.cc.isClang;
-    name=builtins.parseDrvName drv.name;
-    flavors = {
-      stdenv-linux = if isIntel then "intel"
-                     else if isClang then "clang"
-                          else "gnu";
-      intelmpi = "intelmpi";
-      openmpi = "openmpi";
-    };
-    flavor = if drv ? flavor then drv.flavor
-             else
-               if flavors ? "${name.name}" then flavors.${name.name}
-               else "undefined";
-  in builtins.trace "drvFlavor: ${drv}=${flavor}" flavor;
+    name=builtins.head (builtins.concatLists (map (x: builtins.match x drv.name) [
+      "(.*)-[0-9.]*" # fallback regex
+    ]));
+    flavor = if drv == null then "none"
+    	     else "${name}";
+  in builtins.trace "drvFlavor: ${if (drv != null) then drv else "null"}=${flavor}" flavor;
 
   compilers_line = stdenv: mpi: let
-    compiler_id = if (stdenv.cc.isIntel or false) then "intel"
-      else if (stdenv.cc.isOneApi or false) then "oneapi"
-      else "gnu";
-    mpi_id = if (mpi.isIntel or false) then "intel" else
-             if (mpi != null) then "openmpi" else "none";
+    compiler_id = drvFlavor stdenv.cc.cc;
+    mpi_id = drvFlavor mpi;
     line = {
-      intel = {
-        intel = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
+      intel-compilers = {
+        intelmpi = "CC=mpiicc CXX=mpiicpc F77=mpiifort FC=mpiifort";
         openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
         none = "CC=icc CXX=icpc F77=ifort FC=ifort";
       };
-      oneapi = {
-        none = "CC=icx CXX=icpx F77=ifx F90=ifx";
-        openmpi = "CC=mpicc CXX=mpicxx F77=mpif90 FC=mpif90";
-        intel = "CC=mpicc CXX=mpicxx F77=mpifc FC=mpifc";
+      oneapi-compilers = {
+        none = "CC=icx CXX=icpx FC=ifx";
+        openmpi = "CC=mpicc CXX=mpicxx FC=mpif90";
+        oneapi-mpi = "CC=mpiicc CXX=mpiicpc FC=mpiifort";
       };
-      gnu = {
+      aocc = {
+        none = "CC=clang CXX=clang++ FC=flang";
+        openmpi = "CC=mpicc CXX=mpicxx FC=mpif90";
+      };
+      gcc = {
         openmpi = "CC=${mpi}/bin/mpicc CXX=${mpi}/bin/mpicxx F77=${mpi}/bin/mpif77 FC=${mpi}/bin/mpif90";
         none = "";
       };
     }."${compiler_id}"."${mpi_id}";
-  in builtins.trace "compilers: ${line}" line;
+  in builtins.trace "compilers ${compiler_id}.${mpi_id}: ${line}" line;
 
   collectl = final.callPackage ./pkgs/collectl { };
 
