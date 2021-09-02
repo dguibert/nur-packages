@@ -35,8 +35,8 @@ stdenv.mkDerivation {
     libxml2
     #"${placeholder "out"}/lib"
   ] ++ lib.optionals (lib.versionAtLeast version "2.0.0") [
-   libffi_3_2
-   elfutils
+    libffi_3_2
+    elfutils
   ] ++ lib.optionals (lib.versionAtLeast version "3.1.0") [
     rocm-runtime
   ]);
@@ -48,6 +48,8 @@ stdenv.mkDerivation {
 
     # Hack around lack of libtinfo in NixOS
     ln -s ${ncurses.out}/lib/libncursesw.so.6 $out/lib/libtinfo.so.5
+    ln -s ${zlib}/lib/libz.so.1 $out/lib/libz.so.1
+    ln -s ${stdenv.glibc}/lib/libdl.so* $out/lib
 
     export libs=$libs:$out/lib
     echo "LIBS: $libs"

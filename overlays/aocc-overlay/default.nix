@@ -24,6 +24,8 @@ let
   aoccPackages = { version, sha256, release_version
                  , llvmPackages ? null
 		 , gcc ? llvmPackages.tools.clang-unwrapped.gcc
+		 , libcxx ? null
+		 , bintools ? null
 	         }: let
     mkExtraBuildCommands = cc: flang: ''
       ${prev.lib.optionalString (flang !=null) "echo \"-I${flang}/include -L${flang}/lib -Wl,-rpath ${flang}/lib -B${flang}/bin\" >> $out/nix-support/cc-cflags"}
@@ -37,10 +39,15 @@ let
       fi
 
       ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
-      ln -s "${cc}/lib" "$rsrc/lib"
+      mkdir $rsrc/lib
+      ln -s "${cc}/lib/*" "$rsrc/lib/"
+      ln -s "${cc}/lib/clang/${release_version}/lib/linux" "$rsrc/lib/linux"
+      echo "-rtlib=compiler-rt -Wno-unused-command-line-argument" >> $out/nix-support/cc-cflags
+      echo "-B${llvmPackages.compiler-rt}/lib" >> $out/nix-support/cc-cflags
+      echo "--unwindlib=libunwind" >> $out/nix-support/cc-cflags
+      echo "-Wl,-rpath ${llvmPackages.libunwind}/lib" >> $out/nix-support/cc-cflags
+
       echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
-    '' + prev.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
-      echo "--gcc-toolchain=${gcc}" >> $out/nix-support/cc-cflags
     '';
   in rec {
     unwrapped = prev.callPackage ./aocc {
@@ -49,9 +56,12 @@ let
     aocc = wrapCCWith rec {
       cc = unwrapped;
       extraPackages = [
-	#llvmPackages.libraries.compiler-rt
+	      llvmPackages.libraries.libcxxabi
+	      llvmPackages.libraries.compiler-rt
+	      llvmPackages.libraries.libunwind
       ];
       extraBuildCommands = mkExtraBuildCommands cc cc;
+      inherit libcxx bintools;
     };
     stdenv = prev.overrideCC prev.stdenv aocc;
   };
@@ -95,8 +105,11 @@ in
 
   aoccPackages_310 = aoccPackages {
     release_version = "12.0.0";
+    llvmPackages = prev.llvmPackages_12;
     gcc = final.gcc10.cc;
     version="3.1.0";
     sha256 ="033davymqa7ir4r1w2pwr5y9w42nd5npj32w8iggw1h58d510j0r";
+    libcxx = prev.llvmPackages_12.libcxxClang;
+    bintools = prev.llvmPackages_12.bintools;
   };
 }
