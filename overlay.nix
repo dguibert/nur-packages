@@ -68,7 +68,7 @@ final: prev: with final; {
         openmpi = "CC=mpicc CXX=mpicxx FC=mpif90";
       };
       gcc = {
-        openmpi = "CC=${mpi}/bin/mpicc CXX=${mpi}/bin/mpicxx F77=${mpi}/bin/mpif77 FC=${mpi}/bin/mpif90";
+        openmpi = "CC=mpicc CXX=mpicxx FC=mpif90";
         none = "";
       };
     }."${compiler_id}"."${mpi_id}";
