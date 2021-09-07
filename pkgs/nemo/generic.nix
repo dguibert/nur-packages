@@ -9,6 +9,8 @@
 , perlPackages
 , substituteAll
 , xios
+, drvFlavor
+, lib
 
 , config
 , name ? "nemo-${config}-${version}"
@@ -76,4 +78,10 @@ stdenv.mkDerivation {
 
     fi
   '';
+
+  # gcc 10 NIX_CFLAGS_COMPILE="-fallow-argument-mismatch";
+  NIX_CFLAGS_COMPILE=if (   (drvFlavor stdenv.cc.cc) == "gcc"
+                                && lib.versionAtLeast stdenv.cc.cc.version "10.0") then
+         "-fallow-argument-mismatch" else "";
+
 }

@@ -9,6 +9,7 @@
 , perlPackages
 , substituteAll
 , xios
+, lib, drvFlavor
 , ...
 }@args:
 
