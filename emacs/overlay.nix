@@ -45,6 +45,7 @@ final: prev: with prev; let
 
       direnv
       notmuch
+      gnus-alias
 
       ivy
       ivy-rich
