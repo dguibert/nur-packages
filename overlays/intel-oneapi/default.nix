@@ -62,7 +62,7 @@ let
       "intel.oneapi.lin.dpcpp-cpp-compiler-pro,v=*"#2021.1.1-189
       "intel.oneapi.lin.dpcpp-cpp-pro-fortran-compiler-common,v=*"#2021.1.1-189
       "intel.oneapi.lin.ifort-compiler,v=*"#2021.1.1-189
-      #intel.oneapi.lin.openmp,v=2021.1.1-189
+      "intel.oneapi.lin.openmp,v=*"#2021.1.1-189
     ];
   };
   # tbb', components='intel.oneapi.lin.tbb.devel', releases=releases, url_name='tbb_oneapi')
@@ -116,7 +116,7 @@ let
       cd oneapi/l_${url_name}_p_${version}.${release_build}_offline
     '';
 
-    nativeBuildInputs= [ file patchelf ];
+    nativeBuildInputs= [ file patchelf nix-patchtools ];
 
     dontPatchELF = true;
     dontStrip = true;
@@ -137,42 +137,79 @@ let
     isIntel = true;
     outputs = [ "out" "runtime" ];
 
+    libs = lib.concatStringsSep ":" [
+      "${stdenv.cc.libc}/lib"
+      "${gcc.cc}/lib"
+      "${gcc.cc.lib}/lib"
+      "${placeholder "runtime"}/lib"
+    ];
+
     preFixup = ''
       mv out/_installdir/mpi/* $out
 
       mv runtime/_installdir/mpi/* $runtime
-
-      for f in $(find $out $runtime -type f -executable); do
-        type="$(file -b --mime-type $f)"
-        case "$type" in
-        "application/executable"|"application/x-executable")
-          echo "    Patching executable: $f"
-          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
-          ;;
-        "application/x-sharedlib"|"application/x-pie-executable")
-          echo "    Patching library   : $f"
-          patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
-          ;;
-        *)
-          echo "Not Patching           : $f ($type)"
-          ;;
-        esac
-      done
+      # TODO handle debug/debug_mt/release_mt
+      set -x
+      (cd $runtime/lib/release; find \! -type d -exec ln -vsf $runtime/lib/release/{} $runtime/lib/{} \; )
 
       (cd $runtime; find -type d -exec mkdir -vp $out/{} \; )
-      (cd $runtime; find -type f -exec ln -vsf $runtime/{} $out/{} \; )
+      (cd $runtime; find \! -type d -exec ln -vsf $runtime/{} $out/{} \; )
+      set +x
 
-      # TODO handle debug/debug_mt/release_mt
-      ln -s $out/lib/release/* $out/lib
+      sed -i -e "s@prefix=I_MPI_SUBSTITUTE_INSTALLDIR@prefix=$out@" $out/bin/mpi*
+
+      echo $libs
+      autopatchelf $out $runtime
 
     '';
   };
 
-  compilers_attrs = {
+  libelf_0815 = lib.upgradeOverride libelf (o: {
+    version = "0.8.15";
+    src = fetchurl {
+      url = "https://sourceware.org/elfutils/ftp/0.185/elfutils-0.185.tar.bz2";
+      sha256 = "sha256-3I0+dKsglGXn9Wjhs7uaWhQvhlbitX0QBJpz2irmtaY=";
+    };
+    patches = [];
+    nativeBuildInputs = o.nativeBuildInputs ++ [ m4 ];
+    buildInputs = (o.buildInputs or []) ++ [ zlib ];
+    configureFlags = o.configureFlags ++ [
+      "--disable-libdebuginfod"
+      "--disable-debuginfod"
+    ];
+    doCheck = false;
+  });
+
+  libffi_3_0_13 = lib.upgradeOverride libffi (o: rec {
+    version = "3.0.13";
+    src = fetchurl {
+      url = "https://sourceware.org/pub/libffi/libffi-${version}.tar.gz";
+      sha256 = "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh";
+    };
+
+    patches = [];
+  });
+
+  compilers_attrs = mpi: {
     langFortran = true;
     isOneApi = true;
 
     outputs = [ "out" "runtime" ]; # FIXME runtime
+
+    libs = (lib.concatStringsSep ":" [
+      "${placeholder "runtime"}/lib"
+      "${placeholder "runtime"}/compiler/lib/intel64_lin"
+      "${placeholder "out"}/compiler/lib/intel64_lin"
+    ]) + ":" + (lib.makeLibraryPath [
+      stdenv.cc.libc
+      stdenv.cc.cc.lib
+      zlib
+      mpi
+      libxml2
+      libelf_0815 #libelf.so.1
+      libelf # libelf.so.0
+      libffi_3_0_13 # libffi.so.6
+    ]);
 
     preFixup = ''
       mv out/_installdir/compiler/*/linux $out
@@ -182,29 +219,10 @@ let
       rm -rf $out/documentation
       rm -rf $out/man
 
-      echo "Patching rpath and interpreter..."
-      for f in $(find $out/bin $runtime/bin -type f -executable); do
-          echo "    Patching executable: $f"
-          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:${zlib}/lib:$runtime/lib:$runtime/compiler/lib/intel64_lin:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64 $f || true
-      done
-      for f in $(find $out/lib $out/compiler $runtime/lib $runtime/compiler -type f -executable) \
-               $(find $out/lib $out/compiler $runtime/lib $runtime/compiler -type f -name \*.so\*) \
-      ; do
-        type="$(file -b --mime-type $f)"
-        case "$type" in
-        "application/executable"|"application/x-executable")
-          echo "    Patching executable: $f"
-          patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64_lin:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64  $f || true
-          ;;
-        "application/x-sharedlib"|"application/x-pie-executable")
-          echo "    Patching library   : $f"
-          patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:$runtime/lib:$runtime/compiler/lib/intel64_lin:$runtime/compiler/lib/intel64:\$ORIGIN:\$ORIGIN/../lib:\$ORIGIN/../compiler/lib/intel64  $f || true
-          ;;
-        *)
-          echo "Not Patching           : $f ($type)"
-          ;;
-        esac
-      done
+      rm -r $out/compiler/lib/ia32_lin
+      rm -r $out/compiler/lib/ia32
+      rm -r $runtime/compiler/lib/ia32_lin
+      rm -r $out/bin/ia32
 
       (cd $runtime; find -type d -exec mkdir -vp  $out/{} \; )
       (cd $runtime; find -type f -exec ln -vsf $runtime/{} $out/{} \; )
@@ -212,6 +230,28 @@ let
 
       # FIXME
       mv $out/bin/clang%2B%2B $out/bin/clang++
+
+      find $out -print0 | xargs -0 -i chmod +w {}
+      # fix executable permission on shared libs
+      find $out $runtime -type f -print0 -name \*.so\* | xargs -0 -i chmod +x {}
+
+      # FIXME: libze_loader.so.1 (https://github.com/oneapi-src/level-zero)
+      rm $out/lib/libomptarget.rtl.level0.so
+      rm $runtime/lib/libpi_level_zero.so
+      rm $runtime/lib/emu/libtask_executor_emu.so* # libtbb.so.12
+      rm $runtime/lib/emu/libintelocl_emu.so* #: libtask_executor_emu.so.2021.12.6.0
+      rm $runtime/lib/emu/libcpu_device_emu.so* #: libtask_executor_emu.so.2021.12.6.0
+      rm $runtime/lib/x64/libcpu_device.so* #: libtbb.so.12
+      rm $runtime/lib/x64/libtask_executor.so* #: libtbb.so.12
+      rm $runtime/lib/x64/libintelocl.so* #: libtask_executor.so.2021.12.6.0
+
+
+      rm -r $out/lib/oclfpga/ # libxerces-c-3.2_dspba.so
+
+      echo $libs
+      autopatchelf $out
+      autopatchelf $runtime
+
     '';
     passthru = {
       hardeningUnsupportedFlags = [ "stackprotector" ];
@@ -254,7 +294,7 @@ let
     ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
     ln -s "${runtime}/lib" "$rsrc/lib"
     echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
-    echo "-L=${runtime}/lib" >> $out/nix-support/cc-cflags
+    echo "-L${runtime}/lib" >> $out/nix-support/cc-cflags
   '' + prev.lib.optionalString prev.stdenv.targetPlatform.isLinux ''
     echo "--gcc-toolchain=${gccForLibs} -B${gccForLibs}" >> $out/nix-support/cc-cflags
   '';
@@ -307,7 +347,7 @@ in rec {
 ### file should not be patched
 ##subprocess.call(['patchelf', '--set-rpath', rpath, file])
   oneapiPackages_2021_1_0 = with oneapiPackages_2021_1_0; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.1.0"; } compilers_attrs;
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.1.0"; } (compilers_attrs mpi);
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -324,7 +364,7 @@ in rec {
   };
 
   oneapiPackages_2021_2_0 = with oneapiPackages_2021_2_0; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.2.0"; } compilers_attrs;
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.2.0"; } (compilers_attrs mpi);
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -341,7 +381,7 @@ in rec {
   };
 
   oneapiPackages_2021_3_0 = with oneapiPackages_2021_3_0; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } compilers_attrs;
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } (compilers_attrs mpi);
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -358,7 +398,7 @@ in rec {
   };
 
   oneapiPackages_2021_3_1 = with oneapiPackages_2021_3_1; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } compilers_attrs;
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } (compilers_attrs mpi);
 
     compilers = wrapCCWith {
       cc = unwrapped;

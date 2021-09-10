@@ -88,6 +88,9 @@ self = stdenv.mkDerivation rec {
     done
 
     wrapProgram $out/bin/mpiexec.hydra --set FI_PROVIDER_PATH $out/intel64/libfabric/lib/prov
+
+    # FIXME release_mt/debug or debug_mt
+    ln -s $out/lib/release/* $out/lib
   '';
 
   passthru = {
