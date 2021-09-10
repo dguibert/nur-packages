@@ -57,6 +57,8 @@ stdenv.mkDerivation rec {
 
   patches = [./bin-mv.patch];
 
+  enableParallelBuilding = true;
+
   postInstall = ''
     find "$out" -type f -exec remove-references-to -t ${stdenv.cc} '{}' +
   '';

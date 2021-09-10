@@ -299,6 +299,8 @@ let
       I_MPI_CC="icx";
       I_MPI_CXX="icpx";
       I_MPI_FC="ifx";
+      I_MPI_F77="ifx";
+      I_MPI_F90="ifx";
     });
   };
 
@@ -312,6 +314,8 @@ let
       I_MPI_CC="icc";
       I_MPI_CXX="icpc";
       I_MPI_FC="ifort";
+      I_MPI_F77="ifort";
+      I_MPI_F90="ifort";
     });
   };
 
