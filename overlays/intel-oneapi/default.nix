@@ -1,54 +1,20 @@
 final: prev: with prev;
 let
-  releases = {
-    "mpi.2021.1.1" = { irc_id=17397; build=76; dir_name="mpi"; };
-    "mpi.2021.2.0" = { irc_id=17729; build=215; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17729/l_mpi_oneapi_p_2021.2.0.215_offline.sh
-    "mpi.2021.3.0" = { irc_id=17947; build=294; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17947/l_mpi_oneapi_p_2021.3.0.294_offline.sh
-    "mpi.2021.3.1" = { irc_id=18016; build=315; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/18016/l_mpi_oneapi_p_2021.3.1.315_offline.sh
-
-    #"tbb.'2021.1.1': {'irc_id': '17378', build: '119'}}
-    # mkl.'2021.1.1': {'irc_id': '17402', build: '52'}}
-    # mkl.'2021.2.0': {'irc_id': '17757', build: '296'}} # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17757/l_onemkl_p_2021.2.0.296_offline.sh
-
-    ## https://software.intel.com/content/www/us/en/develop/tools/oneapi/hpc-toolkit/download.html?operatingsystem=linux&distributions=webdownload&options=offline
-    "compilers.2021.1.0" = { irc_id=17427; build=2684; dir_name="compiler"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/17427/l_HPCKit_p_2021.1.1.2684_offline.sh
-    "compilers.2021.2.0" = { irc_id=17764; build=2997; dir_name="compiler"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/17764/l_HPCKit_p_2021.2.0.2997_offline.sh
-    "compilers.2021.3.0" = { irc_id=17912; build=3230; dir_name="compiler"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/17912/l_HPCKit_p_2021.3.0.3230_offline.sh
-  };
   versions = {
-    "mpi.2021.1.1" = { sha256="8b7693a156c6fc6269637bef586a8fd3ea6610cac2aae4e7f48c1fbb601625fe"; url_name="mpi_oneapi"; };
-    "mpi.2021.2.0" = { sha256="sha256-0NTN0R7a/y5yheOPU33vzP8443owZ8AvSvQ6NimtSqM="; url_name="mpi_oneapi"; };
-    "mpi.2021.3.0" = { sha256="sha256-BMSPhk7kxyOxtMpi8r6owE1dfj3hkXH9YrF4aLx5vDY="; url_name="mpi_oneapi"; };
-    "mpi.2021.3.1" = { sha256="sha256-g3asb+bSdtob6K2qJo03sxNt3dLAHtCPdf0cRJYHXTo="; url_name="mpi_oneapi"; };
+    "mpi.2021.1.1" = { url="https://registrationcenter-download.intel.com/akdlm/irc_nas/17397/l_mpi_oneapi_p_2021.1.1.76_offline.sh"; sha256=null; url_name="mpi_oneapi"; };
+    "mpi.2021.2.0" = { url="https://registrationcenter-download.intel.com/akdlm/irc_nas/17729/l_mpi_oneapi_p_2021.2.0.215_offline.sh"; sha256="sha256-0NTN0R7a/y5yheOPU33vzP8443owZ8AvSvQ6NimtSqM="; url_name="mpi_oneapi"; };
+    "mpi.2021.3.0" = { url="https://registrationcenter-download.intel.com/akdlm/irc_nas/17947/l_mpi_oneapi_p_2021.3.0.294_offline.sh"; sha256="sha256-BMSPhk7kxyOxtMpi8r6owE1dfj3hkXH9YrF4aLx5vDY="; url_name="mpi_oneapi"; };
+    "mpi.2021.3.1" = { url="https://registrationcenter-download.intel.com/akdlm/irc_nas/18016/l_mpi_oneapi_p_2021.3.1.315_offline.sh"; sha256="sha256-g3asb+bSdtob6K2qJo03sxNt3dLAHtCPdf0cRJYHXTo="; url_name="mpi_oneapi"; };
 
     # tbb version('2021.1.1', sha256='535290e3910a9d906a730b24af212afa231523cf13a668d480bade5f2a01b53b'
+    "tbb.2021.3.0" = { url="https://registrationcenter-download.intel.com/akdlm/irc_nas/17952/l_tbb_oneapi_p_2021.3.0.511_offline.sh"; sha256="0cvncglahb224d8fcrf26vqc62dwbf282s69x512w9ixiq0mwgxq"; url_name="tbb_oneapi"; };
     #mkl.version('2021.1.1', sha256='818b6bd9a6c116f4578cda3151da0612ec9c3ce8b2c8a64730d625ce5b13cc0c', expand=False)
 
     "compilers.2021.1.0" = { sha256="666b1002de3eab4b6f3770c42bcf708743ac74efeba4c05b0834095ef27a11b9"; url_name="HPCKit"; };
     "compilers.2021.2.0" = { sha256="sha256-WrxH4zqXQVwi2pGEYLuQbcrShVIzrjg/ztpWZSJWLEo="; url_name="HPCKit"; };
-    "compilers.2021.3.0" = { sha256="sha256-G3zjpPRGyUnEUkg+snC9twzNuEO/VeQLvsZO925OYz4="; url_name="HPCKit"; };
+    "compilers.2021.3.0" = { url="https://registrationcenter-download.intel.com/akdlm/irc_nas/17912/l_HPCKit_p_2021.3.0.3230_offline.sh"; sha256="sha256-G3zjpPRGyUnEUkg+snC9twzNuEO/VeQLvsZO925OYz4="; url_name="HPCKit"; };
   };
 
-  #intel.installer.oneapi.linux.installer,v=4.0.4-261
-  #intel.installer.packagemanager.linux,v=4.0.0-136.beta
-  #intel.oneapi.lin.clck,v=2021.1.1-68
-  #intel.oneapi.lin.condaindex,v=2021.1.1-58
-  #intel.oneapi.lin.dev-utilities.eclipse-file,v=2021.1.1-197
-  #intel.oneapi.lin.dev-utilities.eclipse-integration,v=2021.1.1-197
-  #intel.oneapi.lin.dev-utilities.plugins,v=2021.1.1-197
-  #intel.oneapi.lin.dev-utilities,v=2021.1.1-197
-  #intel.oneapi.lin.dpcpp-compiler.eclipse-cfg,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-compiler.eclipse-plugin-file,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-compiler.eclipse-plugin-integration,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-cpp-compiler-pro.eclipse-cfg,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-cpp-compiler-pro.eclipse-plugin-file,v=2021.1.1-189
-  #intel.oneapi.lin.dpcpp-cpp-compiler-pro.eclipse-plugin-integration,v=2021.1.1-189
-  #intel.oneapi.lin.hpckit.getting_started,v=2021.1.0-2684
-  #intel.oneapi.lin.hpckit.product,v=2021.1.0-2684
-  #intel.oneapi.lin.inspector,v=2021.1.1-42
-  #intel.oneapi.lin.itac,v=2021.1.1-42
-  #intel.oneapi.lin.oneapi-common.licensing,v=2021.1.1-60
-  #intel.oneapi.lin.oneapi-common.vars,v=2021.1.1-60
   components = {
     mpi = [
       "intel.oneapi.lin.mpi.devel,v=*"#2021.1.1-76
@@ -64,23 +30,19 @@ let
       "intel.oneapi.lin.ifort-compiler,v=*"#2021.1.1-189
       "intel.oneapi.lin.openmp,v=*"#2021.1.1-189
     ];
+    tbb = [
+      "intel.oneapi.lin.tbb.devel,v=*"
+      "intel.oneapi.lin.tbb.runtime,v=*"
+    ];
   };
-  # tbb', components='intel.oneapi.lin.tbb.devel', releases=releases, url_name='tbb_oneapi')
-  #intel.oneapi.lin.tbb.devel,v=2021.1.1-119
-  #intel.oneapi.lin.tbb.runtime,v=2021.1.1-119
   # mkl', components='intel.oneapi.lin.mkl.devel', releases=releases, url_name='onemkl')
 
   oneapiPackage = { name
     , version
   }: attrs: let
     pname = "oneapi-${name}";
-    url_name = versions."${name}.${version}".url_name;
-    sha256 = versions."${name}.${version}".sha256;
-    release_build = toString releases."${name}.${version}".build;
-    irc_id = toString releases."${name}.${version}".irc_id;
-    dir_name = releases."${name}.${version}".dir_name;
-
-    _oneapi_file = "l_${url_name}_p_${version}.${release_build}_offline.sh";
+    url = versions."${name}.${version}".url;
+    _oneapi_file = builtins.baseNameOf url;
     #self._url_name, version, release['build'])";
 
     extract = pattern: ''
@@ -103,8 +65,7 @@ let
     inherit pname version;
 
     src = prev.fetchurl {
-      url = "https://registrationcenter-download.intel.com/akdlm/irc_nas/${irc_id}/${_oneapi_file}";
-      inherit sha256;
+      inherit (versions."${name}.${version}") url sha256;
     };
 
     buildInputs = with final; [
@@ -113,7 +74,7 @@ let
 
     unpackPhase = ''
       sh $src --extract-folder oneapi -x
-      cd oneapi/l_${url_name}_p_${version}.${release_build}_offline
+      cd oneapi/$(basename ${_oneapi_file} .sh)
     '';
 
     nativeBuildInputs= [ file patchelf nix-patchtools ];
@@ -124,12 +85,6 @@ let
 
     installPhase = ''
       ${lib.concatMapStringsSep "\n" extract components."${name}"}
-      # bash('./%s' % self._oneapi_file(version, release),
-      # '-s', '-a', '-s', '--action', 'install',
-      # '--eula', 'accept',
-      # '--components',
-      # self._components,
-      # '--install-dir', prefix)
     '';
   } // attrs);
 
@@ -157,6 +112,7 @@ let
       set +x
 
       sed -i -e "s@prefix=I_MPI_SUBSTITUTE_INSTALLDIR@prefix=$out@" $out/bin/mpi*
+      sed -i -e "s@prefix=__EXEC_PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__@prefix=$out@" $out/bin/mpi*
 
       echo $libs
       autopatchelf $out $runtime
@@ -190,7 +146,7 @@ let
     patches = [];
   });
 
-  compilers_attrs = mpi: {
+  compilers_attrs = mpi: tbb: {
     langFortran = true;
     isOneApi = true;
 
@@ -205,6 +161,7 @@ let
       stdenv.cc.cc.lib
       zlib
       mpi
+      tbb
       libxml2
       libelf_0815 #libelf.so.1
       libelf # libelf.so.0
@@ -238,13 +195,6 @@ let
       # FIXME: libze_loader.so.1 (https://github.com/oneapi-src/level-zero)
       rm $out/lib/libomptarget.rtl.level0.so
       rm $runtime/lib/libpi_level_zero.so
-      rm $runtime/lib/emu/libtask_executor_emu.so* # libtbb.so.12
-      rm $runtime/lib/emu/libintelocl_emu.so* #: libtask_executor_emu.so.2021.12.6.0
-      rm $runtime/lib/emu/libcpu_device_emu.so* #: libtask_executor_emu.so.2021.12.6.0
-      rm $runtime/lib/x64/libcpu_device.so* #: libtbb.so.12
-      rm $runtime/lib/x64/libtask_executor.so* #: libtbb.so.12
-      rm $runtime/lib/x64/libintelocl.so* #: libtask_executor.so.2021.12.6.0
-
 
       rm -r $out/lib/oclfpga/ # libxerces-c-3.2_dspba.so
 
@@ -256,6 +206,46 @@ let
     passthru = {
       hardeningUnsupportedFlags = [ "stackprotector" ];
     };
+  };
+
+  hwloc_1 = lib.upgradeOverride hwloc (o: rec {
+    version = "1.11.10";
+    src = fetchurl {
+      url = "http://www.open-mpi.org/software/hwloc/v1.11/downloads/${o.pname}-${version}.tar.bz2";
+      sha256 = "1ryibcng40xcq22lsj85fn2vcvrksdx9rr3wwxpq8dw37lw0is1b";
+    };
+
+    patches = [];
+  });
+
+
+  tbb_attrs = {
+    isIntel = true;
+    outputs = [ "out" "runtime" ];
+
+    libs = (lib.concatStringsSep ":" [
+      "${stdenv.cc.libc}/lib"
+      "${gcc.cc}/lib"
+      "${gcc.cc.lib}/lib"
+    ]) + ":" + (lib.makeLibraryPath [
+      hwloc_1 # libhwloc.so.5
+      hwloc # libhwloc.so.15
+    ]);
+    preFixup = ''
+      mv out/_installdir/tbb/* $out
+      mv runtime/_installdir/tbb/* $runtime
+
+      rm -r $out/lib/ia32
+      ln -s $out/lib/intel64/gcc4.8/* $out/lib/
+      ln -s $runtime/lib/intel64/gcc4.8/* $out/lib/
+
+      (cd $runtime; find -type d -exec mkdir -vp  $out/{} \; )
+      (cd $runtime; find -type f -exec ln -vsf $runtime/{} $out/{} \; )
+
+      echo $libs
+      autopatchelf $out $runtime
+
+    '';
   };
 
   wrapCCWith = { cc
@@ -347,7 +337,7 @@ in rec {
 ### file should not be patched
 ##subprocess.call(['patchelf', '--set-rpath', rpath, file])
   oneapiPackages_2021_1_0 = with oneapiPackages_2021_1_0; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.1.0"; } (compilers_attrs mpi);
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.1.0"; } (compilers_attrs mpi tbb);
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -364,7 +354,7 @@ in rec {
   };
 
   oneapiPackages_2021_2_0 = with oneapiPackages_2021_2_0; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.2.0"; } (compilers_attrs mpi);
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.2.0"; } (compilers_attrs mpi tbb);
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -381,7 +371,7 @@ in rec {
   };
 
   oneapiPackages_2021_3_0 = with oneapiPackages_2021_3_0; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } (compilers_attrs mpi);
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } (compilers_attrs mpi tbb);
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -398,7 +388,7 @@ in rec {
   };
 
   oneapiPackages_2021_3_1 = with oneapiPackages_2021_3_1; {
-    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } (compilers_attrs mpi);
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } (compilers_attrs mpi tbb);
 
     compilers = wrapCCWith {
       cc = unwrapped;
@@ -408,6 +398,8 @@ in rec {
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.3.1"; } mpi_attrs;
+
+    tbb = oneapiPackage { name = "tbb"; version = "2021.3.0"; } tbb_attrs;
 
     /* Return a modified stdenv that uses Intel compilers */
     stdenv = mkStdEnv compilers;
