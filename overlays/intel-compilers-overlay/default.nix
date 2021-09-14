@@ -32,9 +32,9 @@ let
         inherit cc bintools libc;
       } // extraArgs; in self);
 
-      self = with self; (if (comp_url != null) then {
+      self = with self; {
         redist = pkgs.callPackage ./redist.nix { inherit version gcc; url=redist_url; sha256=redist_sha256; };
-        unwrapped = pkgs.callPackage ./compiler.nix { inherit version gcc; url=comp_url; sha256=comp_sha256; };
+        unwrapped = pkgs.callPackage ./compiler.nix { inherit version gcc mpi; url=comp_url; sha256=comp_sha256; };
 
         mkl = pkgs.callPackage ./mkl.nix { inherit version gcc redist mpi; url=comp_url; sha256=comp_sha256; };
 
@@ -61,8 +61,7 @@ let
             '';
           });
         };
-      } else {}) // {
-        mpi = if (mpi_url!=null) then pkgs.callPackage ./mpi.nix { version = mpi_version; url=mpi_url; sha256=mpi_sha256; } else null;
+        mpi = pkgs.callPackage ./mpi.nix { version = mpi_version; url=mpi_url; sha256=mpi_sha256; };
       };
     in self;
 
