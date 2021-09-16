@@ -33,7 +33,7 @@ let
       } // extraArgs; in self);
 
       self = with self; {
-        redist = pkgs.callPackage ./redist.nix { inherit version gcc; url=redist_url; sha256=redist_sha256; };
+        redist = pkgs.callPackage ./redist.nix { inherit version gcc mpi; url=redist_url; sha256=redist_sha256; };
         unwrapped = pkgs.callPackage ./compiler.nix { inherit version gcc mpi; url=comp_url; sha256=comp_sha256; };
 
         mkl = pkgs.callPackage ./mkl.nix { inherit version gcc redist mpi; url=comp_url; sha256=comp_sha256; };
@@ -66,71 +66,6 @@ let
     in self;
 
 in {
-    # https://registrationcenter.intel.com/en/products/list/
-    # https://software.intel.com/en-us/articles/intel-compiler-and-composer-update-version-numbers-to-compiler-version-number-mapping
-
-    intelPackages_2017_5_239 = intelPackages {
-      version = "2017.5.239";
-      comp_url = null;
-      redist_url = null;
-      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
-      mpi_sha256 = "02si091w8gvq7nsclngiz1ckqjy9hcf4g2apnisvrs6whk94h42s";
-    };
-    intelPackages_2017_7_259 = intelPackages {
-      version = "2017.7.259";
-      comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12856/parallel_studio_xe_2017_update7.tgz";
-      comp_sha256 = "0q331y0vlr4lrl8bwczhh8m4arqljw7sjf4r2i4gx921k2lklg0k";
-      redist_url = "https://software.intel.com/sites/default/files/managed/e1/e4/l_comp_lib_2017.7.259_comp.for_redist.tgz";
-      redist_sha256 = "06wq03l257ywklywrs6qnx7zqmx0m8f3xfqa5l8a10w9axbh8s39";
-      mpi_version = "2017.5.239";
-      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12209/l_mpi_2017.4.239.tgz";
-      mpi_sha256 = "02si091w8gvq7nsclngiz1ckqjy9hcf4g2apnisvrs6whk94h42s";
-    };
-    intelPackages_2017 = final.intelPackages_2017_7_259;
-
-    #intelPackages_2018_0_128 = intelPackages "2018.0.128";
-    # "2018.0.128"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12062/parallel_studio_xe_2018_professional_edition.tgz
-    #602c9ceb6934a3eadce5a834b066bf326ab12b9d7b448ae405c7bca09be485f0  software.intel.com_sites_default_files_managed_96_59_l_comp_lib_2018.0.128_comp.for_redist.tgz
-    #  mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12120/l_mpi_2018.0.128.tgz";
-    #  mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d5";
-    #intelPackages_2018_1_163 = intelPackages "2018.1.163";
-    # "2018.1.163"http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12375/parallel_studio_xe_2018_update1_professional_edition.tgz
-    #fe36b4de91666fdd6e8236f121105792f5f39b41e2bedf378f298e22c7e1fb8d  software.intel.com_sites_default_files_managed_aa_dc_l_comp_lib_2018.1.163_comp.for_redist.tgz
-    #  mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12414/l_mpi_2018.1.163.tgz";
-    #  mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d4";
-
-    intelPackages_2018_2_199 = intelPackages {
-      version = "2018.2.199";
-      comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12718/parallel_studio_xe_2018_update2_professional_edition.tgz";
-      comp_sha256 = "00lf287g8nffzb5pidzwg3y2k9bdzfk19spssi0p8s1czclpnmzw";
-      redist_url = "l_comp_lib_2018.2.199_comp.for_redist.tgz";
-      redist_sha256 = "6d9e5383f81296edf702351826f1bc618cd8ca0cc7a692d272a922516e997604";
-      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12748/l_mpi_2018.2.199.tgz";
-      mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d3";
-    };
-
-    intelPackages_2018_3_222 = intelPackages {
-      version = "2018.3.222";
-      comp_url ="http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/12999/parallel_studio_xe_2018_update3_professional_edition.tgz";
-      comp_sha256 = "";
-      redist_url = "l_comp_lib_2018.3.222_comp.for_redist.tgz";
-      redist_sha256 = "b9eaf0ed8b8dac01b4d169165624aafc86776c4ae5ed73f564b04090a94a1be6";
-      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13112/l_mpi_2018.3.222.tgz";
-      mpi_sha256 = "16c94p7w12hyd9x5v28hhq2dg101sx9lsvhlkzl99isg6i5x28ah";
-    };
-
-    intelPackages_2018_5_274 = intelPackages {
-      version = "2018.5.274";
-      comp_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13718/parallel_studio_xe_2018_update4_professional_edition.tgz";
-      comp_sha256 = "08ykfwmka5lgma21a3by8rl10x91m8s7myln41h0i4c4v8h47asl";
-      mpi_url = "http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/13741/l_mpi_2018.4.274.tgz";
-      mpi_sha256 = "1q6qbnfzqkxc378mj803a2g6238m0ankrf34i482z70lnhz4n4d1";
-      redist_url="https://software.intel.com/sites/default/files/managed/7a/1e/l_comp_lib_2018.5.274_comp.for_redist.tgz";
-      redist_sha256="0i1h2dc7w3bhk5m7hkqvz1ffhrhgkx294b3r73hzs32hnjgbvqrg";
-      gcc =prev.gcc7;
-    };
-    intelPackages_2018 = final.intelPackages_2018_5_274;
-
     #https://software.intel.com/en-us/articles/redistributable-libraries-for-intel-c-and-fortran-2019-compilers-for-linux
     intelPackages_2019_0_117 = intelPackages {
       version = "2019.0.117";

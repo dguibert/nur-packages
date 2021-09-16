@@ -81,10 +81,16 @@ self = stdenv.mkDerivation rec {
 
   postFixup = ''
     find $out -type d -name ia32_lin -print0 | xargs -0 -i rm -r {}
+    find $out -type d -name ia32_qnx -print0 | xargs -0 -i rm -r {} # 2019 version
+    test -e $out/intel64/lib/libtmip_mx.so && rm $out/intel64/lib/libtmip_mx.so* # intelmpi> No package found that provides library: libmyriexpress.so
+    rm -f $out/intel64/bin/tune/_hashlib.so # > No package found that provides library: libssl.so.6
+
+
 
     # FIXME release_mt/debug or debug_mt
-    ln -s $out/lib/release/* $out/lib
+    ln -s $out/lib/release/* $out/lib || true
 
+    echo "libs: $libs"
     autopatchelf "$out"
 
     wrapProgram $out/bin/mpiexec.hydra --set FI_PROVIDER_PATH $out/intel64/libfabric/lib/prov

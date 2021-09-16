@@ -61,6 +61,11 @@ self = stdenv.mkDerivation rec {
     # Fixing man path
     rm -f $out/documentation
     rm -f $out/man
+    # version 2019
+    rm -f $out/compiler/lib/intel64_lin/offload_main
+    rm -f $out/compiler/lib/intel64_lin/libioffload_target.so.5 #> No package found that provides library: libcoi_device.so.0
+
+
 
     autopatchelf "$out"
 
