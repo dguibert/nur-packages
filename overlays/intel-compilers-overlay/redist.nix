@@ -5,6 +5,9 @@
 , sha256
 , preinstDir ? "compilers_and_libraries_${version}/linux"
 , gcc
+, nix-patchtools
+, libpsm2
+, rdma-core
 }:
 
 stdenv.mkDerivation rec {
@@ -12,7 +15,7 @@ stdenv.mkDerivation rec {
   name = "intel-compilers-redist-${version}";
 
   src = fetchannex { inherit url sha256; };
-  nativeBuildInputs= [ file patchelf ];
+  nativeBuildInputs= [ file nix-patchtools ];
 
   dontPatchELF = true;
   dontStrip = true;
@@ -24,24 +27,21 @@ stdenv.mkDerivation rec {
     ln -s $out/compiler/lib/intel64_lin $out/lib
     set +xv
   '';
+
+  libs = (lib.concatStringsSep ":" [
+    "${placeholder "out"}/lib"
+    "${placeholder "out"}/mpi/intel64/lib"
+    "${placeholder "out"}/mpi/intel64/libfabric/lib"
+  ]) + ":" + (lib.makeLibraryPath [
+    stdenv.cc.libc
+    gcc.cc.lib
+    libpsm2
+    rdma-core
+  ]);
+
   preFixup = ''
-    echo "Patching rpath and interpreter..."
-    for f in $(find $out -type f -executable); do
-      type="$(file -b --mime-type $f)"
-      case "$type" in
-      "application/executable"|"application/x-executable")
-        echo "Patching executable: $f"
-        patchelf --set-interpreter $(echo ${glibc}/lib/ld-linux*.so.2) --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
-        ;;
-      "application/x-sharedlib"|"application/x-pie-executable")
-        echo "Patching library: $f"
-        patchelf --set-rpath ${glibc}/lib:\$ORIGIN:\$ORIGIN/../lib:${gcc.cc.lib}/lib $f || true
-        ;;
-      *)
-        echo "$f ($type) not patched"
-        ;;
-      esac
-    done
+    find $out -type d -name ia32_lin -print0 | xargs -0 -i rm -r {}
+    autopatchelf "$out"
 
     echo "Fixing path into scripts..."
     for file in `grep -l -r "${preinstDir}/" $out`
