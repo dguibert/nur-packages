@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*
 ;; Configure use-package to use system (nix) packages
 ;; inspired from https://www.srid.ca/vanilla-emacs-nixos.html
 (require 'package)
@@ -6,7 +7,6 @@
 (require 'use-package)
 ;; Setup use package that must use system packages
 (use-package use-package-ensure-system-package :ensure t)
-
 
 ;; Turn off some crufty defaults
 (setq
@@ -313,6 +313,7 @@
      (latex   . t)
      (emacs-lisp . t)))
   ;;; execute block evaluation without confirmation
+  (setq org-latex-listings t)
   ;(setq org-confirm-babel-evaluate nil)
   (setq org-ellipsis " ▾")
   ;; Agenda
@@ -363,30 +364,142 @@
 ; https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
 (use-package org-roam
   :ensure t
+  :demand t  ;; Ensure org-roam is loaded by default
   :init
   (setq org-roam-v2-ack t)
-  :bind
-  (("C-c n l" . org-roam-buffer-toggle)
-   ("C-c n f" . org-roam-node-find)
-   ("C-c n i" . org-roam-node-insert)
-   ("C-c n g" . org-roam-graph)
-   :map org-mode-map
-   ("C-M-i"    . completion-at-point))
   :custom
-  (org-roam-directory (concat (getenv "HOME") "/Documents/roam/"))
-  (org-roam-completion-everywhere t) ; M-x completion-at-point (roam:Node)
+  (org-roam-directory "~/Documents/roam")
+  (org-roam-completion-everywhere t)
+  (org-roam-dailies-capture-templates
+   '(("d" "default" entry "* %<%I:%M %p>: %?"
+             :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
   (org-roam-capture-templates
    '(("d" "default" plain
       "%?"
       :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t)))
+      :unnarrowed t)
+     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+      :unnarrowed t)
+     ("b" "book notes" plain (file "~/Documents/roam/templates/BookNoteTemplate.org")
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+       :unnarrowed t)
+     ))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n I" . org-roam-node-insert-immediate)
+         ("C-c n p" . my/org-roam-find-project)
+         ("C-c n t" . my/org-roam-capture-task)
+         ("C-c n b" . my/org-roam-capture-inbox)
+         :map org-mode-map
+         ("C-M-i" . completion-at-point)
+         :map org-roam-dailies-map
+         ("Y" . org-roam-dailies-capture-yesterday)
+         ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
   :config
   (setq org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
         org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
         )
+  (require 'org-roam-dailies) ;; Ensure the keymap is available
+                                        ;(org-roam-db-autosync-mode)
+  (org-roam-setup))
 
-  (org-roam-setup)
-)
+(defun org-roam-node-insert-immediate (arg &rest args)
+  (interactive "P")
+  (let ((args (push arg args))
+        (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                  '(:immediate-finish t)))))
+    (apply #'org-roam-node-insert args)))
+
+(defun my/org-roam-filter-by-tag (tag-name)
+  (lambda (node)
+    (member tag-name (org-roam-node-tags node))))
+
+(defun my/org-roam-list-notes-by-tag (tag-name)
+  (mapcar #'org-roam-node-file
+          (seq-filter
+           (my/org-roam-filter-by-tag tag-name)
+           (org-roam-node-list))))
+
+(defun my/org-roam-refresh-agenda-list ()
+  (interactive)
+  (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
+
+;; Build the agenda list the first time for the session
+(my/org-roam-refresh-agenda-list)
+
+(defun my/org-roam-project-finalize-hook ()
+  "Adds the captured project file to `org-agenda-files' if the
+capture was not aborted."
+  ;; Remove the hook since it was added temporarily
+  (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+
+  ;; Add project file to the agenda list if the capture was confirmed
+  (unless org-note-abort
+    (with-current-buffer (org-capture-get :buffer)
+      (add-to-list 'org-agenda-files (buffer-file-name)))))
+
+(defun my/org-roam-find-project ()
+  (interactive)
+  ;; Add the project file to the agenda after capture is finished
+  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+
+  ;; Select a project file to open, creating it if necessary
+  (org-roam-node-find
+   nil
+   nil
+   (my/org-roam-filter-by-tag "Project")
+   :templates
+   '(("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
+      :unnarrowed t))))
+
+(defun my/org-roam-capture-inbox ()
+  (interactive)
+  (org-roam-capture- :node (org-roam-node-create)
+                     :templates '(("i" "inbox" plain "* %?"
+                                   :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+
+(defun my/org-roam-capture-task ()
+  (interactive)
+  ;; Add the project file to the agenda after capture is finished
+  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+
+  ;; Capture the new task, creating the project file if necessary
+  (org-roam-capture- :node (org-roam-node-read
+                            nil
+                            (my/org-roam-filter-by-tag "Project"))
+                     :templates '(("p" "project" plain "** TODO %?"
+                                   :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                          "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+                                                          ("Tasks"))))))
+
+(defun my/org-roam-copy-todo-to-today ()
+  (interactive)
+  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+        (org-roam-dailies-capture-templates
+         '(("t" "tasks" entry "%?"
+            :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+        (org-after-refile-insert-hook #'save-buffer)
+        today-file
+        pos)
+    (save-window-excursion
+      (org-roam-dailies--capture (current-time) t)
+      (setq today-file (buffer-file-name))
+      (setq pos (point)))
+
+    ;; Only refile if the target file is different than the current file
+    (unless (equal (file-truename today-file)
+                   (file-truename (buffer-file-name)))
+      (org-refile nil nil (list "Tasks" today-file nil pos)))))
+
+(add-to-list 'org-after-todo-state-change-hook
+             (lambda ()
+               (when (equal org-state "DONE")
+                 (my/org-roam-copy-todo-to-today))))
 
 ;; Since the org module lazy loads org-protocol (waits until an org URL is
 ;; detected), we can safely chain `org-roam-protocol' to it.
@@ -428,9 +541,14 @@
   )
 
 ;;;; Actually start using templates
-;;(after! org-capture
+(setq org-capture-templates
+  '(("m" "Email Workflow")
+    ("mf" "Follow Up" entry (file+olp "~/Documents/roam/Mail.org" "Follow Up")
+     "* TODO Follow up with %:fromname on %:subject\nSCHEDULED:%t\n%a\n%i" :immediate-finish t)
+    ("mr" "Read Later" entry (file+olp "~/Documents/roam/Mail.org" "Read Later")
+     "* TODO Read %:subject\nSCHEDULED:%t\n%a\n\n%i" :immediate-finish t)
+   ))
 ;;        ;; Firefox and Chrome
-;;        (add-to-list 'org-capture-templates
 ;;                     '("P" "Protocol" entry ; key, name, type
 ;;                       (file+headline +org-capture-notes-file "Inbox") ; target
 ;;                       "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?"
@@ -442,7 +560,6 @@
 ;;                       "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
 ;;                       :prepend t
 ;;                       :kill-buffer t))
-;;        )
 
 (use-package org-ref
   :config
@@ -466,14 +583,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(helm-minibuffer-history-key "M-p")
  '(notmuch-saved-searches
-   '(
-     (:name "unread" :query "tag:inbox and tag:unread")
+   '((:name "unread" :query "tag:inbox and tag:unread")
      (:name "inbox" :query "tag:inbox" :key "i")
      (:name "flagged" :query "tag:flagged" :key "f")
      (:name "drafts" :query "tag:draft" :key "d")
-     (:name "all mail" :query "*" :key "a")
-     )))
+     (:name "all mail" :query "*" :key "a")))
+ '(package-selected-packages
+   '(ox-moderncv which-key visual-fill-column use-package-ensure-system-package rainbow-delimiters org-tree-slide org-roam-bibtex org-noter org-download org-contrib org-bullets ob-async notmuch nix-mode magit ivy-rich gnus-alias gnuplot general evil-visualstar evil-surround evil-numbers evil-matchit evil-leader evil-collection doom-themes doom-modeline direnv counsel-projectile cmake-mode all-the-icons-ivy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -485,3 +603,17 @@
 
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
+
+(use-package org-tree-slide
+  :custom
+  (org-image-actual-width nil))
+
+;(use-package ox-moderncv
+;  :ensure t
+;  :init (require 'ox-moderncv))
+(with-eval-after-load 'ox-latex
+(add-to-list 'org-latex-classes
+'("moderncv"
+"\\documentclass{moderncv}"
+("\\section{%s}" . "\\section*{%s}")
+("\\subsection{%s}" . "\\subsection*{%s}"))))

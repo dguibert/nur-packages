@@ -41,9 +41,11 @@
       ENVRC = "emacs";
       buildInputs = with pkgs; let
       in [
+        biber
         my-texlive
         my-emacs
         gnuplot
+
       ];
     };
   })) // rec {
