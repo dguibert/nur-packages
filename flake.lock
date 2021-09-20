@@ -2,11 +2,11 @@
   "nodes": {
     "flake-utils": {
       "locked": {
-        "lastModified": 1623875721,
-        "narHash": "sha256-A8BU7bjS5GirpAUv4QA+QnJ4CceLHkcXdRp4xITDB0s=",
+        "lastModified": 1631561581,
+        "narHash": "sha256-3VQMV5zvxaVLvqqUrNz3iJelLw30mIVSfZmAaauM3dA=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "f7e004a55b120c02ecb6219596820fcd32ca8772",
+        "rev": "7e5bf3925f6fbdfaf50a2a7ca0be2879c4261d19",
         "type": "github"
       },
       "original": {
@@ -69,12 +69,13 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1628846295,
-        "narHash": "sha256-ZDdrKqFluum2vKoy2vCrj8q296OoC7IkcJsbJOTatpY=",
-        "owner": "dguibert",
-        "repo": "nixpkgs",
-        "rev": "aacc96f555829f112e53972e2cd1ef9557c3923f",
-        "type": "github"
+        "lastModified": 1631800540,
+        "narHash": "sha256-wS1fP+rQIKK6MbVWw1CH+6oEOEa2Hb0oWkIS9Q9cjh8=",
+        "ref": "pu",
+        "rev": "c375b0349e2e8c605a6c978d883b77b8099f271c",
+        "revCount": 316724,
+        "type": "git",
+        "url": "file:///home/dguibert/code/nixpkgs"
       },
       "original": {
         "owner": "dguibert",

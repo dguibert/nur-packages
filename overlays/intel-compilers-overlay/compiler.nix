@@ -5,6 +5,9 @@
 , url
 , sha256
 , preinstDir ? "opt/intel/compilers_and_libraries_${version}/linux"
+, nix-patchtools
+, mpi
+, makeWrapper
 }:
 
 let
@@ -28,7 +31,7 @@ self = stdenv.mkDerivation rec {
 
   src = fetchannex { inherit url sha256; };
 
-  nativeBuildInputs= [ file patchelf ];
+  nativeBuildInputs= [ file patchelf nix-patchtools makeWrapper ];
 
   dontPatchELF = true;
   dontStrip = true;
@@ -46,31 +49,25 @@ self = stdenv.mkDerivation rec {
     set +xv
   '';
 
+  libs = (lib.concatStringsSep ":" [
+    "${placeholder "out"}/compiler/lib/intel64_lin"
+  ]) + ":" + (lib.makeLibraryPath [
+    stdenv.cc.libc
+    gcc.cc.lib
+    mpi
+  ]);
+
   preFixup = ''
     # Fixing man path
     rm -f $out/documentation
     rm -f $out/man
+    # version 2019
+    rm -f $out/compiler/lib/intel64_lin/offload_main
+    rm -f $out/compiler/lib/intel64_lin/libioffload_target.so.5 #> No package found that provides library: libcoi_device.so.0
 
-    #TODO keep $ORIGIN:$ORIGIN/../lib
-    #autopatchelf "$out"
 
-    echo "Patching rpath and interpreter..."
-    for f in $(find $out -type f -executable); do
-      type="$(file -b --mime-type $f)"
-      case "$type" in
-      "application/executable"|"application/x-executable")
-        echo "Patching executable: $f"
-        patchelf --set-interpreter $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2) --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
-        ;;
-      "application/x-sharedlib"|"application/x-pie-executable")
-        echo "Patching library: $f"
-        patchelf --set-rpath ${stdenv.cc.libc.out}/lib:${gcc.cc}/lib:${gcc.cc.lib}/lib:\$ORIGIN:\$ORIGIN/../lib $f || true
-        ;;
-      *)
-        echo "$f ($type) not patched"
-        ;;
-      esac
-    done
+
+    autopatchelf "$out"
 
     echo "Fixing path into scripts..."
     for file in `grep -l -r "/${preinstDir}/" $out`
@@ -78,21 +75,13 @@ self = stdenv.mkDerivation rec {
       sed -e "s,/${preinstDir}/,$out,g" -i $file
     done
 
-    libc=$(dirname $(dirname $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2)))
-    for comp in icc icpc ifort ; do
-      echo "-idirafter $libc/include -dynamic-linker $(echo ${stdenv.cc.libc.out}/lib/ld-linux*.so.2)" >> $out/bin/intel64/$comp.cfg
-    done
+    ln -s $out/bin/intel64/* $out/bin/
+    ln -s $out/compiler/lib/intel64_lin $out/lib
 
     for comp in icc icpc ifort xild xiar; do
-      echo "#!/bin/sh" > $out/bin/$comp
-
-      echo "export PATH=${gcc}/bin:${gcc.cc}/bin:\$PATH" >> $out/bin/$comp
-      echo "source $out/bin/compilervars.sh intel64" >> $out/bin/$comp
-      echo "$out/bin/intel64/$comp \"\$@\"" >> $out/bin/$comp
-      chmod +x $out/bin/$comp
+      wrapProgram $out/bin/$comp --prefix PATH : "${gcc}/bin:${gcc.cc}/bin"
     done
 
-    ln -s $out/compiler/lib/intel64_lin $out/lib
   '';
 
   enableParallelBuilding = true;
