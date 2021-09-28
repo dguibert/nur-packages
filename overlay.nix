@@ -71,6 +71,9 @@ final: prev: with final; {
         openmpi = "CC=${mpi}/bin/mpicc CXX=${mpi}/bin/mpicxx F77=${mpi}/bin/mpif77 FC=${mpi}/bin/mpif90";
         none = "";
       };
+      nvhpc = {
+        none = "CC=pgcc CXX=pgc++ FC=pgf90";
+      };
     }."${compiler_id}"."${mpi_id}";
   in builtins.trace "compilers ${compiler_id}.${mpi_id}: ${line}" line;
 

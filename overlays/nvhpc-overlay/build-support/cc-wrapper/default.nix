@@ -366,10 +366,10 @@ stdenv.mkDerivation {
       touch "$out/nix-support/libc-ldflags"
       #echo "-B${libc_lib}${libc.libdir or "/lib/"}" >> $out/nix-support/libc-crt1-cflags
     '' + optionalString (!(cc.langD or false)) ''
-      echo "-idirafter ${libc_dev}${libc.incdir or "/include"}" >> $out/nix-support/libc-cflags
+      echo "-I ${libc_dev}${libc.incdir or "/include"}" >> $out/nix-support/libc-cflags
     '' + optionalString (isGNU && (!(cc.langD or false))) ''
       for dir in "${cc}"/lib/gcc/*/*/include-fixed; do
-        echo '-idirafter' ''${dir} >> $out/nix-support/libc-cflags
+        echo '-I' ''${dir} >> $out/nix-support/libc-cflags
       done
     '' + ''
 

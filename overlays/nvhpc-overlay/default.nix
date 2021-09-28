@@ -26,6 +26,7 @@ let
     in rec {
     unwrapped = prev.callPackage ./nvhpc {
       inherit version url sha256;
+      gcc = prev.gcc8;
     };
     nvhpc = wrapCCWith (rec {
       cc = unwrapped;
@@ -33,7 +34,8 @@ let
       ];
       extraBuildCommands = ''
       ccLDFlags+=" -L${prev.numactl}/lib -rpath,${prev.numactl}/lib"
-      echo "$ccLDFlags" > $out/nix-support/cc-ldflags
+      echo "$ccLDFlags" >> $out/nix-support/cc-ldflags
+      echo "-isystem ${prev.binutils.libc.dev}/include" >> $out/nix-support/cxx-cxxflags
       '';
     } // args_);
     stdenv = prev.overrideCC prev.stdenv nvhpc;
@@ -45,6 +47,12 @@ in
     version="21.7";
     url = "https://developer.download.nvidia.com/hpc-sdk/21.7/nvhpc_2021_217_Linux_x86_64_cuda_11.4.tar.gz";
     sha256 ="sha256-4gYuC09W9LMe2I0I+MufNxvy8vsMWaBrJHODPHQsi3U=";
+    libcxx = null;
+  };
+  nvhpcPackages_21_9 = nvhpcPackages {
+    version="21.9";
+    url = "https://developer.download.nvidia.com/hpc-sdk/21.9/nvhpc_2021_219_Linux_x86_64_cuda_11.4.tar.gz";
+    sha256 ="1hf92qyp5cxpjyrdi52psb31kzfgmpwqvm8m4vcrjmmx1mifj0wj";
     libcxx = null;
   };
 }

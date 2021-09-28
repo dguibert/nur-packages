@@ -25,10 +25,10 @@ stdenv.mkDerivation {
 
   buildInputs = [ nix-patchtools more file gcc flock /* for makelocalrc */ ];
   libs = lib.makeLibraryPath [
-    stdenv.cc.cc.lib /* libstdc++.so.6 */
+    gcc.cc.lib /* libstdc++.so.6 */
     #llvmPackages_7.llvm # libLLVM.7.so
-    stdenv.cc.cc # libm
-    stdenv.glibc
+    gcc.cc # libm
+    glibc
     zlib
     ncurses
     libxml2
@@ -102,6 +102,7 @@ EOF
   passthru = {
     isClang = false;
     langFortran = true;
+    langCC = true;
     hardeningUnsupportedFlags = [ "fortify" "stackprotector" "pie" "pic" "strictoverflow" "format" ];
   };
 }
