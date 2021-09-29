@@ -247,6 +247,7 @@ final: prev: with final; {
   python36 = prev.python36.override { packageOverrides = final.pythonOverrides; };
   python37 = prev.python37.override { packageOverrides = final.pythonOverrides; };
   python38 = prev.python38.override { packageOverrides = final.pythonOverrides; };
+  python39 = prev.python39.override { packageOverrides = final.pythonOverrides; };
 
   pythonOverrides = python-self: python-super: with python-self; {
     hatchet = callPackage ./pkgs/py-hatchet {};

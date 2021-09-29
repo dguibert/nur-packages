@@ -83,25 +83,8 @@ in {
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
       pyslurm = python-super.pyslurm_19_05_0.override { slurm=final.slurm_19_05_5; };
-      cryptography = lib.upgradeOverride python-super.cryptography (o: with o; rec {
-        version = "3.4.7"; # Also update the hash in vectors.nix
-
-        src = python-super.fetchPypi {
-          inherit pname version;
-          sha256= "sha256-PRDegRbSVkljGXfLN9psvdLW+g4CgdAUpbfTNyVcpxM=";
-        };
-
-        cargoDeps = prev.rustPlatform.fetchCargoTarball {
-          inherit src;
-          sourceRoot = "${pname}-${version}/${cargoRoot}";
-          name = "${pname}-${version}";
-          sha256 = "sha256-wlD5aICI040I1k2Y0C3hetHO8orfGwvJpRwqS/ys2tQ=";
-        };
-
-
-      });
       annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
-        version = "1.3.1";
+        version = "1.4.5";
 
         # use fetchFromGitHub instead of fetchPypi because the test suite of
         # the package is not included into the PyPI tarball
@@ -109,7 +92,7 @@ in {
           rev = "v${version}";
           owner = "Lykos153";
           repo = "AnnexRemote";
-          sha256 = "sha256-CM9Xe6a/Bt0tWdqVDGAqtl5qqQYwvcbzKFj1xoLz0Hs=";
+          sha256 = "sha256-T9zC4d8gcLmFaB+3kR4/0n3LPNg5/e2WhdMknT+Uaz8=";
         };
 
       });
