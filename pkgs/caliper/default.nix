@@ -53,12 +53,12 @@ in
 
 stdenv.mkDerivation rec {
   pname = "caliper";
-  version = "2.5.0";
+  version = "2.6.0";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
     rev = "refs/tags/v${version}";
-    sha256 = "sha256-Tvgahy9xASdTuPLL1v4JbOIoAy5WVtdMQHEhiy3fLVM=";
+    sha256 = "sha256-of/4N/FpQP//agSPqnvoY3b5zKn3+KvkRxMnFFLPOOM=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ]
   ++ lib.optional enableCuda [ cudatoolkit ]
