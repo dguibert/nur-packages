@@ -71,15 +71,18 @@ stdenv.mkDerivation rec {
   '';
 
   cmakeFlags = [
+    #"-DWITH_OMPT=ON"
     "-DWITH_MPI=ON"
-    #"-DWITH_MPIT=ON"
-    "-DWITH_CALLPATH=ON"
-    "-DWITH_SYMBOLLOOKUP=On"
+    "-DWITH_MPIT=ON"
     "-DWITH_SAMPLER=ON"
     "-DWITH_GOTCHA=ON"
     "-DWITH_PAPI=ON"
+    "-DWITH_LIBDW=ON"
+    "-DWITH_LIBUNWIND=ON"
     "-DWITH_LIBPFM=ON"
     "-DWITH_DYNINST=ON" #–DDyninst_DIR=<path to Dyninst-config.cmake>
+    "-DWITH_TOOLS=ON"
+    "-DWITH_SAMPLER=ON"
     # -DWITH_CUPTI=On –DCUDA_TOOLKIT_ROOT_DIR=<cudadir> –DCUPTI_PREFIX=<path to cupti> \-DWITH_NVPROF=On
     # -DWITH_VTUNE=On –DITT_PREFIX=<path to vtune>
 
