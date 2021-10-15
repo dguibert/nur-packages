@@ -56,6 +56,7 @@
             overlays.arm
             overlays.pgi
             (import ../../envs/overlay.nix nixpkgs)
+            (import ../../emacs/overlay.nix)
             self.overlay
             (final: prev: {
               pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
@@ -85,8 +86,7 @@
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
         experimental-features = nix-command flakes ca-references recursive-nix
 
-        extra-platforms = armv7l-linux i686-linux
-        #builders = ssh://spartan501; ssh://spartan501 x86_64-linux - 16 1 benchmark,big-parallel,recursive-nix
+        #builders = @/tmp/nix--home_nfs-bguibertd-machines
       '';
     in
       "${nixConf}/opt";

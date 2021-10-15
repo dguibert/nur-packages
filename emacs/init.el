@@ -608,12 +608,6 @@ capture was not aborted."
   :custom
   (org-image-actual-width nil))
 
-;(use-package ox-moderncv
-;  :ensure t
-;  :init (require 'ox-moderncv))
-(with-eval-after-load 'ox-latex
-(add-to-list 'org-latex-classes
-'("moderncv"
-"\\documentclass{moderncv}"
-("\\section{%s}" . "\\section*{%s}")
-("\\subsection{%s}" . "\\subsection*{%s}"))))
+(setq ediff-diff-options "-w")
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
