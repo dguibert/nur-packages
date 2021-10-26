@@ -43,6 +43,10 @@
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit) ;; Make ESC quit prompts
 
+(require 'server)
+(unless (server-running-p)
+    (server-start))
+
 (use-package all-the-icons)
 (use-package doom-themes
   :after all-the-icons
@@ -611,3 +615,9 @@ capture was not aborted."
 (setq ediff-diff-options "-w")
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+(use-package auctex
+  :defer t
+  :ensure t
+  :config
+  (setq TeX-PDF-mode t))

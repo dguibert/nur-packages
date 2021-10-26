@@ -99,6 +99,8 @@ final: prev: with prev; let
       org-tree-slide
 
       org-cv
+
+      auctex
     ]) ++ [
       notmuch   # From main packages set
       ripgrep
