@@ -117,7 +117,7 @@ with lib;
   programs.git.iniContent.rerere.enabled = true;
   programs.git.iniContent.rerere.autoupdate = true;
   programs.git.iniContent.rebase.autosquash = true;
-  programs.git.iniContent.credential.helper = "password-store";
+  programs.git.iniContent.credential.helper = "cache --timeout 3600";
   programs.git.iniContent."url \"software.ecmwf.int\"".insteadOf = "ssh://git@software.ecmwf.int:7999";
   programs.git.iniContent.color.branch = "auto";
   programs.git.iniContent.color.diff = "auto";
