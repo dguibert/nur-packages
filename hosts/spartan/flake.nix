@@ -19,6 +19,8 @@
     deploy-rs.url = "github:serokell/deploy-rs";
     #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+
+    nxsession.url              = "github:dguibert/nxsession";
   };
 
   outputs = { self, nixpkgs
@@ -27,7 +29,8 @@
             , home-manager
             , base16-nix
             , deploy-rs
-            }@flakes: let
+            , ...
+            }@inputs: let
 
       # Memoize nixpkgs for different platforms for efficiency.
       defaultPkgsFor = system:
@@ -60,6 +63,7 @@
             (import ../../envs/overlay.nix nixpkgs)
             (import ../../emacs/overlay.nix)
             self.overlay
+            inputs.nxsession.overlay
           ];
           config.allowUnfree = true;
         };
