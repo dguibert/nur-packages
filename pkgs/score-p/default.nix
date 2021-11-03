@@ -12,10 +12,10 @@
 }:
 
 stdenv.mkDerivation {
-  name = "score-p-7.0";
+  name = "score-p-7.1";
   src = fetchurl {
-    url = "http://perftools.pages.jsc.fz-juelich.de/cicd/scorep/tags/scorep-7.0/scorep-7.0.tar.gz";
-    sha256 = "sha256-aPJKaOtvlOrs9QDhdEj1ZgMZRt6rdPLLoHLug2ivCZY=";
+    url = "http://perftools.pages.jsc.fz-juelich.de/cicd/scorep/tags/scorep-7.1/scorep-7.1.tar.gz";
+    sha256 = "sha256-mN6kl5ggAfuC2jQpylVmmykXoIWMcaviz+fNETOB8fc=";
   };
   buildInputs = [ otf2 mpi which gfortran zlib pkgconfig cubew cubelib /*opari*/
   ];
