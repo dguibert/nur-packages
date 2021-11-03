@@ -28,6 +28,7 @@
 , enableCuda ? false
 , cudatoolkit
 , lib
+, nix-update-script
 }:
 
 ## Service	CMake flags
@@ -53,12 +54,12 @@ in
 
 stdenv.mkDerivation rec {
   pname = "caliper";
-  version = "2.6.0";
+  version = "2.7.0";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "caliper";
     rev = "refs/tags/v${version}";
-    sha256 = "sha256-of/4N/FpQP//agSPqnvoY3b5zKn3+KvkRxMnFFLPOOM=";
+    sha256 = "sha256-hLseLz3GWEp/VV22sb7BFGYU/jZROTLttnl8eEeMEjo=";
   };
   buildInputs = [ gfortran libunwind libpfm mpi papi dyninst ]
   ++ lib.optional enableCuda [ cudatoolkit ]
@@ -93,5 +94,12 @@ stdenv.mkDerivation rec {
   ++ lib.optional enableCuda [ "-DWITH_NVTX=ON" "-DWITH_CUPTI=ON"
     "-DCUPTI_INCLUDE_DIR=${cudatoolkit}/extras/CUPTI/include"
   ];
+
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = pname;
+    };
+  };
+
 }
 
