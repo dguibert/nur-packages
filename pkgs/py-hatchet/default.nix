@@ -4,20 +4,27 @@
 
 { buildPythonPackage, fetchPypi, lib, matplotlib, numpy, pandas, pydot, pyyaml
 , fetchFromGitHub
+, nix-update-script
 }:
 
 buildPythonPackage rec {
   pname = "hatchet";
-  version = "1.3.0";
+  version = "1.3.1a0";
 
   src = fetchFromGitHub {
     owner = "hatchet";
     repo = "hatchet";
     rev = "refs/tags/v${version}";
-    sha256 = "sha256-daPDSjGcJKQLvE3MtrHUdvsIh3JynwRP7DDCXRKtxNI=";
+    sha256 = "sha256-mNXPv/SFzA2MBkb/EPovhOP3vRdfaEp2RiKFvnEPS7E=";
   };
 
   propagatedBuildInputs = [ pydot pyyaml matplotlib numpy pandas ];
+
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = pname;
+    };
+  };
 
   # TODO FIXME
   doCheck = false;
