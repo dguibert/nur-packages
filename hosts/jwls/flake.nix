@@ -29,7 +29,7 @@
             , base16-nix
             , deploy-rs
             , nxsession
-            }@flakes: let
+            }@inputs: let
 
       # Memoize nixpkgs for different platforms for efficiency.
       defaultPkgsFor = system:

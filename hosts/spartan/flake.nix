@@ -87,6 +87,7 @@
         keep-derivations = true   # Idem
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
         experimental-features = nix-command flakes ca-references recursive-nix
+        system-features = recursive-nix nixos-test benchmark big-parallel gccarch-x86-64
 
         builders = @/tmp/nix--home_nfs-bguibertd-machines
       '';
