@@ -16,7 +16,7 @@
 
     base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
     # For accessing `deploy-rs`'s utility Nix functions
-    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.url = "github:dguibert/deploy-rs";
     #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
