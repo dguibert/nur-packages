@@ -23,21 +23,18 @@ in {
     patches = (o.patches or []) ++ [
       ../../pkgs/nix-dont-remove-lustre-xattr.patch
       ../../pkgs/nix-unshare.patch
+      ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
     ];
   });
   fish = tryUpstream prev.fish (o: {
     doCheck = false;
     doInstallCheck=false;
   });
-  openssh = tryUpstream prev.openssh (o: {
+  openssh = prev.openssh.overrideAttrs (o: {
     doCheck = false;
     doInstallCheck=false;
   });
   # '/home_nfs/bguibertd/nix/store/qs8l94570y7mnykssscd4c32xl5ki4gz-openssh-8.8p1.drv'
-  openssh_gssapi = tryUpstream prev.openssh_gssapi (o: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
   # libgpg-error> ./etc/t-argparse.conf:73: error getting current user's name: System error w/o
   # errno
   libgpg-error = prev.libgpg-error.overrideAttrs (attrs: {
@@ -55,7 +52,15 @@ in {
     doInstallCheck=false;
   });
 
-  #go_bootstrap = tryUpstream prev.go_bootstrap (attrs: {
+  go_bootstrap = prev.go_bootstrap.overrideAttrs (attrs: {
+    doCheck = attrs.doCheck && !prev.go_bootstrap.stdenv.hostPlatform.isAarch64;
+  });
+  # go> --- FAIL: TestCurrent (0.00s)
+  # go> --- FAIL: TestLookup (0.00s)
+  # go> --- FAIL: TestLookupId (0.00s)
+  go_1_16 = prev.go_1_16.overrideAttrs (attrs: {
+    doCheck = attrs.doCheck && !prev.go_1_16.stdenv.hostPlatform.isAarch64;
+  });
   #  prePatch = attrs.prePatch + ''
   #    sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
   #  '';
@@ -117,11 +122,21 @@ in {
         };
 
       });
+      requests-toolbelt = tryUpstream python-super.requests-toolbelt (o: {
+        doCheck = false;
+        doInstallCheck=false;
+      });
+      trio = tryUpstream python-super.trio (o: {
+        doCheck = false;
+        doInstallCheck=false;
+      });
+
     })
   ];
 
   patchelf = prev.patchelf.overrideAttrs ( attrs: {
-    configureFlags = "--with-page-size=65536";
+    configureFlags = (attrs.configureFlags or "")
+                   + lib.optionalString (prev.patchelf.stdenv.hostPlatform.isAarch64) "--with-page-size=65536";
   });
 
 

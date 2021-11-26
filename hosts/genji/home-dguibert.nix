@@ -219,7 +219,7 @@ with lib;
 
     socat
     pv
-    nc
+    netcat
   ];
 
   programs.direnv.enable = true;

@@ -77,7 +77,7 @@
         keep-outputs = true       # Nice for developers
         keep-derivations = true   # Idem
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
-        experimental-features = nix-command flakes ca-references recursive-nix
+        experimental-features = nix-command flakes recursive-nix
         system-features = recursive-nix nixos-test benchmark big-parallel gccarch-x86-64
         #extra-platforms = i686-linux aarch64-linux
 
@@ -204,6 +204,13 @@
              if [ -e $HOME/.home-$(uname -m)/.bashrc ]; then
                  source $HOME/.home-$(uname -m)/.bashrc
              fi
+             case $HOSTNAME in
+               l0|genji0)
+               ;;
+               genji*|c*|g*|spartan*)
+               export TMP=/dev/shm; export TMPDIR=$TMP; export TEMP=$TMP; export TEMPDIR=$TMP
+               ;;
+             esac
            '';
            home.file.".inputrc".text = ''
              set show-all-if-ambiguous on
@@ -349,17 +356,24 @@
           '';
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-x86_64";
       };
+    };
+    deploy.nodes.fuji1 = {
+      hostname = "fuji1";
       profiles.hm-bguibertd-aarch64 = {
         user = "bguibertd";
         sshUser = "bguibertd";
-        path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.activationPackage
-          ''export NIX_STATE_DIR=${self.legacyPackages.aarch64-linux.nixStore}/var/nix
-            export NIX_PROFILE=${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/profile-aarch64
+        path = (nixpkgsFor "aarch64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.activationPackage
+          ''
+            set -x
+            export NIX_STATE_DIR=${self.legacyPackages.aarch64-linux.nixStore}/var/nix
+            export NIX_PROFILE=${self.legacyPackages.aarch64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/profile-aarch64
             export HOME=${self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.config.home.homeDirectory}
-            epxort PATH=${self.legacyPackages.x86_64-linux.nix}/bin:$PATH
+            export PATH=${self.legacyPackages.aarch64-linux.nix}/bin:$PATH
             rm $HOME/.nix-profile
             ln -sf $NIX_PROFILE $HOME/.nix-profile
+            nix-env --set-flag priority 80 nix
             ./activate
+            set +x
           '';
         profilePath = "${self.legacyPackages.aarch64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-aarch64";
       };
