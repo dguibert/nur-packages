@@ -19,6 +19,8 @@
     deploy-rs.url = "github:serokell/deploy-rs";
     #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+
+    nxsession.url              = "github:dguibert/nxsession";
   };
 
   outputs = { self, nixpkgs
@@ -27,7 +29,8 @@
             , home-manager
             , base16-nix
             , deploy-rs
-            }@flakes: let
+            , ...
+            }@inputs: let
 
       # Memoize nixpkgs for different platforms for efficiency.
       defaultPkgsFor = system:
@@ -36,6 +39,7 @@
           overlays =  [
             overlays.default
             nix.overlay
+            deploy-rs.overlay
             (final: prev: {
               nixStore = (self.overlay final prev).nixStore;
               nix = prev.nix.overrideAttrs (attrs: {
@@ -51,6 +55,7 @@
           inherit system;
           overlays =  [
             nix.overlay
+            deploy-rs.overlay
             overlays.default
             overlays.aocc
             overlays.flang
@@ -60,6 +65,7 @@
             (import ../../envs/overlay.nix nixpkgs)
             (import ../../emacs/overlay.nix)
             self.overlay
+            inputs.nxsession.overlay
           ];
           config.allowUnfree = true;
         };
@@ -83,13 +89,15 @@
         keep-derivations = true   # Idem
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
         experimental-features = nix-command flakes ca-references recursive-nix
+        system-features = recursive-nix nixos-test benchmark big-parallel gccarch-x86-64
+        #extra-platforms = i686-linux aarch64-linux
 
         builders = @/tmp/nix--home_nfs-bguibertd-machines
       '';
     in
       "${nixConf}/opt";
 
-  in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+  in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
        let pkgs = nixpkgsFor system;
            defPkgs = defaultPkgsFor system;
        in rec {
@@ -139,6 +147,132 @@
       homeDirectory = "/home_nfs_robin_ib/bguibertd";
       inherit system pkgs;
       configuration = { lib, ... }: {
+        imports = [
+         ({ config, pkgs, lib, ...}: {
+           programs.bash.enable = true;
+           programs.bash.profileExtra = ''
+             source $HOME/.home-$(uname -m)/.profile
+           '';
+           programs.bash.bashrcExtra = ''
+             if [ -n "$HOME" ] && [ -n "$USER" ]; then
+
+                 # Set up the per-user profile.
+                 # This part should be kept in sync with nixpkgs:nixos/modules/programs/shell.nix
+
+                 NIX_LINK=$HOME/.home-$(uname -m)/.nix-profile
+
+                 # Set up environment.
+                 # This part should be kept in sync with nixpkgs:nixos/modules/programs/environment.nix
+                 export NIX_PROFILES="/home_nfs/bguibertd/nix/var/nix/profiles/default $NIX_LINK"
+
+                 # Set $NIX_SSL_CERT_FILE so that Nixpkgs applications like curl work.
+                 if [ -e /etc/ssl/certs/ca-certificates.crt ]; then # NixOS, Ubuntu, Debian, Gentoo, Arch
+                      export NIX_SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+                 elif [ -e /etc/ssl/ca-bundle.pem ]; then # openSUSE Tumbleweed
+                      export NIX_SSL_CERT_FILE=/etc/ssl/ca-bundle.pem
+                 elif [ -e /etc/ssl/certs/ca-bundle.crt ]; then # Old NixOS
+                      export NIX_SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt
+                 elif [ -e /etc/pki/tls/certs/ca-bundle.crt ]; then # Fedora, CentOS
+                      export NIX_SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt
+                 elif [ -e "$NIX_LINK/etc/ssl/certs/ca-bundle.crt" ]; then # fall back to cacert in Nix profile
+                      export NIX_SSL_CERT_FILE="$NIX_LINK/etc/ssl/certs/ca-bundle.crt"
+                 elif [ -e "$NIX_LINK/etc/ca-bundle.crt" ]; then # old cacert in Nix profile
+                      export NIX_SSL_CERT_FILE="$NIX_LINK/etc/ca-bundle.crt"
+                 fi
+
+                 if [ -n "''${MANPATH-}" ]; then
+                     export MANPATH="$NIX_LINK/share/man:$MANPATH"
+                 fi
+
+                 export PATH="$NIX_LINK/bin:$PATH"
+                 unset NIX_LINK
+             fi
+
+             export NIX_IGNORE_SYMLINK_STORE=1 # aloy
+
+             source $HOME/.home-$(uname -m)/.bashrc
+           '';
+           home.file.".inputrc".text = ''
+             set show-all-if-ambiguous on
+             set visible-stats on
+             set page-completions off
+             # https://git.suckless.org/st/file/FAQ.html
+             set enable-keypad on
+             # http://www.caliban.org/bash/
+             #set editing-mode vi
+             #set keymap vi
+             #Control-o: ">&sortie"
+             "\e[A": history-search-backward
+             "\e[B": history-search-forward
+             "\e[1;5A": history-search-backward
+             "\e[1;5B": history-search-forward
+
+             # Arrow keys in keypad mode
+             "\C-[OA": history-search-backward
+             "\C-[OB": history-search-forward
+             "\C-[OC": forward-char
+             "\C-[OD": backward-char
+
+             # Arrow keys in ANSI mode
+             "\C-[[A": history-search-backward
+             "\C-[[B": history-search-forward
+             "\C-[[C": forward-char
+             "\C-[[D": backward-char
+
+             # mappings for Ctrl-left-arrow and Ctrl-right-arrow for word moving
+             "\e[1;5C": forward-word
+             "\e[1;5D": backward-word
+             #"\e[5C": forward-word
+             #"\e[5D": backward-word
+             "\e\e[C": forward-word
+             "\e\e[D": backward-word
+
+             $if mode=emacs
+
+             # for linux console and RH/Debian xterm
+             "\e[1~": beginning-of-line
+             "\e[4~": end-of-line
+             "\e[5~": beginning-of-history
+             "\e[6~": end-of-history
+             "\e[7~": beginning-of-line
+             "\e[3~": delete-char
+             "\e[2~": quoted-insert
+             "\e[5C": forward-word
+             "\e[5D": backward-word
+             "\e\e[C": forward-word
+             "\e\e[D": backward-word
+             "\e[1;5C": forward-word
+             "\e[1;5D": backward-word
+
+             # for rxvt
+             "\e[8~": end-of-line
+
+             # for non RH/Debian xterm, can't hurt for RH/DEbian xterm
+             "\eOH": beginning-of-line
+             "\eOF": end-of-line
+
+             # for freebsd console
+             "\e[H": beginning-of-line
+             "\e[F": end-of-line
+             $endif
+           '';
+
+           # mimeapps.list
+           # https://github.com/bobvanderlinden/nix-home/blob/master/home.nix
+           home.keyboard.layout = "fr";
+
+
+         })
+        ];
+        _module.args.pkgs = lib.mkForce pkgs;
+      };
+    };
+
+    homeConfigurations.home-bguibertd-x86_64 = home-manager.lib.homeManagerConfiguration {
+      username = "bguibertd";
+      homeDirectory = "/home_nfs_robin_ib/bguibertd/.home-x86_64";
+      inherit system pkgs;
+      configuration = { lib, ... }: {
         imports = [ (import "${base16-nix}/base16.nix")
           (import ./home-dguibert.nix)
         ];
@@ -146,11 +280,20 @@
       };
     };
 
+    homeConfigurations.home-bguibertd-aarch64 = home-manager.lib.homeManagerConfiguration {
+      username = "bguibertd";
+      homeDirectory = "/home_nfs_robin_ib/bguibertd/.home-aarch64";
+      inherit system pkgs;
+      configuration = { lib, ... }: {
+        imports = [ (import "${base16-nix}/base16.nix")
+          (import ./home-dguibert.nix)
+        ];
+        _module.args.pkgs = lib.mkForce pkgs;
+      };
+    };
 
   })) // {
-    overlay = final: prev: (import ./overlay.nix final prev) //{
-      nix_spartan = defaultPkgsFor.x86_64-linux.nix;
-    };
+    overlay = final: prev: import ./overlay.nix final prev;
 
     deploy.nodes.genji = {
       hostname = "genji";
@@ -164,10 +307,24 @@
       profiles.hm-bguibertd = {
         user = "bguibertd";
         sshUser = "bguibertd";
-        path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
+        path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
                "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix HOME_MANAGER_BACKUP_EXT=bak ./activate";
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
       };
+      profiles.hm-bguibertd-x86_64 = {
+        user = "bguibertd";
+        sshUser = "bguibertd";
+        path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd-x86_64.activationPackage
+               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix ./activate";
+        profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-x86_64";
+      };
+      #profiles.hm-bguibertd-aarch64 = {
+      #  user = "bguibertd";
+      #  sshUser = "bguibertd";
+      #  path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.activationPackage
+      #         "env NIX_STATE_DIR=${self.legacyPackages.aarch64-linux.nixStore}/var/nix ./activate";
+      #  profilePath = "${self.legacyPackages.aarch64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-aarch64";
+      #};
     };
 
     # This is highly advised, and will prevent many possible mistakes

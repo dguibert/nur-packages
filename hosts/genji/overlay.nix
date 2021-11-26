@@ -13,7 +13,7 @@ in {
     doCheck = false;
     doInstallCheck=false;
   });
-  nix = tryUpstream prev.nix (o: {
+  nix = /*tryUpstream*/ prev.nix.overrideAttrs (o: {
     doCheck = false;
     doInstallCheck=false;
     patches = (o.patches or []) ++ [
@@ -27,6 +27,15 @@ in {
     doInstallCheck=false;
   });
   coreutils = prev.coreutils.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  openssh = tryUpstream prev.openssh (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  # '/home_nfs/bguibertd/nix/store/qs8l94570y7mnykssscd4c32xl5ki4gz-openssh-8.8p1.drv'
+  openssh_gssapi = tryUpstream prev.openssh_gssapi (o: {
     doCheck = false;
     doInstallCheck=false;
   });
