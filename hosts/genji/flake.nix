@@ -201,7 +201,8 @@
                      export PATH="$NIX_LINK/bin:$PATH"
                      unset NIX_LINK
                  fi
-             else
+             fi
+             if ! command -v nix &>/dev/null; then
                  if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
                    source $HOME/.nix-profile/etc/profile.d/nix.sh
                  fi
@@ -333,21 +334,41 @@
         user = "bguibertd";
         sshUser = "bguibertd";
         path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
-               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix HOME_MANAGER_BACKUP_EXT=bak ./activate";
+          ''export NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix
+            export HOME_MANAGER_BACKUP_EXT=bak
+            ./activate
+          '';
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
       };
       profiles.hm-bguibertd-x86_64 = {
         user = "bguibertd";
         sshUser = "bguibertd";
         path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd-x86_64.activationPackage
-               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix HOME=${self.homeConfigurations.x86_64-linux.home-bguibertd-x86_64.config.home.homeDirectory} ./activate";
+          ''
+            set -x
+            export NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix
+            export NIX_PROFILE=${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/profile-x86_64
+            export HOME=${self.homeConfigurations.x86_64-linux.home-bguibertd-x86_64.config.home.homeDirectory}
+            export PATH=${self.legacyPackages.x86_64-linux.nix}/bin:$PATH
+            rm $HOME/.nix-profile
+            ln -sf $NIX_PROFILE $HOME/.nix-profile
+             ./activate
+            set +x
+          '';
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-x86_64";
       };
       profiles.hm-bguibertd-aarch64 = {
         user = "bguibertd";
         sshUser = "bguibertd";
         path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.activationPackage
-               "env NIX_STATE_DIR=${self.legacyPackages.aarch64-linux.nixStore}/var/nix HOME=${self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.config.home.homeDirectory} ./activate";
+          ''export NIX_STATE_DIR=${self.legacyPackages.aarch64-linux.nixStore}/var/nix
+            export NIX_PROFILE=${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/profile-aarch64
+            export HOME=${self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.config.home.homeDirectory}
+            epxort PATH=${self.legacyPackages.x86_64-linux.nix}/bin:$PATH
+            rm $HOME/.nix-profile
+            ln -sf $NIX_PROFILE $HOME/.nix-profile
+            ./activate
+          '';
         profilePath = "${self.legacyPackages.aarch64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-aarch64";
       };
     };
