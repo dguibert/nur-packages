@@ -343,13 +343,13 @@
                "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix HOME=${self.homeConfigurations.x86_64-linux.home-bguibertd-x86_64.config.home.homeDirectory} ./activate";
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-x86_64";
       };
-      #profiles.hm-bguibertd-aarch64 = {
-      #  user = "bguibertd";
-      #  sshUser = "bguibertd";
-      #  path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.activationPackage
-      #         "env NIX_STATE_DIR=${self.legacyPackages.aarch64-linux.nixStore}/var/nix ./activate";
-      #  profilePath = "${self.legacyPackages.aarch64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-aarch64";
-      #};
+      profiles.hm-bguibertd-aarch64 = {
+        user = "bguibertd";
+        sshUser = "bguibertd";
+        path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.activationPackage
+               "env NIX_STATE_DIR=${self.legacyPackages.aarch64-linux.nixStore}/var/nix HOME=${self.homeConfigurations.aarch64-linux.home-bguibertd-aarch64.config.home.homeDirectory} ./activate";
+        profilePath = "${self.legacyPackages.aarch64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm-aarch64";
+      };
     };
 
     # This is highly advised, and will prevent many possible mistakes
