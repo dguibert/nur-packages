@@ -224,6 +224,7 @@ final: prev: with final; {
 
   nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
 
+  nss_sss = callPackage ./pkgs/sssd/nss-client.nix { };
 
   nvptx-newlib = final.callPackage ./pkgs/nvptx-newlib { };
   nvptx-tools = final.callPackage ./pkgs/nvptx-tools { };
