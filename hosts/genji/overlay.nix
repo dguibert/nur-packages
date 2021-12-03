@@ -22,15 +22,10 @@ in {
     doInstallCheck=false;
     patches = (o.patches or []) ++ [
       ../../pkgs/nix-dont-remove-lustre-xattr.patch
-      ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
       ../../pkgs/nix-unshare.patch
     ];
   });
   fish = tryUpstream prev.fish (o: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
-  coreutils = prev.coreutils.overrideAttrs (attrs: {
     doCheck = false;
     doInstallCheck=false;
   });
@@ -43,10 +38,23 @@ in {
     doCheck = false;
     doInstallCheck=false;
   });
-  #libuv = tryUpstream prev.libuv (attrs: {
-  #  doCheck = false;
-  #  doInstallCheck=false;
-  #});
+  # libgpg-error> ./etc/t-argparse.conf:73: error getting current user's name: System error w/o
+  # errno
+  libgpg-error = prev.libgpg-error.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+
+  libuv = prev.libuv.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  # test-getaddrinfo
+  gnutls = prev.gnutls.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+
   #go_bootstrap = tryUpstream prev.go_bootstrap (attrs: {
   #  prePatch = attrs.prePatch + ''
   #    sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
@@ -59,11 +67,11 @@ in {
   #    sed -i '/TestLchown/aif true \{ return\; \}' src/os/os_unix_test.go
   #  '';
   #});
-  #p11-kit = tryUpstream prev.p11-kit (attrs: {
-  #  enableParallelBuilding = false;
-  #  doCheck = false;
-  #  doInstallCheck=false;
-  #});
+  p11-kit = tryUpstream prev.p11-kit (attrs: {
+    enableParallelBuilding = false;
+    doCheck = false;
+    doInstallCheck=false;
+  });
   jobs = prev.jobs._override (self: with self; {
     admin_scripts_dir = "/home_nfs/script/admin";
     #scheduler = prev.jobs.scheduler_slurm;
@@ -111,5 +119,11 @@ in {
       });
     })
   ];
+
+  patchelf = prev.patchelf.overrideAttrs ( attrs: {
+    configureFlags = "--with-page-size=65536";
+  });
+
+
 }
 

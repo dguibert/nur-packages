@@ -33,26 +33,12 @@
             }@inputs: let
 
       # Memoize nixpkgs for different platforms for efficiency.
-      defaultPkgsFor = system:
-        import nixpkgs {
-          inherit system;
-          overlays =  [
-            overlays.default
-            nix.overlay
-            deploy-rs.overlay
-            (final: prev: {
-              nixStore = (self.overlay final prev).nixStore;
-              nix = prev.nix.overrideAttrs (attrs: {
-                doCheck = false;
-                doInstallCheck=false;
-              });
-            })
-          ];
-          config.allowUnfree = true;
-        };
       nixpkgsFor = system:
         import nixpkgs {
-          inherit system;
+          localSystem = {
+            inherit system;
+            # gcc = { arch = "x86-64" /*target*/; };
+          };
           overlays =  [
             nix.overlay
             deploy-rs.overlay
@@ -67,7 +53,10 @@
             self.overlay
             inputs.nxsession.overlay
           ];
-          config.allowUnfree = true;
+          config = {
+            replaceStdenv = import ../../stdenv.nix;
+            allowUnfree = true;
+          };
         };
 
     overlays = import ../../overlays;
@@ -99,13 +88,12 @@
 
   in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
        let pkgs = nixpkgsFor system;
-           defPkgs = defaultPkgsFor system;
        in rec {
 
     legacyPackages = pkgs;
 
     defaultApp = apps.nix;
-    apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with defPkgs; let
+    apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with pkgs; let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
         NIX_CONF_DIR = NIX_CONF_DIR_fun pkgs;
       # https://gist.githubusercontent.com/cleverca22/bc86f34cff2acb85d30de6051fa2c339/raw/03a36bbced6b3ae83e46c9ea9286a3015e8285ee/doit.sh
@@ -120,16 +108,16 @@
         set -x
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         export NIX_STORE=${nixStore}/store
-        export PATH=${defPkgs.nix}/bin:$PATH
+        export PATH=${pkgs.nix}/bin:$PATH
         $@
       '');
     };
 
-    devShell = with defPkgs; mkShell rec {
+    devShell = with pkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      nativeBuildInputs = [ defPkgs.nix jq
-        deploy-rs.packages.${system}.deploy-rs
+      nativeBuildInputs = [ pkgs.nix jq
+        #deploy-rs.packages.${system}.deploy-rs
       ];
       shellHook = ''
         export ENVRC=${name}
@@ -163,6 +151,7 @@
            programs.bash.enable = true;
            programs.bash.profileExtra = ''
              if [ -e $HOME/.home-$(uname -m)/.profile ]; then
+               unset __HM_SESS_VARS_SOURCED # redefined below
                source $HOME/.home-$(uname -m)/.profile
              fi
            '';
@@ -211,7 +200,9 @@
 
              export NIX_IGNORE_SYMLINK_STORE=1 # aloy
 
-             source $HOME/.home-$(uname -m)/.bashrc
+             if [ -e $HOME/.home-$(uname -m)/.bashrc ]; then
+                 source $HOME/.home-$(uname -m)/.bashrc
+             fi
            '';
            home.file.".inputrc".text = ''
              set show-all-if-ambiguous on
