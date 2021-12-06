@@ -117,6 +117,7 @@
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       nativeBuildInputs = [ pkgs.nix jq
+        pkgs.deploy-rs.deploy-rs
         #deploy-rs.packages.${system}.deploy-rs
       ];
       shellHook = ''

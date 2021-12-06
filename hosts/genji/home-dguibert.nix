@@ -216,6 +216,10 @@ with lib;
     #Mitos
     #MemAxes
     python3
+
+    socat
+    pv
+    nc
   ];
 
   programs.direnv.enable = true;

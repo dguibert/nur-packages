@@ -67,7 +67,7 @@ in {
   #    sed -i '/TestLchown/aif true \{ return\; \}' src/os/os_unix_test.go
   #  '';
   #});
-  p11-kit = tryUpstream prev.p11-kit (attrs: {
+  p11-kit = prev.p11-kit.overrideAttrs (attrs: {
     enableParallelBuilding = false;
     doCheck = false;
     doInstallCheck=false;
