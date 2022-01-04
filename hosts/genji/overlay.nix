@@ -122,13 +122,13 @@ in {
         };
 
       });
-      requests-toolbelt = tryUpstream python-super.requests-toolbelt (o: {
-        doCheck = false;
-        doInstallCheck=false;
-      });
-      trio = tryUpstream python-super.trio (o: {
-        doCheck = false;
-        doInstallCheck=false;
+      #requests-toolbelt = tryUpstream python-super.requests-toolbelt (o: {
+      #  doCheck = false;
+      #  doInstallCheck=false;
+      #});
+      trio = /*tryUpstream*/ python-super.trio.overrideAttrs (o: {
+        doCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
+        doInstallCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
       });
 
     })

@@ -6,7 +6,8 @@
   inputs = {
     nixpkgs.url          = "github:dguibert/nixpkgs/pu-cluster";
 
-    nix.url              = "github:dguibert/nix/pu";
+    #nix.url              = "github:dguibert/nix/pu";
+    nix.url              = "github:dguibert/nix/a828ef7ec896e4318d62d2bb5fd391e1aabf242e";
     nix.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -14,13 +15,14 @@
     home-manager. url    = "github:dguibert/home-manager/pu";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
+    base16-nix           = { url  = "github:dguibert/base16-nix"; flake=false; };
     # For accessing `deploy-rs`'s utility Nix functions
     deploy-rs.url = "github:dguibert/deploy-rs/pu";
     #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
     nxsession.url              = "github:dguibert/nxsession";
+    nxsession.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs
@@ -137,6 +139,13 @@
       inherit system pkgs;
       configuration = { lib, ... }: {
         imports = [
+          ({ ... }: {
+            home.sessionVariablesFileName = "hm-session-vars.sh";
+            home.sessionVariablesGuardVar = "__HM_SESS_VARS_SOURCED";
+            home.pathName = "home-manager-path";
+            home.gcLinkName = "current-home";
+            home.generationLinkNamePrefix = "home-manager";
+          })
          ({ config, pkgs, lib, ...}: {
            nixpkgs.overlays = [
              nix.overlay
@@ -152,7 +161,6 @@
            programs.bash.enable = true;
            programs.bash.profileExtra = ''
              if [ -e $HOME/.home-$(uname -m)/.profile ]; then
-               unset __HM_SESS_VARS_SOURCED # redefined below
                source $HOME/.home-$(uname -m)/.profile
              fi
            '';
@@ -295,6 +303,13 @@
       configuration = { lib, ... }: {
         imports = [ (import "${base16-nix}/base16.nix")
           (import ./home-dguibert.nix)
+          ({ ... }: {
+            home.sessionVariablesFileName = "hm-x86_64-session-vars.sh";
+            home.sessionVariablesGuardVar = "__HM_X86_64_SESS_VARS_SOURCED";
+            home.pathName = "home-manager-x86_64_path";
+            home.gcLinkName = "current-home-x86_64";
+            home.generationLinkNamePrefix = "home-manager-x86_64";
+          })
         ];
         _module.args.pkgs = lib.mkForce pkgs;
       };
@@ -307,6 +322,13 @@
       configuration = { lib, ... }: {
         imports = [ (import "${base16-nix}/base16.nix")
           (import ./home-dguibert.nix)
+          ({ ... }: {
+            home.sessionVariablesFileName = "hm-aarch64-session-vars.sh";
+            home.sessionVariablesGuardVar = "__HM_AARCH64_SESS_VARS_SOURCED";
+            home.pathName = "home-manager-aarch64_path";
+            home.gcLinkName = "current-home-aarch64";
+            home.generationLinkNamePrefix = "home-manager-aarch64";
+          })
         ];
         _module.args.pkgs = lib.mkForce pkgs;
       };
