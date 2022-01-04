@@ -4,6 +4,7 @@ let
 
   makeProg = args: prev.substituteAll (args // {
     isExecutable = true;
+    __contentAddressed = false; # https://github.com/NixOS/nix/issues/4764
   });
 
   nix_pass = makeProg {
