@@ -217,11 +217,14 @@ with lib;
 
     nxsession
 
-    socat
     # testing (removed 20171122)
     #Mitos
     #MemAxes
-    #python3
+    python3
+
+    socat
+    pv
+    netcat
   ];
 
   programs.direnv.enable = true;
