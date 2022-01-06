@@ -54,6 +54,10 @@
         path = ./templates/env_flake;
         description = "A bery basic env for my project";
       };
+      terraform = {
+        path = ./templates/terraform;
+        description = "A template to use terranix/terraform";
+      };
     };
     defaultTemplate = self.templates.env_flake;
 
