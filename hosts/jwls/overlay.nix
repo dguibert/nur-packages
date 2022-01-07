@@ -8,28 +8,58 @@ final: prev: with final; let
 in {
   nixStore = builtins.trace "nixStore=/p/project/prcoe08/guibert1/nix" "/p/project/prcoe08/guibert1/nix";
 
+  nix_2_3 = tryUpstream prev.nix_2_3 (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
   nixStable = tryUpstream prev.nixStable (o: {
     doCheck = false;
     doInstallCheck=false;
   });
-  nix = tryUpstream prev.nix (o: {
+  nix = /*tryUpstream*/ prev.nix.overrideAttrs (o: {
     doCheck = false;
     doInstallCheck=false;
     patches = (o.patches or []) ++ [
       ../../pkgs/nix-dont-remove-lustre-xattr.patch
-      ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
       ../../pkgs/nix-unshare.patch
+      ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
     ];
   });
-  fish = tryUpstream prev.fish (attrs: {
+  fish = tryUpstream prev.fish (o: {
     doCheck = false;
     doInstallCheck=false;
   });
-  #libuv = tryUpstream prev.libuv (attrs: {
-  #  doCheck = false;
-  #  doInstallCheck=false;
-  #});
-  #go_bootstrap = tryUpstream prev.go_bootstrap (attrs: {
+  openssh = prev.openssh.overrideAttrs (o: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  # '/home_nfs/bguibertd/nix/store/qs8l94570y7mnykssscd4c32xl5ki4gz-openssh-8.8p1.drv'
+  # libgpg-error> ./etc/t-argparse.conf:73: error getting current user's name: System error w/o
+  # errno
+  libgpg-error = prev.libgpg-error.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+
+  libuv = prev.libuv.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+  # test-getaddrinfo
+  gnutls = prev.gnutls.overrideAttrs (attrs: {
+    doCheck = false;
+    doInstallCheck=false;
+  });
+
+  go_bootstrap = prev.go_bootstrap.overrideAttrs (attrs: {
+    doCheck = attrs.doCheck && !prev.go_bootstrap.stdenv.hostPlatform.isAarch64;
+  });
+  # go> --- FAIL: TestCurrent (0.00s)
+  # go> --- FAIL: TestLookup (0.00s)
+  # go> --- FAIL: TestLookupId (0.00s)
+  go_1_16 = prev.go_1_16.overrideAttrs (attrs: {
+    doCheck = attrs.doCheck && !prev.go_1_16.stdenv.hostPlatform.isAarch64;
+  });
   #  prePatch = attrs.prePatch + ''
   #    sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
   #  '';
@@ -41,11 +71,11 @@ in {
   #    sed -i '/TestLchown/aif true \{ return\; \}' src/os/os_unix_test.go
   #  '';
   #});
-  #p11-kit = tryUpstream prev.p11-kit (attrs: {
-  #  enableParallelBuilding = false;
-  #  doCheck = false;
-  #  doInstallCheck=false;
-  #});
+  p11-kit = prev.p11-kit.overrideAttrs (attrs: {
+    enableParallelBuilding = false;
+    doCheck = false;
+    doInstallCheck=false;
+  });
   jobs = prev.jobs._override (self: with self; {
     #scheduler = prev.jobs.scheduler_slurm;
     defaultJob = sbatchJob;
@@ -78,7 +108,7 @@ in {
     (python-self: python-super: {
       pyslurm = python-super.pyslurm_19_05_0.override { slurm=final.slurm_19_05_7; };
       annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
-        version = "1.3.1";
+        version = "1.4.5";
 
         # use fetchFromGitHub instead of fetchPypi because the test suite of
         # the package is not included into the PyPI tarball
@@ -86,10 +116,19 @@ in {
           rev = "v${version}";
           owner = "Lykos153";
           repo = "AnnexRemote";
-          sha256 = "sha256-CM9Xe6a/Bt0tWdqVDGAqtl5qqQYwvcbzKFj1xoLz0Hs=";
+          sha256 = "sha256-T9zC4d8gcLmFaB+3kR4/0n3LPNg5/e2WhdMknT+Uaz8=";
         };
 
       });
+      #requests-toolbelt = tryUpstream python-super.requests-toolbelt (o: {
+      #  doCheck = false;
+      #  doInstallCheck=false;
+      #});
+      trio = /*tryUpstream*/ python-super.trio.overrideAttrs (o: {
+        doCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
+        doInstallCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
+      });
+
     })
   ];
 }

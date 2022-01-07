@@ -6,7 +6,8 @@
   inputs = {
     nixpkgs.url          = "github:dguibert/nixpkgs/pu-cluster"; # autogen> RPATH of binary /p/home/jusers/guibert1/shared/nix/store/sz2zsddmdxznnrgrbqi5wygbyv4dxcp9-autogen-5.18.16-bin/bin/columns contains a forbidden reference to /tmp/nix-build-autogen-5.18.16.drv-0/
 
-    nix.url              = "github:dguibert/nix/pu";
+    #nix.url              = "github:dguibert/nix/pu";
+    nix.url              = "github:dguibert/nix/a828ef7ec896e4318d62d2bb5fd391e1aabf242e";
     nix.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -14,12 +15,14 @@
     home-manager. url    = "github:dguibert/home-manager/pu";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    base16-nix           = { url  = "github:atpotts/base16-nix"; flake=false; };
+    base16-nix           = { url  = "github:dguibert/base16-nix"; flake=false; };
     # For accessing `deploy-rs`'s utility Nix functions
-    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.url = "github:dguibert/deploy-rs/pu";
+    #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
     nxsession.url              = "github:dguibert/nxsession";
+    nxsession.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs
@@ -32,23 +35,15 @@
             }@inputs: let
 
       # Memoize nixpkgs for different platforms for efficiency.
-      defaultPkgsFor = system:
-        import nixpkgs {
-          inherit system;
-          overlays =  [
-            overlays.default
-            nix.overlay
-            (final: prev: {
-              nixStore = (self.overlay final prev).nixStore;
-            })
-          ];
-          config.allowUnfree = true;
-        };
       nixpkgsFor = system:
         import nixpkgs {
-          inherit system;
+          localSystem = {
+            inherit system;
+            # gcc = { arch = "x86-64" /*target*/; };
+          };
           overlays =  [
             nix.overlay
+            deploy-rs.overlay
             overlays.default
             overlays.aocc
             overlays.flang
@@ -61,9 +56,12 @@
             (final: prev: {
               pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
             })
-            nxsession.overlay
+            inputs.nxsession.overlay
           ];
-          config.allowUnfree = true;
+          config = {
+            replaceStdenv = import ../../stdenv.nix;
+            allowUnfree = true;
+          };
         };
 
     overlays = import ../../overlays;
@@ -84,7 +82,9 @@
         keep-outputs = true       # Nice for developers
         keep-derivations = true   # Idem
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
-        experimental-features = nix-command flakes ca-references recursive-nix
+        experimental-features = nix-command flakes recursive-nix
+        system-features = recursive-nix nixos-test benchmark big-parallel gccarch-x86-64
+        #extra-platforms = i686-linux aarch64-linux
 
         #builders = @/tmp/nix--home_nfs-bguibertd-machines
       '';
@@ -93,13 +93,12 @@
 
   in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
        let pkgs = nixpkgsFor system;
-           defPkgs = defaultPkgsFor system;
        in rec {
 
     legacyPackages = pkgs;
 
     defaultApp = apps.nix;
-    apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with defPkgs; let
+    apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with pkgs; let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
         NIX_CONF_DIR = NIX_CONF_DIR_fun pkgs;
       # https://gist.githubusercontent.com/cleverca22/bc86f34cff2acb85d30de6051fa2c339/raw/03a36bbced6b3ae83e46c9ea9286a3015e8285ee/doit.sh
@@ -114,16 +113,17 @@
         set -x
         export XDG_CACHE_HOME=$HOME/.cache/${name}
         export NIX_STORE=${nixStore}/store
-        export PATH=${defPkgs.nix}/bin:$PATH
+        export PATH=${pkgs.nix}/bin:$PATH
         $@
       '');
     };
 
-    devShell = with defPkgs; mkShell rec {
+    devShell = with pkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
-      nativeBuildInputs = [ defPkgs.nix jq
-        deploy-rs.packages.${system}.deploy-rs
+      nativeBuildInputs = [ pkgs.nix jq
+        pkgs.deploy-rs.deploy-rs
+        #deploy-rs.packages.${system}.deploy-rs
       ];
       shellHook = ''
         export ENVRC=${name}
@@ -150,17 +150,20 @@
 
 
   })) // {
-    overlay = final: prev: (import ./overlay.nix final prev) //{
-      nix_spartan = defaultPkgsFor.x86_64-linux.nix;
-    };
+    overlay = final: prev: import ./overlay.nix final prev;
 
     deploy.nodes.jwls = {
       hostname = "juwels-booster";
       profiles.guibert1-hm = {
         user = "guibert1";
         sshUser = "guibert1";
-        path = deploy-rs.lib.x86_64-linux.activate.custom self.homeConfigurations.x86_64-linux.home-guibert1.activationPackage
-               "env NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix HOME_MANAGER_BACKUP_EXT=bak ./activate";
+        path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-guibert1.activationPackage
+          ''
+            set -x
+            export NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix
+            export HOME_MANAGER_BACKUP_EXT=bak
+            ./activate
+          '';
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/guibert1/hm";
       };
     };
