@@ -11,12 +11,12 @@
 }:
 
 stdenv.mkDerivation {
-  name = "lo2s-1.2.2-22-g53c0b85";
+  name = "lo2s-1.4.0";
   src = fetchFromGitHub {
     owner = "tud-zih-energy";
     repo = "lo2s";
     rev = "53c0b85166bf50208838380186e50350f6e79f14";
-    sha256 = "sha256-pYwBkTd0Hr7cF9wsmSEn5tessg92b64JGeqdBqO0/3I=";
+    sha256 = "sha256-ylan66n5HwO3EVrWn+3WI0eYNhnsa+sSy8Z0zKCx2rk=";
     fetchSubmodules = true;
     leaveDotGit = true;
   };
