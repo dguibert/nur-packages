@@ -1,7 +1,8 @@
 { stdenv, fetchFromGitHub, otf2, muster, openmpi, cmake, qt5, boost }:
 
 stdenv.mkDerivation {
-  name = "ravel";
+  pname = "ravel";
+  version = "1.0.0";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "ravel";
