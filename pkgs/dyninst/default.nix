@@ -9,12 +9,12 @@
 }:
 
 stdenv.mkDerivation {
-  name = "dyninst-10.1.0";
+  name = "dyninst-12.0.1";
   src = fetchFromGitHub {
     owner = "dyninst";
     repo = "dyninst";
-    rev = "refs/tags/v10.1.0";
-    sha256 = "sha256-7WO1RwlSfFVoUfLIJL25Y7dMvpx5Z5jl5G9fnoobRgg=";
+    rev = "refs/tags/v12.0.1";
+    sha256 = "sha256-nL3DQ9+7awbpqYBy8DTiO0o5rSYMW7Hj3tkR7EfDTwY=";
   };
   nativeBuildInputs = [ cmake ];
   buildInputs = [ boost elfutils libelf libdwarf libiberty tbb ];
