@@ -164,6 +164,7 @@ with lib;
 
     gitAndTools.gitRemoteGcrypt
     gitAndTools.git-crypt
+    perlPackages.GitAutofixup
 
     gnumake
     #nix-repl
