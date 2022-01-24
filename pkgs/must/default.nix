@@ -10,7 +10,8 @@
 }:
 
 stdenv.mkDerivation {
-  name = "must-1.6.0-rc1";
+  pname = "must";
+  version="1.6.0-rc1";
   src = fetchurl {
     url = "https://doc.itc.rwth-aachen.de/download/attachments/7373495/MUST-v1.6-rc1.tar.gz?version=1&modificationDate=1520357610000&api=v2";
     sha256 = "0pvrvcxh15r2ps7dvg1p88s8bg6c0s0rwin8a69c476l883qvz00";
