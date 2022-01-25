@@ -12,7 +12,8 @@
 }:
 
 stdenv.mkDerivation {
-  name = "score-p-7.1";
+  pname = "score-p";
+  version="7.1";
   src = fetchurl {
     url = "http://perftools.pages.jsc.fz-juelich.de/cicd/scorep/tags/scorep-7.1/scorep-7.1.tar.gz";
     sha256 = "sha256-mN6kl5ggAfuC2jQpylVmmykXoIWMcaviz+fNETOB8fc=";
