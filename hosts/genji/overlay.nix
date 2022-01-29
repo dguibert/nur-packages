@@ -5,62 +5,44 @@ final: prev: with final; let
     #if (builtins.tryEval (isBroken drv)).success
     #then (isBroken drv) # should fail and use our override
     #else drv.overrideAttrs attrs;
+    dontCheck = drv: drv.overrideAttrs (o: {
+      doCheck = false;
+      doInstallCheck = false;
+    });
+    upstreamFails = drv: tryUpstream drv (o: {
+      doCheck = false;
+      doInstallCheck = false;
+    });
 in {
   #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
   nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
-  nix_2_3 = tryUpstream prev.nix_2_3 (o: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
-  nixStable = tryUpstream prev.nixStable (o: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
-  nix = /*tryUpstream*/ prev.nix.overrideAttrs (o: {
-    doCheck = false;
-    doInstallCheck=false;
+  nix_2_3 = upstreamFails prev.nix_2_3;
+  nixStable = upstreamFails prev.nixStable;
+  nix = /*tryUpstream*/ (dontCheck prev.nix).overrideAttrs (o: {
     patches = (o.patches or []) ++ [
-      ../../pkgs/nix-dont-remove-lustre-xattr.patch
+      #../../pkgs/nix-dont-remove-lustre-xattr.patch
       ../../pkgs/nix-unshare.patch
-      ../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
+      #../../pkgs/nix-sqlite-unix-dotfiles-for-nfs.patch
     ];
   });
-  fish = tryUpstream prev.fish (o: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
-  openssh = prev.openssh.overrideAttrs (o: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  fish = upstreamFails prev.fish;
+
   # '/home_nfs/bguibertd/nix/store/qs8l94570y7mnykssscd4c32xl5ki4gz-openssh-8.8p1.drv'
-  # libgpg-error> ./etc/t-argparse.conf:73: error getting current user's name: System error w/o
-  # errno
-  libgpg-error = prev.libgpg-error.overrideAttrs (attrs: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  # libgpg-error> ./etc/t-argparse.conf:73: error getting current user's name: System error w/o errno
+  openssh = dontCheck prev.openssh;
 
-  libuv = prev.libuv.overrideAttrs (attrs: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  libgpg-error = dontCheck prev.libgpg-error;
+
+  libuv = dontCheck prev.libuv;
   # test-getaddrinfo
-  gnutls = prev.gnutls.overrideAttrs (attrs: {
-    doCheck = false;
-    doInstallCheck=false;
-  });
+  gnutls = dontCheck prev.gnutls;
 
-  go_bootstrap = prev.go_bootstrap.overrideAttrs (attrs: {
-    doCheck = attrs.doCheck && !prev.go_bootstrap.stdenv.hostPlatform.isAarch64;
-  });
+  go_bootstrap = dontCheck prev.go_bootstrap;
   # go> --- FAIL: TestCurrent (0.00s)
   # go> --- FAIL: TestLookup (0.00s)
   # go> --- FAIL: TestLookupId (0.00s)
-  go_1_16 = prev.go_1_16.overrideAttrs (attrs: {
-    doCheck = attrs.doCheck && !prev.go_1_16.stdenv.hostPlatform.isAarch64;
-  });
+  go_1_16 = dontCheck prev.go_1_16;
   #  prePatch = attrs.prePatch + ''
   #    sed -i '/TestChown/aif true \{ return\; \}' src/os/os_unix_test.go
   #  '';
@@ -72,10 +54,8 @@ in {
   #    sed -i '/TestLchown/aif true \{ return\; \}' src/os/os_unix_test.go
   #  '';
   #});
-  p11-kit = prev.p11-kit.overrideAttrs (attrs: {
+  p11-kit = (dontCheck prev.p11-kit).overrideAttrs (attrs: {
     enableParallelBuilding = false;
-    doCheck = false;
-    doInstallCheck=false;
   });
   jobs = prev.jobs._override (self: with self; {
     admin_scripts_dir = "/home_nfs/script/admin";
