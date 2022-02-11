@@ -320,7 +320,7 @@
     overlay = final: prev: import ./overlay.nix final prev;
 
     deploy.nodes.betzy = {
-      hostname = "betzy.sigma.no";
+      hostname = "betzy.sigma2.no";
       profilesOrder = [
         "hm-dguibert-x86_64"
         "hm-dguibert"

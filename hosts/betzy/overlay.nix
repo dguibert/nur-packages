@@ -83,28 +83,62 @@ in {
     '';
   };
   #slurm = final.slurm_20_11_8;
+  libmysqlclient_3_2 = final.mariadb-connector-c_3_2;
+  mariadb-connector-c_3_2 = prev.mariadb-connector-c_3_2.overrideAttrs (o: rec {
+    version = "3.2.5";
+    src = fetchurl {
+      url = "https://dlm.mariadb.com/1936363/Connectors/c/connector-c-3.2.5/mariadb-connector-c-3.2.5-src.tar.gz";
+      sha256 = "0w0fimdiiqrrm012iflz8l4rnafryq7y0qqijzxn7nwzxhm9jsr9";
+    };
+
+  });
 
   pythonOverrides = prev.lib.composeOverlays [
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
       #pyslurm = python-super.pyslurm_20_11_8.override { slurm=final.slurm_20_11_8; };
-      annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
-        version = "1.4.5";
+      #annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
+      #  version = "1.4.5";
 
-        # use fetchFromGitHub instead of fetchPypi because the test suite of
-        # the package is not included into the PyPI tarball
-        src = fetchFromGitHub {
-          rev = "v${version}";
-          owner = "Lykos153";
-          repo = "AnnexRemote";
-          sha256 = "sha256-T9zC4d8gcLmFaB+3kR4/0n3LPNg5/e2WhdMknT+Uaz8=";
-        };
+      #  # use fetchFromGitHub instead of fetchPypi because the test suite of
+      #  # the package is not included into the PyPI tarball
+      #  src = fetchFromGitHub {
+      #    rev = "v${version}";
+      #    owner = "Lykos153";
+      #    repo = "AnnexRemote";
+      #    sha256 = "sha256-T9zC4d8gcLmFaB+3kR4/0n3LPNg5/e2WhdMknT+Uaz8=";
+      #  };
 
-      });
+      #});
       #requests-toolbelt = tryUpstream python-super.requests-toolbelt (o: {
       #  doCheck = false;
       #  doInstallCheck=false;
       #});
+      brotli = python-super.brotli.overrideAttrs (o: rec {
+        version = "1.0.9";
+
+        # PyPI doesn't contain tests so let's use GitHub
+        src = fetchFromGitHub {
+          owner = "google";
+          repo = o.pname;
+          rev = "v${version}";
+          sha256 = "sha256-AnhOM1mtiMf3ryly+jiTYOAGhyDSoDvjC3Fp+F4StEU=";
+          # for some reason, the test data isn't captured in releases, force a git checkout
+          deepClone = true;
+        };
+      });
+      datalad = python-super.datalad.overrideAttrs (o: rec {
+        version = "0.15.4";
+
+        src = fetchFromGitHub {
+          owner = "datalad";
+          repo = "datalad";
+          rev = "refs/tags/${version}";
+          sha256 = "sha256-6QwXqusf+YgKFuR8iTcTr/e60mNmK4hQaMsc7Kh/Nv8=";
+        };
+
+      });
+
       trio = /*tryUpstream*/ python-super.trio.overrideAttrs (o: {
         doCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
         doInstallCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
