@@ -6,8 +6,8 @@
   inputs = {
     nixpkgs.url          = "github:dguibert/nixpkgs/pu-cluster";
 
-    #nix.url              = "github:dguibert/nix/pu";
-    nix.url              = "github:dguibert/nix/a828ef7ec896e4318d62d2bb5fd391e1aabf242e";
+    nix.url              = "github:dguibert/nix/pu";
+    #nix.url              = "github:dguibert/nix/a828ef7ec896e4318d62d2bb5fd391e1aabf242e";
     nix.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -345,7 +345,7 @@
             export NIX_PROFILE=${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/dguibert/profile-x86_64
             export HOME=${self.homeConfigurations.x86_64-linux.home-dguibert-x86_64.config.home.homeDirectory}
             export PATH=${self.legacyPackages.x86_64-linux.nix}/bin:$PATH
-            rm $HOME/.nix-profile
+            rm -rf $HOME/.nix-profile
             ln -sf $NIX_PROFILE $HOME/.nix-profile
              ./activate
             set +x
