@@ -331,6 +331,7 @@
         path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-dguibert.activationPackage
           ''export NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix
             export HOME_MANAGER_BACKUP_EXT=bak
+            nix-env --set-flag priority 80 nix
             ./activate
           '';
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/dguibert/hm";
@@ -345,6 +346,7 @@
             export NIX_PROFILE=${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/dguibert/profile-x86_64
             export HOME=${self.homeConfigurations.x86_64-linux.home-dguibert-x86_64.config.home.homeDirectory}
             export PATH=${self.legacyPackages.x86_64-linux.nix}/bin:$PATH
+            mkdir -p $HOME
             rm -rf $HOME/.nix-profile
             ln -sf $NIX_PROFILE $HOME/.nix-profile
              ./activate
