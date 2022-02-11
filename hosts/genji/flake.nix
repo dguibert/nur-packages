@@ -6,8 +6,8 @@
   inputs = {
     nixpkgs.url          = "github:dguibert/nixpkgs/pu-cluster";
 
-    #nix.url              = "github:dguibert/nix/pu";
-    nix.url              = "github:dguibert/nix/a828ef7ec896e4318d62d2bb5fd391e1aabf242e";
+    nix.url              = "github:dguibert/nix/pu";
+    #nix.url              = "github:dguibert/nix/a828ef7ec896e4318d62d2bb5fd391e1aabf242e";
     nix.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
