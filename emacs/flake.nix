@@ -7,6 +7,8 @@
   #inputs.nix-ccache.url       = "github:dguibert/nix-ccache/pu";
   #inputs.nix-ccache.inputs.nixpkgs.follows = "nixpkgs";
 
+  inputs.emacs-overlay.url = "github:nix-community/emacs-overlay";
+
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
   outputs = { self, nixpkgs
@@ -14,12 +16,13 @@
             #, nix-ccache
             , flake-utils
             , ...
-            }@flakes: let
+            }@inputs: let
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
         overlays =  [
-          nix.overlay
+          inputs.nix.overlay
+          inputs.emacs-overlay.overlay
           overlays.default
           overlays.extra-builtins
           self.overlay

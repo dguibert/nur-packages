@@ -1,7 +1,5 @@
 final: prev: with prev; let
   # https://gist.github.com/grahamc/2daa060dce38ad18ddfa7927e1b1a1b3
-  #emacsPackaging = pkgs.emacs27-nox.pkgs;
-  emacsPackaging = emacs27.pkgs;
 
   my-texlive = (texlive.combine {
     inherit (texlive) scheme-medium
@@ -27,13 +25,11 @@ final: prev: with prev; let
     };
   };
 
-  emacsWithPackages = emacsPackaging.emacsWithPackages;
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.elpaPackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.melpaPackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.melpaStablePackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.orgPackages
-  my-emacs = ((pkgs.emacsPackagesGen emacs27).overrideScope' overrides).emacsWithPackages
-  #my-emacs = emacsWithPackages
+  my-emacs = ((pkgs.emacsPackagesGen emacsPgtkGcc).overrideScope' overrides).emacsWithPackages
     (epkgs: (with epkgs.melpaStablePackages; [
       #magit          # ; Integrate git <C-x g>
       #zerodark-theme # ; Nicolas' theme
