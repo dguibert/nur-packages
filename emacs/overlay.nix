@@ -29,82 +29,44 @@ final: prev: with prev; let
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.melpaPackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.melpaStablePackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.orgPackages
-  my-emacs = ((pkgs.emacsPackagesGen emacsPgtkGcc).overrideScope' overrides).emacsWithPackages
-    (epkgs: (with epkgs.melpaStablePackages; [
-      #magit          # ; Integrate git <C-x g>
-      #zerodark-theme # ; Nicolas' theme
-    ]) ++ (with epkgs.melpaPackages; [
-      #undo-tree      # ; <C-x u> to show the undo tree
-      #zoom-frm       # ; increase/decrease font size for all buffers %lt;C-x C-+>
-    ]) ++ (with epkgs.elpaPackages; [
-      #auctex         # ; LaTeX mode
-      #beacon         # ; highlight my cursor when scrolling
-      #nameless       # ; hide current package name everywhere in elisp code
-    ]) ++ (with epkgs; [
-      use-package
-      use-package-ensure-system-package
-      nix-mode
-      all-the-icons-ivy
-      doom-modeline
-      doom-themes
+  my-emacs = pkgs.emacsWithPackagesFromUsePackage {
+    # Your Emacs config file. Org mode babel files are also
+    # supported.
+    # NB: Config files cannot contain unicode characters, since
+    #     they're being parsed in nix, which lacks unicode
+    #     support.
+    # config = ./emacs.org;
+    config = ./init.el;
 
-      which-key
+    # Package is optional, defaults to pkgs.emacs
+    package = pkgs.emacsPgtkGcc;
 
-      evil
-      evil-leader
-      evil-collection
-      #evil-magit
-      evil-matchit
-      evil-numbers
-      evil-surround
-      evil-visualstar
+    alwaysEnsure = false;
 
-      direnv
-      notmuch
-      gnus-alias
+    # For Org mode babel files, by default only code blocks with
+    # `:tangle yes` are considered. Setting `alwaysTangle` to `true`
+    # will include all code blocks missing the `:tangle` argument,
+    # defaulting it to `yes`.
+    # Note that this is NOT recommended unless you have something like
+    # `#+PROPERTY: header-args:emacs-lisp :tangle yes` in your config,
+    # which defaults `:tangle` to `yes`.
+    alwaysTangle = true;
 
-      ivy
-      ivy-rich
-      org-bullets
-      rainbow-delimiters
+    # Optionally provide extra packages not in the configuration file.
+    extraEmacsPackages = epkgs: [
+      pkgs.notmuch   # From main packages set
+      pkgs.ripgrep
 
-      general
+      pkgs.xclip
+    ];
 
-      hydra
-
-      projectile
-      magit
-      counsel-projectile
-
-      org-download
-      ob-async
-      gnuplot
-      visual-fill-column
-
-      org-roam
-      org-roam-bibtex
-
-      org-noter
-      org-ref
-
-      cmake-mode
-
-      all-the-icons
-
-      org-contrib
-      org-tree-slide
-
-      org-cv
-
-      auctex
-    ]) ++ [
-      notmuch   # From main packages set
-      ripgrep
-
-      xclip
-      #my-mode
-      sqlite.bin
-    ]);
+    ## Optionally override derivations.
+    #override = epkgs: epkgs // {
+    #  weechat = epkgs.melpaPackages.weechat.overrideAttrs(old: {
+    #    patches = [ ./weechat-el.patch ];
+    #  });
+    #};
+  };
 
 in {
   inherit my-texlive;

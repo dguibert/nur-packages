@@ -47,8 +47,9 @@
 (unless (server-running-p)
     (server-start))
 
-(use-package all-the-icons)
+(use-package all-the-icons :ensure t)
 (use-package doom-themes
+  :ensure t
   :after all-the-icons
   :config
   (setq
@@ -89,6 +90,7 @@
  )
 
 (use-package evil
+  :ensure t
   :init ;; tweak evil's configuration before loading it
   (setq
        evil-search-module 'evil-search
@@ -103,12 +105,14 @@
 )
 
 (use-package which-key
+  :ensure t
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
 
 (use-package evil-leader
+  :ensure t
   :config
   (evil-leader/set-leader "<SPC>")
   (global-evil-leader-mode)
@@ -124,6 +128,7 @@
   )
 
 (use-package direnv
+  :ensure t
   :config
   (direnv-mode))
 
@@ -135,6 +140,7 @@
   )
 
 (use-package notmuch
+  :ensure t
   :init
   ;(setq message-directory "~/Maildir")
   (setq send-mail-function 'sendmail-send-it)
@@ -172,13 +178,16 @@
       (notmuch-show-tag (list "+deleted")))))
 
 (use-package ivy
+  :ensure t
   :diminish
   :config
   (ivy-mode 1))
 
-(use-package ivy-rich)
+(use-package ivy-rich
+  :ensure t)
 
 (use-package counsel
+  :ensure t
   :bind (("M-x" . counsel-M-x)
          ("C-x b" . counsel-ibuffer)
          ("C-x C-f" . counsel-find-file)
@@ -186,6 +195,7 @@
          ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package helpful
+  :ensure t
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
@@ -196,6 +206,7 @@
   ([remap describe-key] . helpful-key))
 
 (use-package general
+  :ensure t
   :config
   (general-create-definer rune/leader-keys
     :keymaps '(normal insert visual emacs)
@@ -207,10 +218,13 @@
     "tt" '(counsel-load-theme :which-key "choose theme")))
 
 (use-package rainbow-delimiters
+  :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package gnuplot)
-(use-package hydra)
+(use-package gnuplot
+  :ensure t)
+(use-package hydra
+  :ensure t)
 
 (defhydra hydra-text-scale (:timeout 4)
   "scale text"
@@ -222,6 +236,7 @@
   "ts" '(hydra-text-scale/body :which-key "scale text"))
 
 (use-package projectile
+  :ensure t
   :diminish projectile-mode
   :config (projectile-mode)
   :custom ((projectile-completion-system 'ivy))
@@ -234,9 +249,11 @@
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
+  :ensure t
   :config (counsel-projectile-mode))
 
 (use-package magit
+  :ensure t
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
@@ -246,8 +263,10 @@
 ;(setq tramp-verbose 10)
 (customize-set-variable 'tramp-verbose 1 "Enable remote command traces")
 
-(use-package org-download)
-(use-package ob-async)
+(use-package org-download
+  :ensure t)
+(use-package ob-async
+  :ensure t)
 
 ;; Org Mode Configuration ------------------------------------------------------
 
@@ -348,9 +367,10 @@
    ("\C-cl" . org-store-link))
 )
 
-(use-package ol-notmuch)
+(use-package ol-notmuch :ensure t)
 
 (use-package org-bullets
+  :ensure t
   :after org
   :hook (org-mode . org-bullets-mode)
   :custom
@@ -361,7 +381,7 @@
 ;        visual-fill-column-center-text 0)
 ;  (visual-fill-column-mode 1))
 
-(use-package visual-fill-column)
+(use-package visual-fill-column :ensure t)
 ;  :hook (org-mode . efs/org-mode-visual-fill))
 
 ; https://rgoswami.me/posts/org-note-workflow/
@@ -505,12 +525,8 @@ capture was not aborted."
                (when (equal org-state "DONE")
                  (my/org-roam-copy-todo-to-today))))
 
-;; Since the org module lazy loads org-protocol (waits until an org URL is
-;; detected), we can safely chain `org-roam-protocol' to it.
-(use-package org-roam-protocol
-  :after org-protocol)
-
 (use-package org-roam-bibtex
+  :ensure t
   :after (org-roam)
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
@@ -530,6 +546,7 @@ capture was not aborted."
            :unnarrowed t))))
 
 (use-package org-noter
+  :ensure t
   :after (:any org pdf-view)
   :config
   (setq
@@ -566,6 +583,7 @@ capture was not aborted."
 ;;                       :kill-buffer t))
 
 (use-package org-ref
+  :ensure t
   :config
   (setq
    org-ref-completion-library 'org-ref-ivy-cite
@@ -578,9 +596,9 @@ capture was not aborted."
    ))
 
 
-(use-package cmake-mode)
+(use-package cmake-mode :ensure t)
 
-(use-package all-the-icons)
+(use-package all-the-icons :ensure t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -593,15 +611,7 @@ capture was not aborted."
      (:name "inbox" :query "tag:inbox" :key "i")
      (:name "flagged" :query "tag:flagged" :key "f")
      (:name "drafts" :query "tag:draft" :key "d")
-     (:name "all mail" :query "*" :key "a")))
- '(package-selected-packages
-   '(ox-moderncv which-key visual-fill-column use-package-ensure-system-package rainbow-delimiters org-tree-slide org-roam-bibtex org-noter org-download org-contrib org-bullets ob-async notmuch nix-mode magit ivy-rich gnus-alias gnuplot general evil-visualstar evil-surround evil-numbers evil-matchit evil-leader evil-collection doom-themes doom-modeline direnv counsel-projectile cmake-mode all-the-icons-ivy)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+     (:name "all mail" :query "*" :key "a"))))
 
 (require 'private "~/.emacs.d/private.el")
 
@@ -609,6 +619,7 @@ capture was not aborted."
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
 
 (use-package org-tree-slide
+  :ensure t
   :custom
   (org-image-actual-width nil))
 
