@@ -83,6 +83,7 @@
         system-features = recursive-nix nixos-test benchmark big-parallel gccarch-x86-64
 
         builders = @/tmp/nix--home_nfs-bguibertd-machines
+        extra-substituters = local?root=/mnt/old/home_nfs/bguibertd&trusted=1
       '';
     in
       "${nixConf}/opt";

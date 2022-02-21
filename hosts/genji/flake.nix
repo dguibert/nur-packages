@@ -75,16 +75,16 @@
 
         system-features = recursive-nix nixos-test benchmark big-parallel kvm
         sandbox-fallback = false
-	use-sqlite-wal = false
 
         keep-outputs = true       # Nice for developers
         keep-derivations = true   # Idem
         extra-sandbox-paths = /opt/intel/licenses=/home/dguibert/nur-packages/secrets?
         experimental-features = nix-command flakes recursive-nix
         system-features = recursive-nix nixos-test benchmark big-parallel gccarch-x86-64 kvm
-        #extra-platforms = i686-linux aarch64-linux
+        extra-platforms = i686-linux aarch64-linux
 
         builders = @/tmp/nix--home_nfs-bguibertd-machines
+        extra-substituters = local?root=/mnt/old/home_nfs/bguibertd&trusted=1
       '';
     in
       "${nixConf}/opt";

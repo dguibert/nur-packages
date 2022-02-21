@@ -75,7 +75,6 @@
 
         system-features = recursive-nix nixos-test benchmark big-parallel kvm
         sandbox-fallback = false
-        use-sqlite-wal = false
 
         keep-outputs = true       # Nice for developers
         keep-derivations = true   # Idem
@@ -85,6 +84,7 @@
         #extra-platforms = i686-linux aarch64-linux
 
         #builders = @/tmp/nix--home_nfs-dguibert-machines
+        extra-substituters = local?root=/mnt/old/cluster/projects/nn9560k/dguibert&trusted=1
       '';
     in
       "${nixConf}/opt";
