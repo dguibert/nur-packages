@@ -211,6 +211,7 @@ with lib;
     tree
 
     nxsession
+    xorg.setxkbmap
 
     # testing (removed 20171122)
     #Mitos
