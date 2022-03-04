@@ -613,6 +613,8 @@ capture was not aborted."
      (:name "drafts" :query "tag:draft" :key "d")
      (:name "all mail" :query "*" :key "a"))))
 
+;; support multiple email accounts (required in private.el)
+(autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
 (require 'private "~/.emacs.d/private.el")
 
 (savehist-mode 1)
@@ -632,3 +634,13 @@ capture was not aborted."
   :ensure t
   :config
   (setq TeX-PDF-mode t))
+
+;; move customization variables to a separate file and load it
+(setq custom-file (expand-file-name "custom-vars.el" user-emacs-directory))
+(load custom-file 'noerror 'nomessage)
+
+;; revert buffers when the underlying file has changed
+(global-auto-revert-mode 1)
+;; revert dired and other buffers
+(setq golbal-auto-revert-non-file-buffers t)
+

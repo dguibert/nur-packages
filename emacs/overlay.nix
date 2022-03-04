@@ -54,6 +54,9 @@ final: prev: with prev; let
 
     # Optionally provide extra packages not in the configuration file.
     extraEmacsPackages = epkgs: [
+      epkgs.gnus-alias
+      epkgs.ol-notmuch
+
       pkgs.notmuch   # From main packages set
       pkgs.ripgrep
 
