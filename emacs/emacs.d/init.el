@@ -8,6 +8,10 @@
 ;; Setup use package that must use system packages
 (use-package use-package-ensure-system-package :ensure t)
 
+(setq gc-cons-threshold most-positive-fixnum
+      load-prefer-newer t)
+(add-to-list 'load-path (concat user-emacs-directory "site-lisp/"))
+
 ;; Turn off some crufty defaults
 (setq
    inhibit-startup-message t inhibit-startup-echo-area-message (user-login-name)
@@ -139,6 +143,150 @@
   :init (evil-collection-init)
   )
 
+(use-package notmuch-agenda
+  :defer t
+  :commands notmuch-agenda-insert-part)
+
+(use-package org-mime
+  :ensure t
+  :commands org-mime-htmlize
+  :bind
+  (:map notmuch-message-mode-map
+        ("C-c h" . org-mime-htmlize)
+        ("C-c C-c" . maybe-htmlize-send-and-exit))
+  :custom
+  (org-mime-default-header
+   "#+OPTIONS: latex:t toc:nil H:3 ^:{} broken-links:t
+")
+  (org-mime-beautify-quoted-mail nil)
+  :config
+
+  (defun narrow-to-message ()
+    (interactive)
+    (message-goto-body)
+    (narrow-to-region
+     (point)
+     (save-excursion
+       (point)
+       (or (and (search-forward-regexp
+                 (rx "<#" (| "multipart" "part" "external" "mml"))
+                 nil t)
+                (progn (beginning-of-line) t)
+                (point))
+           (point-max))))
+    (goto-char (point-min)))
+
+  (defun org-mime-maybe-htmlize ()
+    (save-match-data
+      (save-excursion
+        (save-restriction
+          (narrow-to-message)
+          (mark-whole-buffer)
+          (org-mime-htmlize)))))
+
+  ;; just do html part.
+  (defun org-mime-multipart (plain html &optional images)
+    "Markup a multipart/alternative with HTML alternatives.
+If html portion of message includes IMAGES they are wrapped in multipart/related part."
+    (concat (when images "<#multipart type=related>")
+            "<#part type=text/html>\n"
+            (if org-mime-beautify-quoted-mail
+                (org-mime-beautify-quoted html)
+              html)
+            images
+            (when images "<#/multipart>\n")))
+
+  (defun maybe-htmlize-send-and-exit ()
+    (interactive)
+    (org-mime-maybe-htmlize)
+    (notmuch-mua-send-and-exit))
+
+  (defun org-mime-pre-quotify (&rest _)
+    (save-excursion
+      (goto-char (point-min))
+      (let ((qdepth 0)
+            (qdepth* 0)
+            (last-qlstart (make-marker)))
+        (set-marker-insertion-type last-qlstart t)
+        (while (not (eobp))
+          (cond
+           ((looking-at "^ *>+")
+            (setq qdepth*
+                  (progn (search-forward-regexp "^ *\\(>+\\)\\s-*" nil t)
+                         (length (match-string 1))))
+
+            (goto-char (match-beginning 0))
+            (set-marker last-qlstart (point))
+            (delete-forward-char (- (match-end 0) (point)))
+            (when (looking-at "^\\*") (insert " ")))
+
+           ((looking-at "^\\s-*$")
+            (setq qdepth* qdepth))
+
+           (t (setq qdepth* 0)))
+
+          (cond
+           ((> qdepth* qdepth)
+            (dotimes (_ (- qdepth* qdepth))
+              (insert "#+HTML: <blockquote>\n")))
+           ((< qdepth* qdepth)
+            (save-excursion
+              (goto-char last-qlstart)
+              (forward-line)
+              (dotimes (_ (- qdepth qdepth*))
+                (insert "#+HTML: </blockquote>\n")))))
+
+          (setq qdepth qdepth*)
+          (forward-line))
+        (when (and (> qdepth 0)
+                   (not (looking-at "^$")))
+          (insert "\n"))
+        (when (and last-qlstart (> qdepth 0))
+          (save-excursion
+            (goto-char last-qlstart)
+            (forward-line)
+            (dotimes (_ qdepth)
+              (insert "#+HTML: </blockquote>\n")))
+          (set-marker last-qlstart nil))
+        )))
+
+  (defun org-mime-style-blockquote ()
+    (org-mime-change-element-style
+     "blockquote"
+     "margin:0 0 0 .8ex;border-left:3px #ccc solid;padding-left:1ex"))
+
+  (advice-add 'org-mime-htmlize :before 'org-mime-pre-quotify)
+  (add-hook 'org-mime-html-hook 'org-mime-style-blockquote))
+
+(use-package general
+  :ensure t
+  :config
+  (general-create-definer rune/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+
+  (rune/leader-keys
+    "t"  '(:ignore t :which-key "toggles")
+    "tt" '(counsel-load-theme :which-key "choose theme")))
+
+(use-package hydra
+  :ensure t)
+(use-package pretty-hydra :ensure t)
+
+(use-package major-mode-hydra :ensure t
+  :bind ("<f1>" . major-mode-hydra)
+  :commands major-mode-hydra major-mode-hydra-define)
+
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(rune/leader-keys
+  "ts" '(hydra-text-scale/body :which-key "scale text"))
+
 (use-package notmuch
   :ensure t
   :init
@@ -168,14 +316,111 @@
   ;(add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
   ;(setq notmuch-crypto-process-mime t)
   ;; Saving sent mail in folders depending on from
-)
-(define-key notmuch-show-mode-map "d"
-  (lambda ()
-    "toggle deleted tag for message"
+  :bind
+  (:map notmuch-search-mode-map
+   ("d" . notmuch-delete)
+   ("u" . notmuch-mark-read)
+   ("i" . notmuch-mark-inbox)
+   ("g" . notmuch-refresh-this-buffer)
+   ("@" . notmuch-search-person)
+   :map notmuch-show-mode-map
+   ("d" . notmuch-delete)
+   ("U" . notmuch-mark-read)
+   ("u" . notmuch-skip-to-unread)
+   )
+  :custom
+  (notmuch-search-oldest-first nil)
+  (notmuch-saved-searches
+   '((:name "unread" :query "tag:inbox and tag:unread")
+     (:name "inbox" :query "tag:inbox" :key "i")
+     (:name "flagged" :query "tag:flagged" :key "f")
+     (:name "drafts" :query "tag:draft" :key "d")
+     (:name "all mail" :query "*" :key "a"))i
+     (:name "recent"
+            :query "date:\"this week\""
+            :key "r"
+            ))
+  (notmuch-identities
+   '("David Guibert <david.guibert@gmail.com>"))
+  (notmuch-fcc-dirs
+   '(("david.guibert@gmail.com" . "david.guibert@gmail.com/mail -unread +sent")))
+  (notmuch-draft-folders
+   '(("david\\.guibert@gmail\\.com" . "david.guibert/mail +draft")))
+
+  (notmuch-address-selection-function
+   (lambda
+     (prompt collection initial-input)
+     (completing-read prompt collection nil nil nil
+                      (quote notmuch-address-history))))
+  :config
+  (require 'org-mime)
+
+  (defun notmuch-mark-read ()
     (interactive)
-    (if (member "deleted" (notmuch-show-get-tags))
-        (notmuch-show-tag (list "-deleted -inbox"))
-      (notmuch-show-tag (list "+deleted")))))
+    (notmuch-toggle-tag '("unread") t))
+
+  (defun notmuch-search-person ()
+    (interactive)
+    (let* ((options (notmuch-address-options ""))
+           (choice (ivy-completing-read
+                    "Person: "
+                    options
+                    nil
+                    nil
+                    ;; (plist-get  :authors)
+                    "" ;; TODO get author email addresses here? or stick them at the start?
+                    )))
+      (when choice
+        (notmuch-search (format "from: %s or to:%s" choice choice)))))
+
+  (defun notmuch-toggle-tag (tags advance)
+    (let* ((cur-tags
+            (cl-case major-mode
+              (notmuch-search-mode
+               (notmuch-search-get-tags))
+
+              (notmuch-show-mode
+               (notmuch-show-get-tags))))
+           (action (if (cl-intersection cur-tags tags :test 'string=) "-" "+"))
+	   (arg (mapcar (lambda (x) (concat action x)) tags)))
+
+      (cl-case major-mode
+        (notmuch-search-mode
+         (notmuch-search-tag arg)
+         (when advance (notmuch-search-next-thread)))
+        (notmuch-show-mode
+         (notmuch-show-tag arg)
+         (when advance (notmuch-show-next-matching-message))))))
+
+  (defun notmuch-mark-inbox ()
+    (interactive)
+    (notmuch-toggle-tag '("inbox") t))
+
+  (defun notmuch-mark-read ()
+    (interactive)
+    (notmuch-toggle-tag '("unread") t))
+
+  (defun notmuch-expand-calendar-parts (o msg part depth &optional hide)
+    (funcall o
+             msg part depth (and hide
+                                 (not (string= (downcase (plist-get part :content-type))
+                                               "text/calendar")))))
+
+  (advice-add 'notmuch-show-insert-bodypart :around #'notmuch-expand-calendar-parts)
+
+  (require 'notmuch-switch-identity)
+  (fset 'notmuch-show-insert-part-text/calendar #'notmuch-agenda-insert-part)
+
+
+
+)
+;(define-key notmuch-show-mode-map "d"
+;  (lambda ()
+;    "toggle deleted tag for message"
+;    (interactive)
+;    (if (member "deleted" (notmuch-show-get-tags))
+;        (notmuch-show-tag (list "-deleted -inbox"))
+;      (notmuch-show-tag (list "+deleted")))))
 
 (use-package ivy
   :ensure t
@@ -205,35 +450,12 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package general
-  :ensure t
-  :config
-  (general-create-definer rune/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-
-  (rune/leader-keys
-    "t"  '(:ignore t :which-key "toggles")
-    "tt" '(counsel-load-theme :which-key "choose theme")))
-
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package gnuplot
   :ensure t)
-(use-package hydra
-  :ensure t)
-
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
-
-(rune/leader-keys
-  "ts" '(hydra-text-scale/body :which-key "scale text"))
 
 (use-package projectile
   :ensure t
@@ -606,16 +828,11 @@ capture was not aborted."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(helm-minibuffer-history-key "M-p")
- '(notmuch-saved-searches
-   '((:name "unread" :query "tag:inbox and tag:unread")
-     (:name "inbox" :query "tag:inbox" :key "i")
-     (:name "flagged" :query "tag:flagged" :key "f")
-     (:name "drafts" :query "tag:draft" :key "d")
-     (:name "all mail" :query "*" :key "a"))))
+)
 
 ;; support multiple email accounts (required in private.el)
 (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
-(require 'private "~/.emacs.d/private.el")
+(require 'private)
 
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))

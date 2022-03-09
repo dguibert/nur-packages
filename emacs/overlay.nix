@@ -56,6 +56,13 @@ final: prev: with prev; let
     extraEmacsPackages = epkgs: [
       epkgs.gnus-alias
       epkgs.ol-notmuch
+      # notmuch-agenda
+      epkgs.cl-lib # notmuch-agenda
+      epkgs.org
+      epkgs.org-mime
+      #epkgs.org-id
+      #epkgs.org-capture
+      #epkgs.ox-icalendar
 
       pkgs.notmuch   # From main packages set
       pkgs.ripgrep
