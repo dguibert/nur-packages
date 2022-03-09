@@ -832,7 +832,7 @@ capture was not aborted."
 
 ;; support multiple email accounts (required in private.el)
 (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
-(require 'private)
+(require 'private nil t) ;; t=no signaling an error
 
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
