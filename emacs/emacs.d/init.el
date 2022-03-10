@@ -577,7 +577,7 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
   (efs/org-font-setup)
 
   (setq org-agenda-files
-        '("~/Documents/org/notes.org"
+        '(("~/Documents/org/notes.org")
           ))
   :bind
   (("\C-ca" . org-agenda)
@@ -667,7 +667,9 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
 
 (defun my/org-roam-refresh-agenda-list ()
   (interactive)
-  (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
+  (setq org-agenda-files
+        (delq nil (delete-dups
+                   (my/org-roam-list-notes-by-tag "Project")))))
 
 ;; Build the agenda list the first time for the session
 (my/org-roam-refresh-agenda-list)
