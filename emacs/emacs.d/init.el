@@ -10,20 +10,21 @@
 
 (setq gc-cons-threshold most-positive-fixnum
       load-prefer-newer t)
+(add-to-list 'load-path "~/.emacs.private/site-lisp/")
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp/"))
 
 ;; Turn off some crufty defaults
 (setq
-   inhibit-startup-message t inhibit-startup-echo-area-message (user-login-name)
-    initial-major-mode 'fundamental-mode initial-scratch-message nil
-     fill-column 120
-      locale-coding-system 'utf-8
-       )
+ inhibit-startup-message t inhibit-startup-echo-area-message (user-login-name)
+ initial-major-mode 'fundamental-mode initial-scratch-message nil
+ fill-column 120
+ locale-coding-system 'utf-8
+ )
 
 (setq-default
-    tab-width 2
-      indent-tabs-mode nil
-        )
+ tab-width 2
+ indent-tabs-mode nil
+ )
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -57,8 +58,8 @@
   :after all-the-icons
   :config
   (setq
-    doom-themes-enable-bold t
-    doom-themes-enable-italic t)
+   doom-themes-enable-bold t
+   doom-themes-enable-italic t)
   ;(load-theme 'doom-vibrant t)
   ;(load-theme 'doom-solarized-light t)
   (load-theme 'doom-solarized-dark t)
@@ -272,11 +273,6 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
 
 (use-package hydra
   :ensure t)
-(use-package pretty-hydra :ensure t)
-
-(use-package major-mode-hydra :ensure t
-  :bind ("<f1>" . major-mode-hydra)
-  :commands major-mode-hydra major-mode-hydra-define)
 
 (defhydra hydra-text-scale (:timeout 4)
   "scale text"
@@ -302,20 +298,6 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
   ;; Setting proper from, fixes i-did-not-set--mail-host-address--so-tickle-me
   (setq mail-host-address "orsin.net")
   (setq user-full-name "David Guibert")
-  :config
-  (setq notmuch-show-logo nil)
-  ;; Writing email
-  ;;(setq message-default-mail-headers "Cc: \nBcc: \n") ;; Always show BCC
-  (setq notmuch-always-prompt-for-sender 't)
-  ;; postponed message is put in the following draft directory
-  (setq message-auto-save-directory "~/Maildir/draft")
-  (setq message-kill-buffer-on-exit t)
-  ;; change the directory to store the sent mail
-  ;(setq message-directory "~/mail/")
-  ;;; PGP Encryption
-  ;(add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
-  ;(setq notmuch-crypto-process-mime t)
-  ;; Saving sent mail in folders depending on from
   :bind
   (:map notmuch-search-mode-map
    ("d" . notmuch-delete)
@@ -335,11 +317,11 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
      (:name "inbox" :query "tag:inbox" :key "i")
      (:name "flagged" :query "tag:flagged" :key "f")
      (:name "drafts" :query "tag:draft" :key "d")
-     (:name "all mail" :query "*" :key "a"))i
+     (:name "all mail" :query "*" :key "a")
      (:name "recent"
             :query "date:\"this week\""
             :key "r"
-            ))
+            )))
   (notmuch-identities
    '("David Guibert <david.guibert@gmail.com>"))
   (notmuch-fcc-dirs
@@ -353,6 +335,19 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
      (completing-read prompt collection nil nil nil
                       (quote notmuch-address-history))))
   :config
+  (setq notmuch-show-logo nil)
+  ;; Writing email
+  ;;(setq message-default-mail-headers "Cc: \nBcc: \n") ;; Always show BCC
+  (setq notmuch-always-prompt-for-sender 't)
+  ;; postponed message is put in the following draft directory
+  (setq message-auto-save-directory "~/Maildir/draft")
+  (setq message-kill-buffer-on-exit t)
+  ;; change the directory to store the sent mail
+  ;(setq message-directory "~/mail/")
+  ;;; PGP Encryption
+  ;(add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
+  ;(setq notmuch-crypto-process-mime t)
+  ;; Saving sent mail in folders depending on from
   (require 'org-mime)
 
   (defun notmuch-mark-read ()

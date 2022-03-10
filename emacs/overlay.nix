@@ -36,7 +36,7 @@ final: prev: with prev; let
     #     they're being parsed in nix, which lacks unicode
     #     support.
     # config = ./emacs.org;
-    config = ./init.el;
+    config = ./emacs.d/init.el;
 
     # Package is optional, defaults to pkgs.emacs
     package = pkgs.emacsPgtkGcc;
