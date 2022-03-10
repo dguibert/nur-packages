@@ -322,12 +322,12 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
             :query "date:\"this week\""
             :key "r"
             )))
-  (notmuch-identities
-   '("David Guibert <david.guibert@gmail.com>"))
+  ;(notmuch-identities
+  ; '("David Guibert <david.guibert@gmail.com>"))
   (notmuch-fcc-dirs
    '(("david.guibert@gmail.com" . "david.guibert@gmail.com/mail -unread +sent")))
-  (notmuch-draft-folders
-   '(("david\\.guibert@gmail\\.com" . "david.guibert/mail +draft")))
+  ;(notmuch-draft-folders
+  ; '(("david\\.guibert@gmail\\.com" . "david.guibert/mail +draft")))
 
   (notmuch-address-selection-function
    (lambda
