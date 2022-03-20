@@ -10,8 +10,8 @@
 
 (setq gc-cons-threshold most-positive-fixnum
       load-prefer-newer t)
-(add-to-list 'load-path "~/.emacs.private/site-lisp/")
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp/"))
+(add-to-list 'load-path "~/.emacs.private/site-lisp/")
 
 ;; Turn off some crufty defaults
 (setq
