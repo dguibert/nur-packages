@@ -750,3 +750,7 @@ capture was not aborted."
 ;; revert dired and other buffers
 (setq golbal-auto-revert-non-file-buffers t)
 
+(use-package nix-mode
+  :ensure t
+	:mode "\\.nix\\'")
+
