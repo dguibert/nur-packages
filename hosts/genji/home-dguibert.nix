@@ -180,7 +180,7 @@ with lib;
     bc
     unzip
 
-    sshfsFuse
+    sshfs-fuse
 
     moreutils
 
