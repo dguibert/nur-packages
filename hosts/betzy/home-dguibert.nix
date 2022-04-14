@@ -58,36 +58,36 @@ with lib;
 
   programs.bash.initExtra = ''
     # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
-    if test "$TERM" != "dumb" -o -z "$INSIDE_EMACS"; then
-      # Provide a nice prompt.
-      PS1=""
-      PS1+='\[\033[01;37m\]$(exit=$?; if [[ $exit == 0 ]]; then echo "\[\033[01;32m\]✓"; else echo "\[\033[01;31m\]✗ $exit"; fi)'
-      PS1+='$(ip netns identify 2>/dev/null)' # sudo setfacl -m u:$USER:rx /var/run/netns
-      PS1+=' ''${GIT_DIR:+ \[\033[00;32m\][$(basename $GIT_DIR)]}'
-      PS1+=' ''${ENVRC:+ \[\033[00;33m\]env:$ENVRC}'
-      PS1+=' ''${SLURM_NODELIST:+ \[\033[01;34m\][$SLURM_NODELIST]\[\033[00m\]}'
-      PS1+=' \[\033[00;32m\]\u@\h\[\033[01;34m\] \W '
-      if !  command -v __git_ps1 >/dev/null; then
-        if [ -e $HOME/code/git-prompt.sh ]; then
-          source $HOME/code/git-prompt.sh
-        fi
-      fi
-      if command -v __git_ps1 >/dev/null; then
-        PS1+='$(__git_ps1 "|%s|")'
-      fi
-      PS1+='$\[\033[00m\] '
+    test "$TERM" != "dumb" || return
 
-      export PS1
-      case $TERM in
-        dvtm*|st*|rxvt|*term)
-          trap 'echo -ne "\e]0;$BASH_COMMAND\007"' DEBUG
-        ;;
-      esac
-
-      eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
-      export BASE16_SHELL_SET_BACKGROUND=false
-      source ${config.lib.base16.base16template "shell"}
+    # Provide a nice prompt.
+    PS1=""
+    PS1+='\[\033[01;37m\]$(exit=$?; if [[ $exit == 0 ]]; then echo "\[\033[01;32m\]✓"; else echo "\[\033[01;31m\]✗ $exit"; fi)'
+    PS1+='$(ip netns identify 2>/dev/null)' # sudo setfacl -m u:$USER:rx /var/run/netns
+    PS1+=' ''${GIT_DIR:+ \[\033[00;32m\][$(basename $GIT_DIR)]}'
+    PS1+=' ''${ENVRC:+ \[\033[00;33m\]env:$ENVRC}'
+    PS1+=' ''${SLURM_NODELIST:+ \[\033[01;34m\][$SLURM_NODELIST]\[\033[00m\]}'
+    PS1+=' \[\033[00;32m\]\u@\h\[\033[01;34m\] \W '
+    if !  command -v __git_ps1 >/dev/null; then
+      if [ -e $HOME/code/git-prompt.sh ]; then
+        source $HOME/code/git-prompt.sh
+      fi
     fi
+    if command -v __git_ps1 >/dev/null; then
+      PS1+='$(__git_ps1 "|%s|")'
+    fi
+    PS1+='$\[\033[00m\] '
+
+    export PS1
+    case $TERM in
+      dvtm*|st*|rxvt|*term)
+        trap 'echo -ne "\e]0;$BASH_COMMAND\007"' DEBUG
+      ;;
+    esac
+
+    eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
+    export BASE16_SHELL_SET_BACKGROUND=false
+    source ${config.lib.base16.base16template "shell"}
 
     export TODOTXT_DEFAULT_ACTION=ls
     alias t='todo.sh'
