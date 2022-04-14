@@ -321,6 +321,17 @@
 
     deploy.nodes.betzy = {
       hostname = "betzy.sigma2.no";
+      # Fast connection to the node. If this is true, copy the whole closure instead of letting the node substitute.
+      # This defaults to `false`
+      fastConnection = true;
+
+      # If the previous profile should be re-activated if activation fails.
+      autoRollback = true;
+
+      # See the earlier section about Magic Rollback for more information.
+      # This defaults to `true`
+      magicRollback = false;
+
       profilesOrder = [
         "hm-dguibert-x86_64"
         "hm-dguibert"
