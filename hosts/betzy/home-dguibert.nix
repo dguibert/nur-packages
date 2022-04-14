@@ -58,7 +58,7 @@ with lib;
 
   programs.bash.initExtra = ''
     # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
-    if test "$TERM" != "dumb"; then
+    if test "$TERM" != "dumb" -o -z "$INSIDE_EMACS"; then
       # Provide a nice prompt.
       PS1=""
       PS1+='\[\033[01;37m\]$(exit=$?; if [[ $exit == 0 ]]; then echo "\[\033[01;32m\]✓"; else echo "\[\033[01;31m\]✗ $exit"; fi)'
@@ -83,11 +83,11 @@ with lib;
           trap 'echo -ne "\e]0;$BASH_COMMAND\007"' DEBUG
         ;;
       esac
-    fi
 
-    eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
-    export BASE16_SHELL_SET_BACKGROUND=false
-    source ${config.lib.base16.base16template "shell"}
+      eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
+      export BASE16_SHELL_SET_BACKGROUND=false
+      source ${config.lib.base16.base16template "shell"}
+    fi
 
     export TODOTXT_DEFAULT_ACTION=ls
     alias t='todo.sh'
