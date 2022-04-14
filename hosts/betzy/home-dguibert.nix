@@ -57,6 +57,10 @@ with lib;
   programs.bash.shellAliases.ls="ls --color";
 
   programs.bash.initExtra = ''
+    # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
+    if test "$TERM" = "dumb"; then
+      exit
+    fi
     # Provide a nice prompt.
     PS1=""
     PS1+='\[\033[01;37m\]$(exit=$?; if [[ $exit == 0 ]]; then echo "\[\033[01;32m\]✓"; else echo "\[\033[01;31m\]✗ $exit"; fi)'
