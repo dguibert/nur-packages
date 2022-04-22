@@ -48,15 +48,25 @@ with lib;
   #programs.bash.historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
   #programs.bash.historyIgnore = [ "ls" "cd" "clear" "[bf]g" ];
 
-  home.sessionVariables.HISTCONTROL="erasedups:ignoredups:ignorespace";
-  home.sessionVariables.HISTFILE="$HOME/.bash_history";
-  home.sessionVariables.HISTFILESIZE="";
-  home.sessionVariables.HISTIGNORE="ls:cd:clear:[bf]g";
-  home.sessionVariables.HISTSIZE="";
+  programs.bash.historySize = -1; # no truncation
+  programs.bash.historyFile = "$HOME/.bash_history";
+  programs.bash.historyFileSize = -1; # no truncation
+  programs.bash.historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
+  programs.bash.historyIgnore = [ "ls" "cd" "clear" "[bf]g"
+    " *" "cd -" "history" "history -*" "man" "man *"
+    "pwd" "exit" "date" "* --help:"
+  ];
+
 
   programs.bash.shellAliases.ls="ls --color";
 
   programs.bash.initExtra = ''
+    export HISTCONTROL
+    export HISTFILE
+    export HISTFILESIZE
+    export HISTIGNORE
+    export HISTSIZE
+    export PROMPT_COMMAND="history -n; history -w; history -c; history -r"
     # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
     test "$TERM" != "dumb" || return
 
@@ -137,7 +147,6 @@ with lib;
 
   # http://ubuntuforums.org/showthread.php?t=1150822
   ## Save and reload the history after each command finishes
-  home.sessionVariables.PROMPT_COMMAND="history -a; history -c; history -r";
   home.sessionVariables.SQUEUE_FORMAT="%.18i %.25P %35j %.8u %.2t %.10M %.6D %.6C %.6z %.15E %20R %W";
  #home.sessionVariables.SINFO_FORMAT="%30N  %.6D %.6c %15F %10t %20f %P"; # with state
   home.sessionVariables.SINFO_FORMAT="%30N  %.6D %.6c %15F %20f %P";
