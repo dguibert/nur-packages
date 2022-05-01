@@ -97,10 +97,6 @@ final: prev: with final; {
   # throw "use gitAndTools.hub instead"
   gitAndTools = (removeAttrs prev.gitAndTools ["hubUnstable"]) // {
     git-credential-password-store = final.callPackage ./pkgs/git-credential-password-store { };
-    git-crypt = prev.gitAndTools.git-crypt.overrideAttrs (attrs: {
-      # https://github.com/AGWA/git-crypt/issues/105
-      patches = (attrs.patches or []) ++ [ ./pkgs/git-crypt-support-worktree-simple-version-patch.txt ];
-    });
   };
 
   jobs = final.callPackage ./pkgs/jobs {
