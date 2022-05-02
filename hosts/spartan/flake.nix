@@ -52,7 +52,7 @@
             overlays.pgi
             (import ../../envs/overlay.nix nixpkgs)
             (import ../../emacs/overlay.nix)
-            self.overlay
+            self.overlays.default
             inputs.nxsession.overlay
           ];
           config = {
@@ -94,7 +94,7 @@
 
     legacyPackages = pkgs;
 
-    defaultApp = apps.nix;
+    apps.default = apps.nix;
     apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with pkgs; let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
         NIX_CONF_DIR = NIX_CONF_DIR_fun pkgs;
@@ -317,17 +317,21 @@
 
 
   })) // {
-    overlay = final: prev: import ./overlay.nix final prev;
+    overlays.default = final: prev: import ./overlay.nix final prev;
 
     deploy.nodes.spartan = {
       hostname = "spartan";
-      #profiles.software = rec {
-      #  user = "bguibertd";
-      #  sshUser = "bguibertd";
-      #  path = deploy-rs.lib.x86_64-linux.activate.custom self.legacyPackages.x86_64-linux.slash_software._modulefiles
-      #         "rm -f ~/software; ln -sfd ${profilePath} ~/software";
-      #  profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/software";
-      #};
+      # Fast connection to the node. If this is true, copy the whole closure instead of letting the node substitute.
+      # This defaults to `false`
+      fastConnection = true;
+
+      # If the previous profile should be re-activated if activation fails.
+      autoRollback = true;
+
+      # See the earlier section about Magic Rollback for more information.
+      # This defaults to `true`
+      magicRollback = false;
+
       profilesOrder = [
         "hm-bguibertd-x86_64"
         #"hm-bguibertd-aarch64"
@@ -339,6 +343,7 @@
         path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
           ''export NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix
             export HOME_MANAGER_BACKUP_EXT=bak
+            nix-env --set-flag priority 80 nix
             ./activate
           '';
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
@@ -353,7 +358,8 @@
             export NIX_PROFILE=${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/profile-x86_64
             export HOME=${self.homeConfigurations.x86_64-linux.home-bguibertd-x86_64.config.home.homeDirectory}
             export PATH=${self.legacyPackages.x86_64-linux.nix}/bin:$PATH
-            rm $HOME/.nix-profile
+            mkdir -p $HOME
+            rm -rf $HOME/.nix-profile
             ln -sf $NIX_PROFILE $HOME/.nix-profile
              ./activate
             set +x
