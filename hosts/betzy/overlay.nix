@@ -139,6 +139,8 @@ in {
 
       });
 
+      dnspython = upstreamFails python-super.dnspython ;
+
       trio = /*tryUpstream*/ python-super.trio.overrideAttrs (o: {
         doCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
         doInstallCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
