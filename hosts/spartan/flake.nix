@@ -115,7 +115,7 @@
       '');
     };
 
-    devShell = with pkgs; mkShell rec {
+    devShells.default = with pkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       nativeBuildInputs = [ pkgs.nix jq
@@ -147,13 +147,7 @@
             home.generationLinkNamePrefix = "home-manager";
           })
          ({ config, pkgs, lib, ...}: {
-           nixpkgs.overlays = [
-             nix.overlay
-             (import ./overlay.nix)
-             (final: prev: {
-               pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
-             })
-           ];
+           nix.package = pkgs.nixStable;
            services.gpg-agent.pinentryFlavor = lib.mkForce "curses";
            home.packages = with pkgs; [
              pkgs.nix

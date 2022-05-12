@@ -17,8 +17,9 @@ in {
   #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
   nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
-  nix_2_3 = upstreamFails prev.nix_2_3;
-  nixStable = upstreamFails prev.nixStable;
+  nixos-option = null;
+  nix_2_3 = dontCheck prev.nix_2_3;
+  nixStable = dontCheck prev.nixStable;
   nix = /*tryUpstream*/ (dontCheck prev.nix).overrideAttrs (o: {
     patches = (o.patches or []) ++ [
       #../../pkgs/nix-dont-remove-lustre-xattr.patch
@@ -89,41 +90,33 @@ in {
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
       pyslurm = python-super.pyslurm_19_05_0.override { slurm=final.slurm_19_05_5; };
-      #requests-toolbelt = tryUpstream python-super.requests-toolbelt (o: {
-      #  doCheck = false;
-      #  doInstallCheck=false;
-      #});
-      brotli = lib.upgradeOverride python-super.brotli (o: rec {
-        version = "1.0.9";
+      annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
+        version = "1.6.0";
 
-        # PyPI doesn't contain tests so let's use GitHub
+        # use fetchFromGitHub instead of fetchPypi because the test suite of
+        # the package is not included into the PyPI tarball
         src = fetchFromGitHub {
-          owner = "google";
-          repo = o.pname;
           rev = "v${version}";
-          sha256 = "sha256-AnhOM1mtiMf3ryly+jiTYOAGhyDSoDvjC3Fp+F4StEU=";
-          # for some reason, the test data isn't captured in releases, force a git checkout
-          deepClone = true;
-        };
-      });
-      datalad = lib.upgradeOverride python-super.datalad (o: rec {
-        version = "0.15.4";
-
-        src = fetchFromGitHub {
-          owner = "datalad";
-          repo = "datalad";
-          rev = "refs/tags/${version}";
-          sha256 = "sha256-6QwXqusf+YgKFuR8iTcTr/e60mNmK4hQaMsc7Kh/Nv8=";
+          owner = "Lykos153";
+          repo = "AnnexRemote";
+          sha256 = "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
         };
 
       });
 
       trio = /*tryUpstream*/ python-super.trio.overrideAttrs (o: {
-        doCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
-        doInstallCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
+        doCheck = false;
+        doInstallCheck = false;
       });
 
     })
   ];
+
+  patchelf = prev.patchelf.overrideAttrs ( attrs: {
+    configureFlags = (attrs.configureFlags or "")
+                   + lib.optionalString (prev.patchelf.stdenv.hostPlatform.isAarch64) "--with-page-size=65536";
+  });
+
+
 }
 

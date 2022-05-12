@@ -170,6 +170,7 @@ with lib;
       libX11=null; libXext=null; libSM=null; libXpm=null; libXt=null; libXaw=null; libXau=null; libXmu=null;
       libICE=null;
     })
+    duc
 
     rsync
 
