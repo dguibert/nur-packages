@@ -52,7 +52,7 @@
             overlays.pgi
             (import ../../envs/overlay.nix nixpkgs)
             (import ../../emacs/overlay.nix)
-            self.overlay
+            self.overlays.default
             inputs.nxsession.overlay
           ];
           config = {
@@ -95,7 +95,7 @@
 
     legacyPackages = pkgs;
 
-    defaultApp = apps.nix;
+    apps.default = apps.nix;
     apps.nix = flake-utils.lib.mkApp { drv = pkgs.writeScriptBin "nix-spartan" (with pkgs; let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
         NIX_CONF_DIR = NIX_CONF_DIR_fun pkgs;
@@ -116,7 +116,7 @@
       '');
     };
 
-    devShell = with pkgs; mkShell rec {
+    devShells.default = with pkgs; mkShell rec {
       name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       ENVRC = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] nixStore}";
       nativeBuildInputs = [ pkgs.nix jq
@@ -148,13 +148,7 @@
             home.generationLinkNamePrefix = "home-manager";
           })
          ({ config, pkgs, lib, ...}: {
-           nixpkgs.overlays = [
-             nix.overlay
-             (import ./overlay.nix)
-             (final: prev: {
-               pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
-             })
-           ];
+           nix.package = pkgs.nixStable;
            services.gpg-agent.pinentryFlavor = lib.mkForce "curses";
            home.packages = with pkgs; [
              pkgs.nix
@@ -317,7 +311,7 @@
     };
 
   })) // {
-    overlay = final: prev: import ./overlay.nix final prev;
+    overlays.default = final: prev: import ./overlay.nix final prev;
 
     deploy.nodes.betzy = {
       hostname = "betzy.sigma2.no";
