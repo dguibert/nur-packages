@@ -17,8 +17,9 @@ in {
   #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
   nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
 
-  nix_2_3 = upstreamFails prev.nix_2_3;
-  nixStable = upstreamFails prev.nixStable;
+  nixos-option = null;
+  nix_2_3 = dontCheck prev.nix_2_3;
+  nixStable = dontCheck prev.nixStable;
   nix = /*tryUpstream*/ (dontCheck prev.nix).overrideAttrs (o: {
     patches = (o.patches or []) ++ [
       #../../pkgs/nix-dont-remove-lustre-xattr.patch
@@ -108,8 +109,8 @@ in {
       #  doInstallCheck=false;
       #});
       trio = /*tryUpstream*/ python-super.trio.overrideAttrs (o: {
-        doCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
-        doInstallCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
+        doCheck = false;
+        doInstallCheck = false;
       });
 
     })

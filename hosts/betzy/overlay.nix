@@ -5,19 +5,20 @@ final: prev: with final; let
     #if (builtins.tryEval (isBroken drv)).success
     #then (isBroken drv) # should fail and use our override
     #else drv.overrideAttrs attrs;
-    dontCheck = drv: drv.overrideAttrs (o: {
+    dontCheck = drv: builtins.trace "don't check ${drv.name}" drv.overrideAttrs (o: {
       doCheck = false;
       doInstallCheck = false;
     });
-    upstreamFails = drv: tryUpstream drv (o: {
+    upstreamFails = drv: builtins.trace "upstream ${drv.name} fails" tryUpstream drv (o: {
       doCheck = false;
       doInstallCheck = false;
     });
 in {
   nixStore = builtins.trace "nixStore=/cluster/projects/nn9560k/dguibert/nix" "/cluster/projects/nn9560k/dguibert/nix";
 
-  nix_2_3 = upstreamFails prev.nix_2_3;
-  nixStable = upstreamFails prev.nixStable;
+  nixos-option = null;
+  nix_2_3 = dontCheck prev.nix_2_3;
+  nixStable = dontCheck prev.nixStable;
   nix = /*tryUpstream*/ (dontCheck prev.nix).overrideAttrs (o: {
     patches = (o.patches or []) ++ [
       #../../pkgs/nix-dont-remove-lustre-xattr.patch
@@ -128,23 +129,12 @@ in {
           deepClone = true;
         };
       });
-      datalad = lib.upgradeOverride python-super.datalad (o: rec {
-        version = "0.15.4";
-
-        src = fetchFromGitHub {
-          owner = "datalad";
-          repo = "datalad";
-          rev = "refs/tags/${version}";
-          sha256 = "sha256-6QwXqusf+YgKFuR8iTcTr/e60mNmK4hQaMsc7Kh/Nv8=";
-        };
-
-      });
 
       dnspython = upstreamFails python-super.dnspython ;
 
       trio = /*tryUpstream*/ python-super.trio.overrideAttrs (o: {
-        doCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
-        doInstallCheck = !python-super.trio.stdenv.hostPlatform.isAarch64;
+        doCheck = false;
+        doInstallCheck = false;
       });
 
     })
