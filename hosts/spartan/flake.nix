@@ -337,7 +337,7 @@
         path = (nixpkgsFor "x86_64-linux").deploy-rs.lib.activate.custom self.homeConfigurations.x86_64-linux.home-bguibertd.activationPackage
           ''export NIX_STATE_DIR=${self.legacyPackages.x86_64-linux.nixStore}/var/nix
             export HOME_MANAGER_BACKUP_EXT=bak
-            nix-env --set-flag priority 80 nix
+            nix-env --set-flag priority 80 nix || true
             ./activate
           '';
         profilePath = "${self.legacyPackages.x86_64-linux.nixStore}/var/nix/profiles/per-user/bguibertd/hm";
