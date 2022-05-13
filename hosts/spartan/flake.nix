@@ -139,6 +139,7 @@
       inherit system pkgs;
       configuration = { lib, ... }: {
         imports = [
+          (import "${base16-nix}/base16.nix")
           ({ ... }: {
             home.sessionVariablesFileName = "hm-session-vars.sh";
             home.sessionVariablesGuardVar = "__HM_SESS_VARS_SOURCED";
@@ -147,17 +148,58 @@
             home.generationLinkNamePrefix = "home-manager";
           })
          ({ config, pkgs, lib, ...}: {
+           # Choose your themee
+           themes.base16 = {
+             enable = true;
+             scheme = "solarized";
+             variant = "solarized-dark";
+
+             # Add extra variables for inclusion in custom templates
+             extraParams = {
+               fontname = lib.mkDefault  "Inconsolata LGC for Powerline";
+           #headerfontname = mkDefault  "Cabin";
+               bodysize = lib.mkDefault  "10";
+               headersize = lib.mkDefault  "12";
+               xdpi= lib.mkDefault ''
+                     Xft.hintstyle: hintfull
+               '';
+             };
+           };
+           home.file.".vim/base16.vim".source = config.lib.base16.base16template "vim";
+           #config.lib.base16.base16template "vim";
+
            nix.package = pkgs.nixStable;
            services.gpg-agent.pinentryFlavor = lib.mkForce "curses";
            home.packages = with pkgs; [
              pkgs.nix
            ];
            programs.bash.enable = true;
+           programs.bash.historySize = -1; # no truncation
+           programs.bash.historyFile = "$HOME/.bash_history";
+           programs.bash.historyFileSize = -1; # no truncation
+           programs.bash.historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
+           programs.bash.historyIgnore = [ "ls" "cd" "clear" "[bf]g"
+             " *" "cd -" "history" "history -*" "man" "man *"
+             "pwd" "exit" "date" "* --help:"
+           ];
+
            programs.bash.profileExtra = ''
              if [ -e $HOME/.home-$(uname -m)/.profile ]; then
                source $HOME/.home-$(uname -m)/.profile
              fi
            '';
+           programs.bash.initExtra = ''
+             export HISTCONTROL
+             export HISTFILE
+             export HISTFILESIZE
+             export HISTIGNORE
+             export HISTSIZE
+             unset HISTTIMEFORMAT
+             export PROMPT_COMMAND="history -n; history -w; history -c; history -r"
+             # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
+             test "$TERM" != "dumb" || return
+           '';
+
            programs.bash.bashrcExtra = ''
              if [ -e $HOME/.home-$(uname -m) ]; then
                  if [ -n "$HOME" ] && [ -n "$USER" ]; then

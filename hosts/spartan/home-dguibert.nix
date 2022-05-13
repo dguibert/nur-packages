@@ -43,33 +43,11 @@ with lib;
     esac
   '';
 
-
-  #programs.bash.historySize = 50000;
-  #programs.bash.historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
-  #programs.bash.historyIgnore = [ "ls" "cd" "clear" "[bf]g" ];
-
-  programs.bash.historySize = -1; # no truncation
-  programs.bash.historyFile = "$HOME/.bash_history";
-  programs.bash.historyFileSize = -1; # no truncation
-  programs.bash.historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
-  programs.bash.historyIgnore = [ "ls" "cd" "clear" "[bf]g"
-    " *" "cd -" "history" "history -*" "man" "man *"
-    "pwd" "exit" "date" "* --help:"
-  ];
-
-
   programs.bash.shellAliases.ls="ls --color";
+  programs.bash.shellAliases.e="emacsclient -t -a \"\"";
+  programs.bash.shellAliases.eg="emacsclient -n -c -a \"\"";
 
   programs.bash.initExtra = ''
-    export HISTCONTROL
-    export HISTFILE
-    export HISTFILESIZE
-    export HISTIGNORE
-    export HISTSIZE
-    export PROMPT_COMMAND="history -n; history -w; history -c; history -r"
-    # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
-    test "$TERM" != "dumb" || return
-
     # Provide a nice prompt.
     PS1=""
     PS1+='\[\033[01;37m\]$(exit=$?; if [[ $exit == 0 ]]; then echo "\[\033[01;32m\]✓"; else echo "\[\033[01;31m\]✗ $exit"; fi)'
@@ -111,9 +89,6 @@ with lib;
       ;;
     esac
   '';
-
-  home.file.".vim/base16.vim".source = config.lib.base16.base16template "vim";
-  #config.lib.base16.base16template "vim";
 
   programs.git.enable = true;
   programs.git.package = pkgs.gitFull;
