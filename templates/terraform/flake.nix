@@ -20,10 +20,18 @@
           #p."null"
         ]);
 
-        terraformConfiguration = terranix.lib.terranixConfiguration {
-          inherit system pkgs;
+        terraformConfiguration = terranix.lib.buildTerranix {
+          inherit pkgs;
           strip_nulls = false;
-          modules = [ ./config.nix ];
+          terranix_config = {
+            # import a config.nix and maybe other terranix flakes
+            imports = [ ./config.nix ];
+            ## and or inline your terranix code
+            #resource.local_file.test = {
+            #  filename = "test.txt";
+            #  content = "A terranix created test file. YEY!";
+            #};
+          };
         };
       in {
         defaultPackage = terraformConfiguration;
