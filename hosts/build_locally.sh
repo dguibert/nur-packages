@@ -6,4 +6,4 @@ drvs=$@
 set -x
 nix copy --from $store --derivation $drvs
 results=$(nix-store -r --substituters $store $drvs)
-nix copy --to $store $results
+nix copy --to $store --no-check-sigs $results
