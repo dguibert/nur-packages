@@ -363,6 +363,10 @@
 
 (use-package magit
   :ensure t
+  :init
+  ;; Don't use magit for interactive rebase
+  ;; (has own entire key-map, doesn't allow text-file editing).
+  (setq auto-mode-alist (rassq-delete-all 'git-rebase-mode auto-mode-alist))
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
