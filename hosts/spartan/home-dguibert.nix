@@ -188,7 +188,7 @@ with lib;
       LANG=C ${diffutils}/bin/diff -u "$1" "$2"
       exit 0
     '')
-    python3Packages.datalad # error: boto-2.49.0 not supported for interpreter python3.9
+    datalad
     subversion
     tig
     jq
