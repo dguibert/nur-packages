@@ -29,6 +29,19 @@ in {
   });
   fish = upstreamFails prev.fish;
 
+  datalad = lib.upgradeOverride prev.datalad (o: rec {
+    version = "0.16.5";
+
+    # use fetchFromGitHub instead of fetchPypi because the test suite of
+    # the package is not included into the PyPI tarball
+    src = fetchFromGitHub {
+      owner = "datalad";
+      repo = "datalad";
+      rev = "refs/tags/${version}";
+      sha256 = "sha256-F5UFW0/XqntrHclpj3TqoAwuHJbiiv5a7/4MnFoJ1dE=";
+    };
+  });
+
   # '/home_nfs/bguibertd/nix/store/qs8l94570y7mnykssscd4c32xl5ki4gz-openssh-8.8p1.drv'
   # libgpg-error> ./etc/t-argparse.conf:73: error getting current user's name: System error w/o errno
   openssh = dontCheck prev.openssh;
