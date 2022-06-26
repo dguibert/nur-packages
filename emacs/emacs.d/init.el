@@ -367,7 +367,7 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
   ;; Don't use magit for interactive rebase
   ;; (has own entire key-map, doesn't allow text-file editing).
-(while (rassoc 'racket-mode auto-mode-alist)
+(while (rassoc 'git-rebase-mode auto-mode-alist)
   (setq auto-mode-alist
         (assq-delete-all (car (rassoc 'git-rebase-mode auto-mode-alist))
                          auto-mode-alist)))
