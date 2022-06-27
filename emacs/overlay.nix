@@ -11,8 +11,9 @@ final: prev: with prev; let
     ; });
 
 
-  overrides = self: super: {
-    org-cv = self.trivialBuild {
+  #overrides = self: super: {
+  overrides = epkgs: epkgs // {
+    org-cv = epkgs.trivialBuild {
       pname = "org-cv";
       version = "0.0.1";
       src = fetchFromGitLab {
@@ -22,6 +23,28 @@ final: prev: with prev; let
         sha256 = "sha256-4jXttJUkmJbWvW+A0euLDV5Mzj9Pjar/No1ETndfln0=";
       };
       buildInputs = [ self.ox-hugo ];
+    };
+    org-protocol-capture-html = epkgs.melpaBuild rec {
+      pname = "org-protocol-capture-html";
+      version = "20201113.0";
+      commit = "3359ce9a2f3b48df26329adaee0c4710b1024250";
+      src = fetchFromGitHub {
+        owner = "alphapapa";
+        repo = pname;
+        rev = commit;
+        sha256 = "sha256-ueEHJCS+aHYCnd4Lm3NKgqg+m921nl5XijE9ZnSRQXI=";
+      };
+      buildInputs = [ /*pandoc*/];
+      packageRequires = [
+        epkgs.cl-lib
+        #epkgs.subr-x
+        epkgs.s
+      ];
+      recipe = pkgs.writeText "recipe" ''
+      (${pname}
+      :repo "alphapapa/${pname}"
+      :fetcher github)
+    '';
     };
   };
 
@@ -71,6 +94,7 @@ final: prev: with prev; let
     ];
 
     ## Optionally override derivations.
+    override = overrides;
     #override = epkgs: epkgs // {
     #  weechat = epkgs.melpaPackages.weechat.overrideAttrs(old: {
     #    patches = [ ./weechat-el.patch ];

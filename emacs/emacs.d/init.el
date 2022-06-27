@@ -686,6 +686,7 @@ capture was not aborted."
    )
   )
 
+(use-package org-protocol-capture-html :ensure t)
 ;;;; Actually start using templates
 (setq org-capture-templates
   '(("m" "Email Workflow")
@@ -693,6 +694,7 @@ capture was not aborted."
      "* TODO Follow up with %:fromname on %:subject\nSCHEDULED:%t\n%a\n%i" :immediate-finish t)
     ("mr" "Read Later" entry (file+olp "~/Documents/roam/Mail.org" "Read Later")
      "* TODO Read %:subject\nSCHEDULED:%t\n%a\n\n%i" :immediate-finish t)
+    ("w" "Web site" entry (file+olp "~/Document/roam/Web.org") "* %a :website:\n\n%U %?\n\n%:initial")
    ))
 ;;        ;; Firefox and Chrome
 ;;                     '("P" "Protocol" entry ; key, name, type
