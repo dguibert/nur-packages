@@ -364,13 +364,21 @@
 (use-package magit
   :ensure t
   :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   ;; Don't use magit for interactive rebase
   ;; (has own entire key-map, doesn't allow text-file editing).
-(while (rassoc 'git-rebase-mode auto-mode-alist)
-  (setq auto-mode-alist
-        (assq-delete-all (car (rassoc 'git-rebase-mode auto-mode-alist))
-                         auto-mode-alist)))
+  (setq auto-mode-alist (rassq-delete-all #'git-rebase-mode auto-mode-alist))
+  )
+;(require 'cl-lib)
+;(setq auto-mode-alist
+;      (cl-remove-if (lambda (x) (eq (cdr x) 'git-rebase-mode))
+;                    auto-mode-alist))
+;  ;; Don't use magit for interactive rebase
+;  ;; (has own entire key-map, doesn't allow text-file editing).
+;(while (rassoc 'git-rebase-mode auto-mode-alist)
+;  (setq auto-mode-alist
+;        (assq-delete-all (car (rassoc 'git-rebase-mode auto-mode-alist))
+;                         auto-mode-alist)))
 
 ;;(setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
 ;(setq tramp-default-method "sshx")
