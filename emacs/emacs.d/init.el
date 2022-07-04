@@ -519,7 +519,7 @@
   (org-roam-completion-everywhere t)
   (org-roam-dailies-capture-templates
    '(("d" "default" entry "* %<%I:%M %p>: %?"
-             :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
   (org-roam-capture-templates
    '(("d" "default" plain
       "%?"
@@ -530,8 +530,17 @@
       :unnarrowed t)
      ("b" "book notes" plain (file "~/Documents/roam/templates/BookNoteTemplate.org")
       :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t)
+      :unnarrowed t)
      ))
+  ;(org-roam-capture-ref-templates
+  ; '(("r" "ref" plain #'org-roam-capture--get-point ""
+  ;    :target (file+head "web-${slug}.org" "#+title: ${title}\n#+roam_key: ${ref}\n\n${body}")
+  ;    :unnarrowed t)
+  ;   ("w" "website" plain "* [[${url}][${title}]]] :website:\n\n${body}"
+  ;    :target (file+head "Web.org" "#+title: ${title}")
+  ;    :unnarrowed t)
+  ;   )
+  ; )
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)
@@ -551,7 +560,8 @@
         org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
         )
   (require 'org-roam-dailies) ;; Ensure the keymap is available
-                                        ;(org-roam-db-autosync-mode)
+  (require 'org-roam-protocol)
+  ;(org-roam-db-autosync-mode)
   (org-roam-setup))
 
 (defun org-roam-node-insert-immediate (arg &rest args)
@@ -686,7 +696,6 @@ capture was not aborted."
    )
   )
 
-(use-package org-protocol-capture-html :ensure t)
 ;;;; Actually start using templates
 (setq org-capture-templates
   '(("m" "Email Workflow")
@@ -694,7 +703,8 @@ capture was not aborted."
      "* TODO Follow up with %:fromname on %:subject\nSCHEDULED:%t\n%a\n%i" :immediate-finish t)
     ("mr" "Read Later" entry (file+olp "~/Documents/roam/Mail.org" "Read Later")
      "* TODO Read %:subject\nSCHEDULED:%t\n%a\n\n%i" :immediate-finish t)
-    ("w" "Web site" entry (file+olp "~/Document/roam/Web.org") "* %a :website:\n\n%U %?\n\n%:initial")
+    ("w" "Web site" entry (file+olp "~/Document/roam/Web.org")
+     "* %a :website:\n\n%U %?\n\n%:initial")
    ))
 ;;        ;; Firefox and Chrome
 ;;                     '("P" "Protocol" entry ; key, name, type
@@ -708,6 +718,7 @@ capture was not aborted."
 ;;                       "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
 ;;                       :prepend t
 ;;                       :kill-buffer t))
+(use-package org-protocol-capture-html :ensure t)
 
 (use-package org-ref
   :ensure t
