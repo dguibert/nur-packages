@@ -45,6 +45,7 @@
     devShell = pkgs.mkShell {
       name = "emacs";
       ENVRC = "emacs";
+      CHEMACS_PROFILE="dev";
       buildInputs = with pkgs; let
       in [
         biber
