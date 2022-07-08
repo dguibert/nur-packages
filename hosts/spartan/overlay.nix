@@ -103,6 +103,17 @@ in {
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
       pyslurm = python-super.pyslurm_19_05_0.override { slurm=final.slurm_19_05_5; };
+      flask-limiter = lib.upgradeOverride python-super.flask-limiter (o: rec {
+        version = "1.4";
+
+        src = fetchFromGitHub {
+          owner = "alisaifee";
+          repo = "flask-limiter";
+          rev = version;
+          sha256 = "sha256-btnJmRnF9dEzkEbLp2gCni1/S2l7yUbbZTemYHlLOGE=";
+        };
+      });
+
       annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
         version = "1.6.0";
 
