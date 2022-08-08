@@ -1,24 +1,7 @@
-{ config, pkgs, lib
+{ config, pkgs, lib, inputs
 , ...}@args:
 with lib;
 {
-  # Choose your themee
-  themes.base16 = {
-    enable = true;
-    scheme = "solarized";
-    variant = "solarized-dark";
-
-    # Add extra variables for inclusion in custom templates
-    extraParams = {
-      fontname = mkDefault  "Inconsolata LGC for Powerline";
-  #headerfontname = mkDefault  "Cabin";
-      bodysize = mkDefault  "10";
-      headersize = mkDefault  "12";
-      xdpi= mkDefault ''
-            Xft.hintstyle: hintfull
-      '';
-    };
-  };
   nixpkgs.overlays = [
     (import ./overlay.nix)
     (final: prev: {
@@ -74,20 +57,12 @@ with lib;
     esac
 
     eval "$(${pkgs.coreutils}/bin/dircolors)" &>/dev/null
-    export BASE16_SHELL_SET_BACKGROUND=false
-    source ${config.lib.base16.base16template "shell"}
+    source ${config.scheme inputs.base16-shell}
 
     export TODOTXT_DEFAULT_ACTION=ls
     alias t='todo.sh'
 
     tput smkx
-    case $HOSTNAME in
-      spartan0)
-      ;;
-      spartan*)
-      export TMP=/dev/shm; export TMPDIR=$TMP; export TEMP=$TMP; export TEMPDIR=$TMP
-      ;;
-    esac
   '';
 
   programs.git.enable = true;

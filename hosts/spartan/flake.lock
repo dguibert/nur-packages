@@ -1,18 +1,70 @@
 {
   "nodes": {
-    "base16-nix": {
-      "flake": false,
+    "base16": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1640016217,
-        "narHash": "sha256-6qV4WfqgA/61xPDxUTnh9GD+mN/BoJfnyCranBbLT0M=",
-        "owner": "dguibert",
-        "repo": "base16-nix",
-        "rev": "cd2a09114a6ff9cdfa47bd42430aa01f0838e524",
+        "lastModified": 1658847131,
+        "narHash": "sha256-X6Mml7cT0YR3WCD5fkUhpRVV5ZPcwdcDsND8r8xMqTE=",
+        "owner": "SenchoPens",
+        "repo": "base16.nix",
+        "rev": "6b404cda2e04ca3cf5ca7b877af9c469e1386acb",
         "type": "github"
       },
       "original": {
-        "owner": "dguibert",
-        "repo": "base16-nix",
+        "owner": "SenchoPens",
+        "repo": "base16.nix",
+        "type": "github"
+      }
+    },
+    "base16-schemes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1657650255,
+        "narHash": "sha256-xmBDrZXWeQNHRodVBwW9eUNQc6pwm0PGDFT66R3QWyE=",
+        "owner": "base16-project",
+        "repo": "base16-schemes",
+        "rev": "99529527e7cb3d777fb6e041c2aabbe6cdec4c4c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "base16-project",
+        "repo": "base16-schemes",
+        "type": "github"
+      }
+    },
+    "base16-shell": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1657751039,
+        "narHash": "sha256-LA2tOAwJDjW2XXh51rQ1pV1a2U90167rRw3WrbICLrc=",
+        "owner": "base16-project",
+        "repo": "base16-shell",
+        "rev": "da1a14e9a4edfa44b2f19016e4158414bf7215c3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "base16-project",
+        "repo": "base16-shell",
+        "type": "github"
+      }
+    },
+    "base16-vim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1659232828,
+        "narHash": "sha256-iBuxfAMGgH+hV4kpGsov0SqBN+r4v/OslsUVpF9hPbQ=",
+        "owner": "base16-project",
+        "repo": "base16-vim",
+        "rev": "b74846dcff55ba1e9cc141a755c44c2753c34e51",
+        "type": "github"
+      },
+      "original": {
+        "owner": "base16-project",
+        "repo": "base16-vim",
         "type": "github"
       }
     },
@@ -252,7 +304,10 @@
     },
     "root": {
       "inputs": {
-        "base16-nix": "base16-nix",
+        "base16": "base16",
+        "base16-schemes": "base16-schemes",
+        "base16-shell": "base16-shell",
+        "base16-vim": "base16-vim",
         "deploy-rs": "deploy-rs",
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",

@@ -15,7 +15,11 @@
     home-manager. url    = "github:dguibert/home-manager/pu";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    base16-nix           = { url  = "github:dguibert/base16-nix"; flake=false; };
+    base16.url = "github:SenchoPens/base16.nix";
+    base16.inputs.nixpkgs.follows = "nixpkgs";
+    base16-schemes = { url = github:base16-project/base16-schemes; flake = false; };
+    base16-shell = { url = github:base16-project/base16-shell; flake = false; };
+    base16-vim = { url = github:base16-project/base16-vim; flake = false; };
     # For accessing `deploy-rs`'s utility Nix functions
     deploy-rs.url = "github:dguibert/deploy-rs/pu";
     #deploy-rs.inputs.naersk.inputs.nixpkgs.follows = "nixpkgs";
@@ -29,7 +33,6 @@
             , nix
             , flake-utils
             , home-manager
-            , base16-nix
             , deploy-rs
             , ...
             }@inputs: let
@@ -140,7 +143,6 @@
       inherit system pkgs;
       configuration = { lib, ... }: {
         imports = [
-          (import "${base16-nix}/base16.nix")
           ({ ... }: {
             home.sessionVariablesFileName = "hm-session-vars.sh";
             home.sessionVariablesGuardVar = "__HM_SESS_VARS_SOURCED";
@@ -148,25 +150,11 @@
             home.gcLinkName = "current-home";
             home.generationLinkNamePrefix = "home-manager";
           })
+         inputs.base16.nixosModule
+         # set system's scheme to nord by setting `config.scheme`
+         { scheme = "${inputs.base16-schemes}/solarized-dark.yaml"; }
          ({ config, pkgs, lib, ...}: {
-           # Choose your themee
-           themes.base16 = {
-             enable = true;
-             scheme = "solarized";
-             variant = "solarized-dark";
-
-             # Add extra variables for inclusion in custom templates
-             extraParams = {
-               fontname = lib.mkDefault  "Inconsolata LGC for Powerline";
-           #headerfontname = mkDefault  "Cabin";
-               bodysize = lib.mkDefault  "10";
-               headersize = lib.mkDefault  "12";
-               xdpi= lib.mkDefault ''
-                     Xft.hintstyle: hintfull
-               '';
-             };
-           };
-           home.file.".vim/base16.vim".source = config.lib.base16.base16template "vim";
+           home.file.".vim/base16.vim".source = config.scheme inputs.base16-shell;
            #config.lib.base16.base16template "vim";
 
            nix.package = pkgs.nixStable;
@@ -190,13 +178,55 @@
              fi
            '';
            programs.bash.initExtra = ''
+             unset PROMPT_COMMAND
              export HISTCONTROL
-             export HISTFILE
              export HISTFILESIZE
              export HISTIGNORE
              export HISTSIZE
              unset HISTTIMEFORMAT
-             export PROMPT_COMMAND="history -n; history -w; history -c; history -r"
+             # https://unix.stackexchange.com/a/430128
+             # on every prompt, save new history to dedicated file and recreate full history
+             # by reading all files, always keeping history from current session on top.
+             update_history () {
+               history -a ''${HISTFILE}.$$
+               history -c
+               history -r  # load common history file
+               # load histories of other sessions
+               for f in `ls ''${HISTFILE}.[0-9]* 2>/dev/null | grep -v "''${HISTFILE}.$$\$"`; do
+                 history -r $f
+               done
+               history -r "''${HISTFILE}.$$"  # load current session history
+             }
+             if [[ "$PROMPT_COMMAND" != *update_history* ]]; then
+               export PROMPT_COMMAND="update_history''${PROMPT_COMMAND:+;$PROMPT_COMMAND }"
+             fi
+
+             # merge session history into main history file on bash exit
+             merge_session_history () {
+               if [ -e ''${HISTFILE}.$$ ]; then
+                 # fix wrong history files
+                 awk '/^[0-9]+ / { gsub("^[0-9]+ +", "") } { print }' ''${HISTFILE}.$$ | \
+                 awk '!seen[$0]++' >> $HISTFILE
+                 \rm ''${HISTFILE}.$$
+               fi
+             }
+             trap merge_session_history EXIT
+
+
+             # detect leftover files from crashed sessions and merge them back
+             active_shells=$(pgrep `ps -p $$ -o comm=`)
+             grep_pattern=`for pid in $active_shells; do echo -n "-e \.''${pid}\$ "; done`
+             orphaned_files=`ls $HISTFILE.[0-9]* 2>/dev/null | grep -v $grep_pattern`
+
+             if [ -n "$orphaned_files" ]; then
+               echo Merging orphaned history files:
+               for f in $orphaned_files; do
+                 echo "  `basename $f`"
+                 cat $f >> $HISTFILE
+                 \rm $f
+               done
+               echo "done."
+             fi
              # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
              test "$TERM" != "dumb" || return
            '';
@@ -338,7 +368,10 @@
       homeDirectory = "/home_nfs_robin_ib/bguibertd/.home-x86_64";
       inherit system pkgs;
       configuration = { lib, ... }: {
-        imports = [ (import "${base16-nix}/base16.nix")
+        imports = [
+          inputs.base16.nixosModule
+          # set system's scheme to nord by setting `config.scheme`
+          { scheme = "${inputs.base16-schemes}/solarized-dark.yaml"; }
           (import ./home-dguibert.nix)
           ({ ... }: {
             home.sessionVariablesFileName = "hm-x86_64-session-vars.sh";
@@ -349,6 +382,7 @@
           })
         ];
         _module.args.pkgs = lib.mkForce pkgs;
+        _module.args.inputs = lib.mkForce inputs;
       };
     };
 
@@ -357,7 +391,7 @@
       homeDirectory = "/home_nfs_robin_ib/bguibertd/.home-aarch64";
       inherit system pkgs;
       configuration = { lib, ... }: {
-        imports = [ (import "${base16-nix}/base16.nix")
+        imports = [
           (import ./home-dguibert.nix)
           ({ ... }: {
             home.sessionVariablesFileName = "hm-aarch64-session-vars.sh";
