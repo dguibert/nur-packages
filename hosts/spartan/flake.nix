@@ -229,6 +229,24 @@
              fi
              # https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-shell-setup.html#index-TERM_002c-environment-variable-1
              test "$TERM" != "dumb" || return
+
+             # https://codeberg.org/dnkl/foot/issues/86
+             # https://codeberg.org/dnkl/foot/wiki#user-content-how-to-configure-my-shell-to-emit-the-osc-7-escape-sequence
+             _urlencode() {
+                     local length="''${#1}"
+                     for (( i = 0; i < length; i++ )); do
+                             local c="''${1:$i:1}"
+                             case $c in
+                                     %) printf '%%%02X' "'$c" ;;
+                                     *) printf "%s" "$c" ;;
+                             esac
+                     done
+             }
+             osc7_cwd() {
+                     printf '\e]7;file://%s%s\a' "$HOSTNAME" "$(_urlencode "$PWD")"
+             }
+             PROMPT_COMMAND=''${PROMPT_COMMAND:+$PROMPT_COMMAND; }osc7_cwd
+
            '';
 
            programs.bash.bashrcExtra = ''
