@@ -154,7 +154,7 @@
          # set system's scheme to nord by setting `config.scheme`
          { scheme = "${inputs.base16-schemes}/solarized-dark.yaml"; }
          ({ config, pkgs, lib, ...}: {
-           home.file.".vim/base16.vim".source = config.scheme inputs.base16-shell;
+           home.file.".vim/base16.vim".source = config.scheme inputs.base16-vim;
            #config.lib.base16.base16template "vim";
 
            nix.package = pkgs.nixStable;
