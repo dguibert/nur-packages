@@ -81,4 +81,10 @@ final: prev: with prev; let
 in {
   inherit my-texlive;
   inherit my-emacs;
+
+  emacsPgtkNativeComp = prev.emacsPgtkNativeComp.overrideAttrs (o: {
+    buildInputs = o.buildInputs ++ [
+      prev.gtk3-x11
+    ];
+  });
 }
