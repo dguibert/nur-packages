@@ -219,11 +219,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1659955981,
-        "narHash": "sha256-HvnylYPqxMrui0yysyW9Y5hoUTRn21T9IUVt+C1Tvdo=",
+        "lastModified": 1662324136,
+        "narHash": "sha256-kdU1ZHK31Jwr+zgo4D66YXBkD5+kbwl1e3foWzttIcY=",
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "716e080f31157f0db648dc342c94417a9dd9db57",
+        "rev": "f8b671f300c8bb990a7f977d2bc5053042d4e5c1",
         "type": "github"
       },
       "original": {
