@@ -176,7 +176,7 @@ with lib;
   # ✗ 1    dguibert@vbox-57nvj72 ~ $ systemctl --user status
   # Failed to read server status: Process org.freedesktop.systemd1 exited with status 1
   # ✗ 130    dguibert@vbox-57nvj72 ~ $ export XDG_RUNTIME_DIR=/run/user/$(id -u)
-  home.sessionVariables.XDG_RUNTIME_DIR="/run/user/$(id -u)";
+  #home.sessionVariables.XDG_RUNTIME_DIR="/run/user/$(id -u)";
 
   # Fix stupid java applications like android studio
   home.sessionVariables._JAVA_AWT_WM_NONREPARENTING = "1";
