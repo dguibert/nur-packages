@@ -27,8 +27,6 @@ with lib;
   '';
 
   programs.bash.shellAliases.ls="ls --color";
-  programs.bash.shellAliases.e="emacsclient -t -a \"\"";
-  programs.bash.shellAliases.eg="emacsclient -n -c -a \"\"";
 
   programs.bash.initExtra = ''
     unset PROMPT_COMMAND
@@ -262,4 +260,25 @@ with lib;
   # https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1/
 
   home.stateVersion = "20.09";
+
+  programs.bash.shellAliases.e = "emacsclient -s default -t -a \"\"";
+  programs.bash.shellAliases.eg = "emacsclient -s default -n -c -a \"\"";
+  home.sessionVariables.ALTERNATE_EDITOR = "";
+  home.sessionVariables.EDITOR = "emacsclient -s default -t"; # $EDITOR opens in terminal
+  home.sessionVariables.VISUAL = "emacsclient -s default -c -a emacs"; # $VISUAL opens in GUI mode
+  home.file.".emacs.d".source = inputs.chemacs;
+  home.file.".emacs.default/init.el".source = ../../emacs/emacs.d/init.el;
+  home.file.".emacs.default/site-lisp".source = ../../emacs/emacs.d/site-lisp;
+  home.file.".emacs-profiles.el".text = ''
+    (("default" . ((user-emacs-directory . "~/.emacs.default")
+                   (server-name . "default")
+                  ))
+     ("dev"     . ((user-emacs-directory . "~/nur-packages/emacs/emacs.d")
+                   (server-name . "dev")
+                  ))
+    )
+  '';
+  programs.emacs.enable = true;
+  programs.emacs.package = pkgs.my-emacs;
+  services.emacs.enable = true;
 }
