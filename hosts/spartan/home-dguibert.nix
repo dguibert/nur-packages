@@ -172,7 +172,6 @@ with lib;
   #home.sessionVariables.MANPATH="$HOME/man:$MANPATH:/share/man";
   programs.man.enable = false; # RHEL 8 manpath fork bomb
   home.sessionVariables.PAGER="less -R";
-  home.sessionVariables.EDITOR="vim";
   home.sessionVariables.GIT_PS1_SHOWDIRTYSTATE=1;
   # ✗ 1    dguibert@vbox-57nvj72 ~ $ systemctl --user status
   # Failed to read server status: Process org.freedesktop.systemd1 exited with status 1
@@ -266,18 +265,6 @@ with lib;
   home.sessionVariables.ALTERNATE_EDITOR = "";
   home.sessionVariables.EDITOR = "emacsclient -s default -t"; # $EDITOR opens in terminal
   home.sessionVariables.VISUAL = "emacsclient -s default -c -a emacs"; # $VISUAL opens in GUI mode
-  home.file.".emacs.d".source = inputs.chemacs;
-  home.file.".emacs.default/init.el".source = ../../emacs/emacs.d/init.el;
-  home.file.".emacs.default/site-lisp".source = ../../emacs/emacs.d/site-lisp;
-  home.file.".emacs-profiles.el".text = ''
-    (("default" . ((user-emacs-directory . "~/.emacs.default")
-                   (server-name . "default")
-                  ))
-     ("dev"     . ((user-emacs-directory . "~/nur-packages/emacs/emacs.d")
-                   (server-name . "dev")
-                  ))
-    )
-  '';
   programs.emacs.enable = true;
   programs.emacs.package = pkgs.my-emacs;
   services.emacs.enable = true;

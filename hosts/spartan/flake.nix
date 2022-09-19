@@ -27,6 +27,10 @@
 
     nxsession.url              = "github:dguibert/nxsession";
     nxsession.inputs.nixpkgs.follows = "nixpkgs";
+
+    emacs-overlay.url = "github:dguibert/emacs-overlay";
+    chemacs.url = "github:plexus/chemacs2";
+    chemacs.flake = false;
   };
 
   outputs = { self, nixpkgs
@@ -46,6 +50,7 @@
           };
           overlays =  [
             nix.overlays.default
+            inputs.emacs-overlay.overlay
             deploy-rs.overlay
             overlays.default
             overlays.aocc
@@ -303,6 +308,18 @@
            # https://github.com/bobvanderlinden/nix-home/blob/master/home.nix
            home.keyboard.layout = "fr";
 
+           home.file.".emacs.d".source = inputs.chemacs;
+           home.file.".emacs.default/init.el".source = ../../emacs/emacs.d/init.el;
+           home.file.".emacs.default/site-lisp".source = ../../emacs/emacs.d/site-lisp;
+           home.file.".emacs-profiles.el".text = ''
+             (("default" . ((user-emacs-directory . "~/.emacs.default")
+                   (server-name . "default")
+                  ))
+             ("dev"     . ((user-emacs-directory . "~/nur-packages/emacs/emacs.d")
+                   (server-name . "dev")
+                  ))
+             )
+           '';
 
          })
         ];
