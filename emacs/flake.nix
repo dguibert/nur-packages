@@ -2,7 +2,7 @@
   description = "A flake for building my envs";
   # install chemacs2 (https://github.com/plexus/chemacs2)
   # and
-  # emacs --with-profile "((user-emacs-directory . \"$PWD\"))"
+  # emacs --with-profile "((user-emacs-directory . \"$PWD/emacs.d\"))"
 
   inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
   inputs.nix.url              = "github:dguibert/nix/pu";

@@ -148,9 +148,6 @@
   :defer t
   :commands notmuch-agenda-insert-part)
 
-(use-package org-mime
-  :ensure t)
-
 (use-package general
   :ensure t
   :config
@@ -386,11 +383,6 @@
 ;(setq tramp-verbose 10)
 (customize-set-variable 'tramp-verbose 1 "Enable remote command traces")
 
-(use-package org-download
-  :ensure t)
-(use-package ob-async
-  :ensure t)
-
 ;; Org Mode Configuration ------------------------------------------------------
 
 (add-hook 'org-mode-hook
@@ -439,7 +431,7 @@
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-
+; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
 (use-package org :ensure t
   :hook (org-mode . efs/org-mode-setup)
   :init
@@ -482,13 +474,191 @@
   (setq org-attach-directory "attach/")
   (efs/org-font-setup)
 
-  (setq org-agenda-files
-        '(("~/Documents/org/notes.org")
-          ))
   :bind
   (("\C-ca" . org-agenda)
-   ("\C-cl" . org-store-link))
+   ("\C-cl" . org-store-link)
+   ("\C-cc" . org-capture)
+   )
+  :config
+  ;;(org-mode-config)
+  (setq org-extend-today-until 4
+        org-use-effective-time t)
+  (setq org-todo-keywords
+        '((sequence "TODO(t)"
+                    "IN-PROGRESS(p)"
+                    "|"
+                    "DONE(d)"
+                    "HOLD(h@/!)"
+                    "CANCELED(c@/!)"
+                    "HANDLED(l@/!)")
+          (sequence "|" "PAUSE(p)" "CHAT(c)" "EMAIL(e)" "MEETING(m)" "REVIEW(r)" "GEEK(g)")))
+
+  ;;; Look & Feel
+
+  ;; I like to have something different than ellipsis because I often use them
+  ;; myself.
+  ;;(setq org-ellipsis " [+]")
+  (custom-set-faces '(org-ellipsis ((t (:foreground "gray40" :underline nil)))))
+
+  (defun my-org-settings ()
+    (org-display-inline-images)
+    (setq fill-column 75)
+    (abbrev-mode)
+    (org-indent-mode)
+    nil)
+
+  (add-hook 'org-mode-hook #'my-org-settings)
+
+  (setq org-tags-column 69)
+
+  ;; src block indentation / editing / syntax highlighting
+  (setq org-src-fontify-natively t
+        org-src-window-setup 'current-window ;; edit in current window
+        org-src-preserve-indentation t ;; do not put two spaces on the left
+        org-src-tab-acts-natively t)
+
+  ;; *** Templates
+  ;; the %a refer to the place you are in emacs when you make the capture
+  ;; that's very neat when you do that in an email for example.
+  (setq org-capture-templates
+        '(("t" "todo"         entry (file "~/Documents/roam/inbox.org")
+           "* TODO %?\n%U\n- ref :: %a\n")
+          ;; time tracker (clocked tasks)
+          ("g" "geek"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* GEEK %?         :perso:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("c" "chat"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* CHAT %?         :work:chat:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("e" "email"        entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* EMAIL %?        :work:email:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("m" "meeting"      entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* MEETING %?      :work:meeting:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("r" "review"       entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* REVIEW %?       :work:review:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("w" "work"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* IN-PROGRESS %?  :work:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("p" "pause"        entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* PAUSE %?        :pause:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("i" "interruption" entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* IN-PROGRESS %?  :interruption:work:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("f" "chore"        entry (file "~/Documents/roam/inbox.org")
+           "* IN-PROGRESS %?  :chore:\n%U\n"
+           :clock-in t :clock-keep t)))
+
+  ;; How to create default clocktable
+  (setq org-clock-clocktable-default-properties
+        '(:scope subtree :maxlevel 4 :timestamp t :link t :tags t :narrow 36! :match "work"))
+
+  ;; How to display default clock report in agenda view
+  (setq org-agenda-clockreport-parameter-plist
+        '(:lang "en" :maxlevel 4 :fileskip0 t :link t :indent t :narrow 80!))
+
+  ;; *** Projectile; default TODO file to create in your projects
+  (setq org-projectile-file "inbox.org")
+
+  (setq org-refile-targets
+        '((nil :maxlevel . 5)
+          (org-agenda-files :maxlevel . 5)))
+
+  ;; *** Agenda
+  (setq org-log-into-drawer t) ;; hide the log state change history a bit better
+  (setq org-deadline-warning-days 7)
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+  (setq org-habit-show-habits-only-for-today nil)
+  (setq org-habit-graph-column 65)
+  (setq org-duration-format 'h:mm) ;; show hours at max, not days
+  (setq org-agenda-compact-blocks t)
+  ;; default show today
+  (setq org-agenda-span 'day)
+  (setq org-agenda-start-day "-0d")
+  (setq org-agenda-start-on-weekday nil)
+  (setq org-agenda-custom-commands
+        '(("d" "Done tasks" tags "/DONE|CANCELED")
+          ("g" "Plan Today"
+           ((agenda "" ((org-agenda-span 'day)))
+            (org-agenda-skip-function '(org-agenda-skip-deadline-if-not-today))
+            (org-agenda-entry-types '(:deadline))
+            (org-agenda-overriding-header "Today's Deadlines ")))))
+  (setq org-agenda-window-setup 'only-window)
+
+  ;; ** Org Annotate
+
+  ;; Ability to take annotate some files, can of double usage with org-capture.
+  ;; Still, I keep that keyboard shortcut here.
+  ;; (evil-leader/set-key "oa" 'org-annotate-file)
+  (setq org-annotate-file-storage-file "~/Documents/roam/annotations.org")
+
+  ;; ** Org colums
+  ;; Can be nice sometime to have that column view
+  ;; give a felling of Excel view
+  (setq org-columns-default-format
+        "%TODO %3PRIORITY %40ITEM(Task) %17Effort(Estimated Effort){:} %CLOCKSUM %8TAGS(TAG)")
+
+  ;; Org Babel
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(;; other Babel languages
+     (shell . t)
+     ;;(http . t) ; require ob-http
+     (clojure . t)
+     (haskell . t)
+     (plantuml . t) ;; UML graphs
+     (gnuplot . t)))
+  (setq org-plantuml-jar-path "~/bin/plantuml.jar")
 )
+;; *** Refile mapped to SPC y o r
+;;(map! :leader :desc "org-refile" "y o r" #'org-refile)
+;;(map! :leader "y o c" #'org-columns)
+(rune/leader-keys
+  "yor" #'org-refile
+  "yoc" #'org-columns
+  "X" #'org-capture
+  ;X ;; capture a new task, write a description, the n C-c C-c, save that in tracker.org
+  ;mco ;; stop clock on that task, if you capture a new time tracking tasks you don't need to clock-out
+  "mco" #'org-clock-out
+  ;no;; jump to current time tracked tasks
+  "no" #'org-clock-goto
+  ;q ;;add/remove tags to that task
+  "yt" #'org-agenda-set-tags
+  )
+
+(use-package org-mime
+  :ensure t)
+
+(use-package org-download
+  :ensure t)
+(use-package ob-async
+  :ensure t)
+
+(use-package org-super-agenda
+  :ensure t
+  :after org-agenda
+  :custom (org-super-agenda-groups
+           '( ;; Each group has an implicit boolean OR operator between its selectors.
+             (:name "Overdue" :deadline past :order 0)
+             (:name "Evening Habits" :and (:habit t :tag "evening") :order 8)
+             (:name "Habits" :habit t :order 6)
+             (:name "Today" ;; Optionally specify section name
+              :time-grid t  ;; Items that appear on the time grid (scheduled/deadline with time)
+              :order 3)     ;; capture the today first but show it in order 3
+             (:name "Low Priority" :priority "C" :tag "maybe" :order 7)
+             (:name "Due Today" :deadline today :order 1)
+             (:name "Important"
+              :and (:priority "A" :not (:todo ("DONE" "CANCELED")))
+              :order 2)
+             (:name "Due Soon" :deadline future :order 4)
+             (:name "Todo" :not (:habit t) :order 5)
+             (:name "Waiting" :todo ("WAITING" "HOLD") :order 9)))
+  :config
+  (setq org-super-agenda-header-map nil)
+  (org-super-agenda-mode t))
 
 (use-package ol-notmuch :ensure t)
 
@@ -610,7 +780,7 @@ capture was not aborted."
   (interactive)
   (org-roam-capture- :node (org-roam-node-create)
                      :templates '(("i" "inbox" plain "* %?"
-                                   :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+                                   :if-new (file+head "inbox.org" "#+title: Inbox\n")))))
 
 (defun my/org-roam-capture-task ()
   (interactive)
@@ -628,7 +798,7 @@ capture was not aborted."
 
 (defun my/org-roam-copy-todo-to-today ()
   (interactive)
-  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+  (let ((org-refile-keep nil) ;; Set this to nil to delete the original!
         (org-roam-dailies-capture-templates
          '(("t" "tasks" entry "%?"
             :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
@@ -686,14 +856,14 @@ capture was not aborted."
    )
   )
 
-;;;; Actually start using templates
-(setq org-capture-templates
-  '(("m" "Email Workflow")
-    ("mf" "Follow Up" entry (file+olp "~/Documents/roam/Mail.org" "Follow Up")
-     "* TODO Follow up with %:fromname on %:subject\nSCHEDULED:%t\n%a\n%i" :immediate-finish t)
-    ("mr" "Read Later" entry (file+olp "~/Documents/roam/Mail.org" "Read Later")
-     "* TODO Read %:subject\nSCHEDULED:%t\n%a\n\n%i" :immediate-finish t)
-   ))
+;;;;;; Actually start using templates
+;;(setq org-capture-templates
+;;  '(("m" "Email Workflow")
+;;    ("mf" "Follow Up" entry (file+olp "~/Documents/roam/Mail.org" "Follow Up")
+;;     "* TODO Follow up with %:fromname on %:subject\nSCHEDULED:%t\n%a\n%i" :immediate-finish t)
+;;    ("mr" "Read Later" entry (file+olp "~/Documents/roam/Mail.org" "Read Later")
+;;     "* TODO Read %:subject\nSCHEDULED:%t\n%a\n\n%i" :immediate-finish t)
+;;   ))
 ;;        ;; Firefox and Chrome
 ;;                     '("P" "Protocol" entry ; key, name, type
 ;;                       (file+headline +org-capture-notes-file "Inbox") ; target
