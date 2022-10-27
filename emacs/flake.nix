@@ -24,11 +24,11 @@
       import nixpkgs {
         inherit system;
         overlays =  [
-          inputs.nix.overlay
+          inputs.nix.overlays.default
           inputs.emacs-overlay.overlay
           overlays.default
           overlays.extra-builtins
-          self.overlay
+          self.overlays.default
         ];
         config.allowUnfree = true;
         config.psxe.licenseFile = "none"; #<secrets/lic>;
@@ -56,7 +56,7 @@
       ];
     };
   })) // rec {
-    overlay = import ./overlay.nix;
+    overlays.default = import ./overlay.nix;
   };
 }
 
