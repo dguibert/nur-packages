@@ -379,15 +379,36 @@
 
 ;;(setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
 ;(setq tramp-default-method "sshx")
-(customize-set-variable 'tramp-default-method "sshx" "")
+;(customize-set-variable 'tramp-default-method "sshx" "")
 ;(setq tramp-verbose 10)
-(customize-set-variable 'tramp-verbose 1 "Enable remote command traces")
+;(customize-set-variable 'tramp-verbose 1 "Enable remote command traces")
+(use-package tramp
+  :ensure t
+  :custom
+  (tramp-default-method "sshx")
+  (tramp-completion-reread-directory-timeout nil)
+  (tramp-default-remote-shell "/bin/bash")
+  (tramp-encoding-shell "/bin/bash")
+  )
+
 
 ;; Org Mode Configuration ------------------------------------------------------
 
 (add-hook 'org-mode-hook
           (lambda ()
             (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+
+(add-hook 'org-capture-prepare-finalize-hook 'org-id-get-create)
+
+(defun my/org-add-ids-to-headlines-in-file ()
+  "Add ID properties to all headlines in the current file which
+do not already have one."
+  (interactive)
+  (org-map-entries 'org-id-get-create))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'my/org-add-ids-to-headlines-in-file nil 'local)))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
