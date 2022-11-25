@@ -140,11 +140,5 @@ in {
     })
   ];
 
-  patchelf = prev.patchelf.overrideAttrs ( attrs: {
-    configureFlags = (attrs.configureFlags or "")
-                   + lib.optionalString (prev.patchelf.stdenv.hostPlatform.isAarch64) "--with-page-size=65536";
-  });
-
-
 }
 

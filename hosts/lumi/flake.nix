@@ -42,7 +42,7 @@
             # gcc = { arch = "x86-64" /*target*/; };
           };
           overlays =  [
-            nix.overlay
+            nix.overlays.default
             deploy-rs.overlay
             overlays.default
             overlays.aocc
