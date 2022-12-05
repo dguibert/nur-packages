@@ -33,14 +33,13 @@
     };
 
     checks = {
-      "intel_2020_2_254" = legacyPackages.intelPackages_2020_2_254.compilers;
     };
   })) // rec {
 
     ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
     nixosModules = import ./modules;
 
-    overlays = import ./overlays;
+    overlays = import ./overlays { inherit inputs; lib = inputs.nixpkgs.lib; };
 
     templates = {
       env_flake = {
