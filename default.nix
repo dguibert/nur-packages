@@ -19,7 +19,5 @@ pkgs // {
   lib = import ./lib { inherit pkgs; }; # functions
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
-
-  envs = if (builtins.pathExists ./envs/.decrypted) then import ./envs { } else {};
 }
 
