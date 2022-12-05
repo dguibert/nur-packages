@@ -3,23 +3,19 @@
 
   inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
   inputs.nix.url              = "github:dguibert/nix/pu";
+  inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, nix, flake-utils }: let
+  outputs = { self, nixpkgs, nix, flake-utils }@inputs: let
+    inherit (self) outputs;
+
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
         overlays =  [
-          self.overlay
-          self.overlays.aocc
-          self.overlays.flang
-          self.overlays.intel-compilers
-          self.overlays.intel-oneapi
-          self.overlays.arm
-          self.overlays.pgi
-          self.overlays.nvhpc
+          self.overlays.default
           self.overlays.extra-builtins
-          nix.overlay
+          nix.overlays.default
         ];
         config.allowUnfree = true;
     };
@@ -43,8 +39,6 @@
 
     ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
     nixosModules = import ./modules;
-
-    overlay = overlays.default;
 
     overlays = import ./overlays;
 
