@@ -51,7 +51,6 @@
         description = "A template to use terranix/terraform";
       };
     };
-    defaultTemplate = self.templates.env_flake;
 
   };
 }
