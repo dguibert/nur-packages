@@ -22,7 +22,6 @@
           nix.overlay
         ];
         config.allowUnfree = true;
-        config.psxe.licenseFile = "none"; #<secrets/lic>;
     };
 
   in (flake-utils.lib.eachDefaultSystem (system:
