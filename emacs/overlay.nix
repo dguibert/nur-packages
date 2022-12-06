@@ -39,7 +39,7 @@ final: prev: with prev; let
     config = ./emacs.d/init.el;
 
     # Package is optional, defaults to pkgs.emacs
-    package = pkgs.emacsPgtkNativeComp;
+    package = pkgs.emacsPgtk;
 
     alwaysEnsure = false;
 
