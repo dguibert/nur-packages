@@ -1,4 +1,4 @@
-{ lib, inputs, ... }:
+{ lib, inputs ? null, ... }:
 
 with lib;
 

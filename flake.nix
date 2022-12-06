@@ -20,7 +20,7 @@
         config.allowUnfree = true;
     };
 
-  in (flake-utils.lib.eachDefaultSystem (system:
+  in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
        let pkgs = nixpkgsFor system; in
        rec {
 
@@ -32,8 +32,8 @@
       buildInputs = with pkgs; [ pkgs.nix jq ];
     };
 
-    checks = {
-    };
+    checks = inputs.flake-utils.lib.flattenTree (import ./checks { inherit inputs outputs system;
+                                                               lib = inputs.nixpkgs.lib; });
   })) // rec {
 
     ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.

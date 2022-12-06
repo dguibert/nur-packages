@@ -1,4 +1,4 @@
-final: prev: {
+final: prev: with prev; {
   lib = prev.lib.extend(final: prev: {
     fetchers = import ./lib/fetchers.nix prev.lib;
   });
@@ -7,7 +7,7 @@ final: prev: {
   # `fetchurl' downloads a file from the network.
   fetchurl = if stdenv.buildPlatform != stdenv.hostPlatform
     then buildPackages.fetchurl # No need to do special overrides twice,
-    else makeOverridable (import ../build-support/fetchurl) {
+             else makeOverridable (import "${pkgs.path}/pkgs/build-support/fetchurl") {
       inherit lib stdenvNoCC buildPackages;
       inherit cacert;
       curl = buildPackages.curlMinimal.override (old: rec {
@@ -65,4 +65,11 @@ final: prev: {
       });
     };
 
+  libxcrypt = prev.libxcrypt.override {
+    perl = buildPackages.perl.override {
+       enableCrypt = false;
+       fetchurl = stdenv.fetchurlBoot;
+       zlib = buildPackages.zlib.override { fetchurl = stdenv.fetchurlBoot; };
+    };
+  };
 }

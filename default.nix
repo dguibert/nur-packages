@@ -7,11 +7,7 @@
 #     nix-build -A mypackage
 
 { nixpkgs ? { outPath = <nixpkgs>; revCount = 123456; shortRev = "gfedcba"; }
-, pkgs ? import nixpkgs {
-	overlays = [
-		(import ./overlays).default
-	];
-  }
+, pkgs ? import nixpkgs {}
 }:
 
 pkgs // {
