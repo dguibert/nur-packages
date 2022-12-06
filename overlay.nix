@@ -9,7 +9,6 @@ final: prev: with final; {
                      extraNativeCflags
                      customFlagsWithinStdEnv;
 
-  example-package = final.callPackage ./pkgs/example-package { };
   # some-qt5-package = prev.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
   inherit (final.callPackages ./pkgs/elfutils {
