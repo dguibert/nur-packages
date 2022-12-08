@@ -11,6 +11,7 @@
   #inputs.nix-ccache.inputs.nixpkgs.follows = "nixpkgs";
 
   inputs.emacs-overlay.url = "github:nix-community/emacs-overlay";
+  inputs.emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
@@ -31,16 +32,15 @@
           self.overlays.default
         ];
         config.allowUnfree = true;
-        config.psxe.licenseFile = "none"; #<secrets/lic>;
     };
 
-    overlays = import ../overlays;
+    overlays = import ../overlays { lib = nixpkgs.lib; };
 
-  in (flake-utils.lib.eachDefaultSystem (system:
+            in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
        let pkgs = nixpkgsFor system; in
        rec {
 
-    legacyPackages = pkgs;
+    packages.my-emacs = pkgs.my-emacs;
 
     devShell = pkgs.mkShell {
       name = "emacs";

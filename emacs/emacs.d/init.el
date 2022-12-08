@@ -986,3 +986,36 @@ capture was not aborted."
   :ensure t
 	:mode "\\.nix\\'")
 
+(use-package yaml-mode
+  :ensure t)
+
+(use-package shrface
+  :ensure t
+  :defer t
+  :config
+  (shrface-basic)
+  (shrface-trial)
+  (shrface-default-keybindings) ; setup default keybindings
+  (setq shrface-href-versatile t))
+
+(use-package eww
+  :defer t
+  :init
+  (add-hook 'eww-after-render-hook #'shrface-mode)
+  :config
+  (require 'shrface))
+
+(use-package request :ensure t)
+
+(defun request-url-as-org (url)
+  (interactive "sRequest url: ")
+  (require 'shrface)
+  (require 'request)
+  (request url
+    :parser 'buffer-string
+    :headers '(("User-Agent" . "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36"))
+    :sync nil
+    :success (cl-function
+              (lambda (&key data &allow-other-keys)
+                (let ((shrface-request-url url))
+                  (shrface-html-export-as-org data))))))

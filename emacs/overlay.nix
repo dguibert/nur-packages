@@ -82,9 +82,9 @@ in {
   inherit my-texlive;
   inherit my-emacs;
 
-  emacsPgtkNativeComp = prev.emacsPgtkNativeComp.overrideAttrs (o: {
-    buildInputs = o.buildInputs ++ [
-      prev.gtk3-x11
-    ];
-  });
+  #emacsPgtkNativeComp = prev.emacsPgtkNativeComp.overrideAttrs (o: {
+  #  buildInputs = o.buildInputs ++ [
+  #    prev.gtk3-x11
+  #  ];
+  #});
 }
