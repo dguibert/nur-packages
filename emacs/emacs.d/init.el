@@ -135,6 +135,7 @@
 (use-package direnv
   :ensure t
   :config
+  (add-to-list 'warning-suppress-types '(direnv))
   (direnv-mode))
 
 (use-package evil-collection
