@@ -1,11 +1,11 @@
-{ pkgs ? null, lib ? pkgs.lib }:
+final: prev: with prev;
 
 let
   fix = f: let fixpoint = f fixpoint; in fixpoint;
   withOverride = overrides: f: self: f self //
       (if builtins.isFunction overrides then overrides self else overrides);
 
-in with lib; lib // rec {
+self = with self; {
 
   # http://r6.ca/blog/20140422T142911Z.html
   virtual = f: fix f // { _override = overrides: virtual (withOverride overrides f); };  #
@@ -34,7 +34,7 @@ in with lib; lib // rec {
     pass = x: x;
   in (if isDowngrade then warn else pass) upgraded;
 
-  find-tarballs = drv: import ./find-tarballs.nix { inherit lib drv; };
+  find-tarballs = drv: import ./find-tarballs.nix { lib = prev; inherit drv; };
 
   recursiveMerge = attrList:
     let f = attrPath:
@@ -48,5 +48,6 @@ in with lib; lib // rec {
         else last values
       );
     in f [] attrList;
-}
+
+}; in self
 

@@ -49,16 +49,11 @@
             # gcc = { arch = "x86-64" /*target*/; };
           };
           overlays =  [
+            overlays.default
             nix.overlays.default
             inputs.emacs-overlay.overlay
             deploy-rs.overlay
-            overlays.default
-            overlays.aocc
-            overlays.flang
-            overlays.intel-compilers
-            overlays.arm
-            overlays.pgi
-            (import ../../envs/overlay.nix nixpkgs)
+            overlays.cluster
             (import ../../emacs/overlay.nix)
             self.overlays.default
             inputs.nxsession.overlay
@@ -69,7 +64,7 @@
           };
         };
 
-    overlays = import ../../overlays;
+      overlays = import ../../overlays { inherit inputs; lib = inputs.nixpkgs.lib; };
 
     NIX_CONF_DIR_fun = pkgs: let
       nixConf = pkgs.writeTextDir "opt/nix.conf" ''
@@ -356,6 +351,9 @@
       inherit system pkgs;
       configuration = { lib, ... }: {
         imports = [
+          inputs.base16.nixosModule
+          # set system's scheme to nord by setting `config.scheme`
+          { scheme = "${inputs.base16-schemes}/solarized-dark.yaml"; }
           (import ./home-dguibert.nix)
           ({ ... }: {
             home.sessionVariablesFileName = "hm-aarch64-session-vars.sh";

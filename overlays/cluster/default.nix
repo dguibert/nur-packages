@@ -1,6 +1,22 @@
 final: prev: with prev; {
-  lib = prev.lib.extend(final: prev: {
-    fetchers = import ./lib/fetchers.nix prev.lib;
+  lib = prev.lib.extend(final': prev': with final'; {
+    fetchers = import ./lib/fetchers.nix { lib = prev'; };
+    tryUpstream = drv: attrs: builtins.trace "broken upstream ${drv.name}" (drv.overrideAttrs attrs).overrideAttrs (o: {
+      isBroken = isBroken drv;
+    });
+    # https://nixos.org/manual/nix/stable/language/builtins.html#builtins-tryEval
+    #let e = { x = throw ""; }; in (builtins.tryEval (builtins.deepSeq e e)).success
+    #if (builtins.tryEval (isBroken drv)).success
+    #then (isBroken drv) # should fail and use our override
+    #else drv.overrideAttrs attrs;
+    dontCheck = drv: drv.overrideAttrs (o: {
+      doCheck = false;
+      doInstallCheck = false;
+    });
+    upstreamFails = drv: tryUpstream drv (o: {
+      doCheck = false;
+      doInstallCheck = false;
+    });
   });
 
   # fix infinite recursion
@@ -72,4 +88,12 @@ final: prev: with prev; {
        zlib = buildPackages.zlib.override { fetchurl = stdenv.fetchurlBoot; };
     };
   };
+
+  #nix = if nixStore == "/nix" then prev.nix
+  #  else final.lib.upstreamFails prev.nix;
+  nix = final.lib.dontCheck prev.nix;
+  nix_2_3 = final.upstreamFails prev.nix_2_3;
+  nixStable = final.upstreamFails prev.nixStable;
+  nixos-option = null;
+  fish = final.lib.dontCheck prev.fish;
 }

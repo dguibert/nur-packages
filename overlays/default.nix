@@ -14,6 +14,7 @@ mapAttrs'
   (filterAttrs
     (name: type:
     (type == "directory" && builtins.pathExists "${toString ./.}/${name}/default.nix") ||
-    (type == "regular" && hasSuffix ".nix" name && ! (name == "default.nix") && ! (name == "overlays.nix"))
+    (type == "regular" && hasSuffix ".nix" name && ! (name == "default.nix") && ! (name == "overlays.nix")) ||
+    (type == "symlink" && hasSuffix ".nix" name && ! (name == "default.nix") && ! (name == "overlays.nix"))
     )
     (builtins.readDir ./.))

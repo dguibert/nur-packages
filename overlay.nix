@@ -1,5 +1,5 @@
 final: prev: with final; {
-  lib = import ./lib { pkgs=prev; };
+  lib = prev.lib.extend(import ./lib);
 
   adapters = import ./pkgs/stdenv/adapters.nix prev;
   inherit (final.adapters) optimizePackage
