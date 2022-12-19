@@ -10,6 +10,8 @@
   #inputs.nix-ccache.url       = "github:dguibert/nix-ccache/pu";
   #inputs.nix-ccache.inputs.nixpkgs.follows = "nixpkgs";
 
+  inputs.emacs-src.url = "github:emacs-mirror/emacs/emacs-29";
+  inputs.emacs-src.flake = false;
   inputs.emacs-overlay.url = "github:nix-community/emacs-overlay";
   inputs.emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -56,7 +58,16 @@
       ];
     };
   })) // rec {
-    overlays.default = import ./overlay.nix;
+    overlays.default = final: prev: 
+      (import ./overlay.nix final prev) //
+      ({
+        emacsPgtk = (prev.emacsPgtk.override {
+        }).overrideAttrs (old : {
+          name = "emacs-pgtk";
+          version = inputs.emacs-src.shortRev;
+          src = inputs.emacs-src;
+        });
+      });
   };
 }
 

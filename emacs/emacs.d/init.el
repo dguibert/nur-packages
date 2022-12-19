@@ -378,20 +378,33 @@
 ;        (assq-delete-all (car (rassoc 'git-rebase-mode auto-mode-alist))
 ;                         auto-mode-alist)))
 
-;;(setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
-;(setq tramp-default-method "sshx")
-;(customize-set-variable 'tramp-default-method "sshx" "")
-;(setq tramp-verbose 10)
-;(customize-set-variable 'tramp-verbose 1 "Enable remote command traces")
-(use-package tramp
-  :ensure t
-  :custom
-  (tramp-default-method "sshx")
-  (tramp-completion-reread-directory-timeout nil)
-  (tramp-default-remote-shell "/bin/bash")
-  (tramp-encoding-shell "/bin/bash")
-  )
+;(use-package tramp
+;  :ensure t
+;  :demand t
+;  :init
+  (autoload #'tramp-register-crypt-file-name-handler "tramp-crypt")
+;  :config
+;  ;;(setq tramp-verbose 6)
+(setq tramp-default-method "sshx")
+;;
+  (setq vc-ignore-dir-regexp
+        (format "\\(%s\\)\\|\\(%s\\)"
+	        vc-ignore-dir-regexp
+	        tramp-file-name-regexp))
+;
+  ;; Honor remote PATH.
+  ; (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
+  (setq tramp-completion-reread-directory-timeout nil)
+  (setq tramp-default-remote-shell "/bin/bash")
+  (setq tramp-encoding-shell "/bin/bash")
+;  ;; Allow ssh connections to persist.
+;  ;;
+;  ;; This seems to maybe cause tramp to hang a lot.
+;  (customize-set-variable 'tramp-use-ssh-controlmaster-options nil)
+;  )
+
+;(require 'tramp)
 
 ;; Org Mode Configuration ------------------------------------------------------
 
@@ -624,7 +637,7 @@ do not already have one."
         (buffer-substring-no-properties
          (match-beginning 1)
          (match-end 1)))))
-  
+
   (defun vulpea-agenda-category (&optional len)
     "Get category of item at point for agenda.
 
