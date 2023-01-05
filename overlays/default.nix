@@ -1,16 +1,20 @@
-rec {
-  default = import ../overlay.nix;
-  local = final: prev: if (builtins.pathExists ./local.nix) then (import (./local.nix)) final prev else {};
+{ lib, inputs ? null, ... }:
 
-  aocc = import ./aocc-overlay;
-  flang = import ./flang-overlay;
-  intel-compilers = import ./intel-compilers-overlay;
-  intel-oneapi = import ./intel-oneapi;
-  arm = import ./arm-overlay;
-  pgi = import ./pgi-overlay;
-  nvhpc = import ./nvhpc-overlay;
+with lib;
 
-  emacs = import ../emacs/overlay.nix;
-  extra-builtins = import ../extra-builtins/overlay.nix;
-}
-
+mapAttrs'
+  (name: type: {
+    name = removeSuffix ".nix" name;
+    value = let file = ./. + "/${name}"; in
+      (final: prev: import file final (prev // {
+        inherit inputs;
+      }
+      ));
+  })
+  (filterAttrs
+    (name: type:
+    (type == "directory" && builtins.pathExists "${toString ./.}/${name}/default.nix") ||
+    (type == "regular" && hasSuffix ".nix" name && ! (name == "default.nix") && ! (name == "overlays.nix")) ||
+    (type == "symlink" && hasSuffix ".nix" name && ! (name == "default.nix") && ! (name == "overlays.nix"))
+    )
+    (builtins.readDir ./.))

@@ -7,19 +7,13 @@
 #     nix-build -A mypackage
 
 { nixpkgs ? { outPath = <nixpkgs>; revCount = 123456; shortRev = "gfedcba"; }
-, pkgs ? import nixpkgs {
-	overlays = [
-		(import ./overlays).default
-	];
-  }
+, pkgs ? import nixpkgs {}
 }:
 
 pkgs // {
   # The `lib`, `modules`, and `overlay` names are special
-  lib = import ./lib { inherit pkgs; }; # functions
+  #lib = import ./lib { inherit pkgs; }; # functions
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
-
-  envs = if (builtins.pathExists ./envs/.decrypted) then import ./envs { } else {};
 }
 

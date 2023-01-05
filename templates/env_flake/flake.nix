@@ -15,10 +15,12 @@
   inputs.nur_dguibert_envs.inputs.nix.follows = "nix";
   inputs.nur_dguibert_envs.inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
 
+  inputs.pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+  inputs.pre-commit-hooks.inputs.flake-utils.follows = "flake-utils";
+  inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs
             , nix
-            #, nix-ccache
             , nur_dguibert_envs
             , flake-utils
             , ...
@@ -30,10 +32,9 @@
           nix.overlay
           nur_dguibert_envs.overlay
           nur_dguibert_envs.overlays.extra-builtins
-          self.overlay
+          self.overlays.default
         ];
         config.allowUnfree = true;
-        config.psxe.licenseFile = "none"; #<secrets/lic>;
     };
 
   in (flake-utils.lib.eachDefaultSystem (system:
@@ -42,13 +43,42 @@
 
     legacyPackages = pkgs;
 
-    devShell = pkgs.mkShell {
+    devShells.default = pkgs.mkShell {
       name = "env";
       ENVRC = "env";
       buildInputs = with pkgs; [ pkgs.nix jq ];
+      pre-commit-check-shellHook = inputs.self.checks.${system}.pre-commit-check.shellHook;
     };
+    checks = {
+      pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
+        src = ./.;
+        hooks = {
+          nixpkgs-fmt.enable = true;
+        # TODO readd git annex pre-commit
+        git-annex = {
+          enable = true;
+          name = "git-annex";
+          entry = "git annex pre-commit";
+          };
+          prettier.enable = true;
+          trailing-whitespace = {
+          enable = true;
+          name = "trim trailing whitespace";
+          entry = "${pkgs.python3.pkgs.pre-commit-hooks}/bin/trailing-whitespace-fixer";
+          types = [ "text" ];
+          stages = [ "commit" "push" "manual" ];
+          };
+          check-merge-conflict = {
+          enable = true;
+          name = "check for merge conflicts";
+          entry = "${pkgs.python3.pkgs.pre-commit-hooks}/bin/check-merge-conflict";
+          types = [ "text" ];
+        };
+      };
+    };
+  };
   })) // rec {
-    overlay = final: prev: {
+    overlays.default = final: prev: {
     };
   };
 }

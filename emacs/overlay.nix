@@ -1,7 +1,5 @@
 final: prev: with prev; let
   # https://gist.github.com/grahamc/2daa060dce38ad18ddfa7927e1b1a1b3
-  #emacsPackaging = pkgs.emacs27-nox.pkgs;
-  emacsPackaging = emacs27.pkgs;
 
   my-texlive = (texlive.combine {
     inherit (texlive) scheme-medium
@@ -27,90 +25,66 @@ final: prev: with prev; let
     };
   };
 
-  emacsWithPackages = emacsPackaging.emacsWithPackages;
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.elpaPackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.melpaPackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.melpaStablePackages
   # nix-env -f "<nixpkgs>" -qaP -A emacsPackages.orgPackages
-  my-emacs = ((pkgs.emacsPackagesGen emacs27).overrideScope' overrides).emacsWithPackages
-  #my-emacs = emacsWithPackages
-    (epkgs: (with epkgs.melpaStablePackages; [
-      #magit          # ; Integrate git <C-x g>
-      #zerodark-theme # ; Nicolas' theme
-    ]) ++ (with epkgs.melpaPackages; [
-      #undo-tree      # ; <C-x u> to show the undo tree
-      #zoom-frm       # ; increase/decrease font size for all buffers %lt;C-x C-+>
-    ]) ++ (with epkgs.elpaPackages; [
-      #auctex         # ; LaTeX mode
-      #beacon         # ; highlight my cursor when scrolling
-      #nameless       # ; hide current package name everywhere in elisp code
-    ]) ++ (with epkgs; [
-      use-package
-      use-package-ensure-system-package
-      nix-mode
-      all-the-icons-ivy
-      doom-modeline
-      doom-themes
+  my-emacs = pkgs.emacsWithPackagesFromUsePackage {
+    # Your Emacs config file. Org mode babel files are also
+    # supported.
+    # NB: Config files cannot contain unicode characters, since
+    #     they're being parsed in nix, which lacks unicode
+    #     support.
+    # config = ./emacs.org;
+    config = ./emacs.d/init.el;
 
-      which-key
+    # Package is optional, defaults to pkgs.emacs
+    package = pkgs.emacsPgtk;
 
-      evil
-      evil-leader
-      evil-collection
-      #evil-magit
-      evil-matchit
-      evil-numbers
-      evil-surround
-      evil-visualstar
+    alwaysEnsure = false;
 
-      direnv
-      notmuch
-      gnus-alias
+    # For Org mode babel files, by default only code blocks with
+    # `:tangle yes` are considered. Setting `alwaysTangle` to `true`
+    # will include all code blocks missing the `:tangle` argument,
+    # defaulting it to `yes`.
+    # Note that this is NOT recommended unless you have something like
+    # `#+PROPERTY: header-args:emacs-lisp :tangle yes` in your config,
+    # which defaults `:tangle` to `yes`.
+    alwaysTangle = true;
 
-      ivy
-      ivy-rich
-      org-bullets
-      rainbow-delimiters
+    # Optionally provide extra packages not in the configuration file.
+    extraEmacsPackages = epkgs: [
+      epkgs.gnus-alias
+      epkgs.ol-notmuch
+      # notmuch-agenda
+      epkgs.cl-lib # notmuch-agenda
+      epkgs.org
+      epkgs.org-mime
+      #epkgs.org-id
+      #epkgs.org-capture
+      #epkgs.ox-icalendar
 
-      general
+      pkgs.notmuch   # From main packages set
+      pkgs.ripgrep
 
-      hydra
+      pkgs.xclip
+    ];
 
-      projectile
-      magit
-      counsel-projectile
-
-      org-download
-      ob-async
-      gnuplot
-      visual-fill-column
-
-      org-roam
-      org-roam-bibtex
-
-      org-noter
-      org-ref
-
-      cmake-mode
-
-      all-the-icons
-
-      org-contrib
-      org-tree-slide
-
-      org-cv
-
-      auctex
-    ]) ++ [
-      notmuch   # From main packages set
-      ripgrep
-
-      xclip
-      #my-mode
-      sqlite.bin
-    ]);
+    ## Optionally override derivations.
+    #override = epkgs: epkgs // {
+    #  weechat = epkgs.melpaPackages.weechat.overrideAttrs(old: {
+    #    patches = [ ./weechat-el.patch ];
+    #  });
+    #};
+  };
 
 in {
   inherit my-texlive;
   inherit my-emacs;
+
+  #emacsPgtkNativeComp = prev.emacsPgtkNativeComp.overrideAttrs (o: {
+  #  buildInputs = o.buildInputs ++ [
+  #    prev.gtk3-x11
+  #  ];
+  #});
 }

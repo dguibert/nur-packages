@@ -1,5 +1,5 @@
 final: prev: with final; {
-  lib = import ./lib { pkgs=prev; };
+  lib = prev.lib.extend(import ./lib);
 
   adapters = import ./pkgs/stdenv/adapters.nix prev;
   inherit (final.adapters) optimizePackage
@@ -9,7 +9,6 @@ final: prev: with final; {
                      extraNativeCflags
                      customFlagsWithinStdEnv;
 
-  example-package = final.callPackage ./pkgs/example-package { };
   # some-qt5-package = prev.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
   inherit (final.callPackages ./pkgs/elfutils {
@@ -97,10 +96,6 @@ final: prev: with final; {
   # throw "use gitAndTools.hub instead"
   gitAndTools = (removeAttrs prev.gitAndTools ["hubUnstable"]) // {
     git-credential-password-store = final.callPackage ./pkgs/git-credential-password-store { };
-    git-crypt = prev.gitAndTools.git-crypt.overrideAttrs (attrs: {
-      # https://github.com/AGWA/git-crypt/issues/105
-      patches = (attrs.patches or []) ++ [ ./pkgs/git-crypt-support-worktree-simple-version-patch.txt ];
-    });
   };
 
   jobs = final.callPackage ./pkgs/jobs {
@@ -249,6 +244,7 @@ final: prev: with final; {
   python37 = prev.python37.override { packageOverrides = final.pythonOverrides; };
   python38 = prev.python38.override { packageOverrides = final.pythonOverrides; };
   python39 = prev.python39.override { packageOverrides = final.pythonOverrides; };
+  python310 = prev.python310.override { packageOverrides = final.pythonOverrides; };
 
   pythonOverrides = python-self: python-super: with python-self; {
     hatchet = callPackage ./pkgs/py-hatchet {};

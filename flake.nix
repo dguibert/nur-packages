@@ -3,29 +3,24 @@
 
   inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
   inputs.nix.url              = "github:dguibert/nix/pu";
+  inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, nix, flake-utils }: let
+  outputs = { self, nixpkgs, nix, flake-utils }@inputs: let
+    inherit (self) outputs;
+
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
         overlays =  [
-          self.overlay
-          self.overlays.aocc
-          self.overlays.flang
-          self.overlays.intel-compilers
-          self.overlays.intel-oneapi
-          self.overlays.arm
-          self.overlays.pgi
-          self.overlays.nvhpc
+          self.overlays.default
           self.overlays.extra-builtins
-          nix.overlay
+          nix.overlays.default
         ];
         config.allowUnfree = true;
-        config.psxe.licenseFile = "none"; #<secrets/lic>;
     };
 
-  in (flake-utils.lib.eachDefaultSystem (system:
+  in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
        let pkgs = nixpkgsFor system; in
        rec {
 
@@ -37,25 +32,25 @@
       buildInputs = with pkgs; [ pkgs.nix jq ];
     };
 
-    checks = {
-      "intel_2020_2_254" = legacyPackages.intelPackages_2020_2_254.compilers;
-    };
+    checks = inputs.flake-utils.lib.flattenTree (import ./checks { inherit inputs outputs system;
+                                                               lib = inputs.nixpkgs.lib; });
   })) // rec {
 
     ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
     nixosModules = import ./modules;
 
-    overlay = overlays.default;
-
-    overlays = import ./overlays;
+    overlays = import ./overlays { inherit inputs; lib = inputs.nixpkgs.lib; };
 
     templates = {
       env_flake = {
         path = ./templates/env_flake;
         description = "A bery basic env for my project";
       };
+      terraform = {
+        path = ./templates/terraform;
+        description = "A template to use terranix/terraform";
+      };
     };
-    defaultTemplate = self.templates.env_flake;
 
   };
 }

@@ -1,7 +1,8 @@
 { stdenv, fetchFromGitHub, cmake, boost, openmpi }:
 
 stdenv.mkDerivation {
-  name = "muster";
+  pname = "muster";
+  version = "1.0.1";
   src = fetchFromGitHub {
     owner = "LLNL";
     repo = "muster";
