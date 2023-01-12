@@ -184,16 +184,6 @@ final: prev: with final; {
     ];
   });
 
-  hdf5_1_8 = builtins.trace "hdf5_1_8 from overlay" final.callPackage ./pkgs/hdf5/1_8.nix {
-    gfortran = null;
-    szip = null;
-    mpi = null;
-  };
-  hdf5 = builtins.trace "hdf5 from overlay" final.callPackage ./pkgs/hdf5 {
-    gfortran = null;
-    szip = null;
-    mpi = null;
-  };
   hpcbind = final.callPackage ./pkgs/hpcbind { };
 
   maqao = final.callPackage ./pkgs/maqao { };
