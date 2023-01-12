@@ -38,6 +38,8 @@
                                                                lib = inputs.nixpkgs.lib; });
   })) // rec {
 
+    lib = nixpkgs.lib;
+
     ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
     nixosModules = import ./modules;
 

@@ -10,17 +10,16 @@
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
-        overlays =  [
-          upstream.overlays.default
-          upstream.overlays.extra-builtins
+        overlays =  upstream.legacyPackages.${system}.overlays ++ [
           upstream.overlays.cluster
           upstream.overlays.store-spartan
-          nix.overlays.default
         ];
         config.allowUnfree = true;
         config.replaceStdenv = import "${upstream}/stdenv.nix";
     };
   in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system: {
     legacyPackages = nixpkgsFor system;
-  }));
+  })) // {
+    lib = nixpkgs.lib;
+  };
 }
