@@ -13,10 +13,10 @@ final: prev: with prev; {
       doCheck = false;
       doInstallCheck = false;
     });
-    upstreamFails = drv: tryUpstream drv (o: {
+    upstreamFails = drv: if ! (nixStore == "/nix") then tryUpstream drv (o: {
       doCheck = false;
       doInstallCheck = false;
-    });
+    }) else drv;
   });
 
   # fix infinite recursion
