@@ -107,7 +107,6 @@ final: prev: with final; {
   hpcg = final.callPackage ./pkgs/hpcg { };
   inherit (final.callPackages ./pkgs/hpl {
     inherit (final) fetchannex;
-    inherit (final) nix-patchtools;
   })
     hpl_netlib_2_3
     hpl_mkl_netlib_2_3
@@ -204,8 +203,6 @@ final: prev: with final; {
   #inherit (final.callPackages ./pkgs/nemo { })
   #  nemo_meto_go8_4_0_2
   #;
-
-  nix-patchtools = final.callPackage ./pkgs/nix-patchtools { };
 
   nss_sss = callPackage ./pkgs/sssd/nss-client.nix { };
 
