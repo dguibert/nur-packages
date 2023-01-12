@@ -4,11 +4,10 @@
   # and
   # emacs --with-profile "((user-emacs-directory . \"$PWD/emacs.d\"))"
 
-  inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
-  inputs.nix.url              = "github:dguibert/nix/pu";
-  inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
-  #inputs.nix-ccache.url       = "github:dguibert/nix-ccache/pu";
-  #inputs.nix-ccache.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.upstream.url = "path:..";
+  inputs.nixpkgs.follows = "upstream/nixpkgs";
+  inputs.nix.follows = "upstream/nix";
+  inputs.flake-utils.follows = "upstream/flake-utils";
 
   inputs.emacs-src.url = "github:emacs-mirror/emacs/emacs-29";
   inputs.emacs-src.flake = false;
@@ -17,28 +16,22 @@
 
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs
-            , nix
-            #, nix-ccache
+  outputs = { self, upstream
+            ,  nixpkgs
             , flake-utils
             , ...
             }@inputs: let
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
-        overlays =  [
-          inputs.nix.overlays.default
+        overlays =  upstream.legacyPackages.${system}.overlays ++ [
           inputs.emacs-overlay.overlay
-          overlays.default
-          overlays.extra-builtins
           self.overlays.default
         ];
         config.allowUnfree = true;
     };
 
-    overlays = import ../overlays { lib = nixpkgs.lib; };
-
-            in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
+    in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
        let pkgs = nixpkgsFor system; in
        rec {
 
