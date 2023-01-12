@@ -6,7 +6,9 @@
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, nix, flake-utils }@inputs: let
+  inputs.nixpkgs-default.url = "path:nixpkgs/default";
+
+  outputs = { self, nixpkgs, nix, flake-utils, ... }@inputs: let
     inherit (self) outputs;
 
     nixpkgsFor = system:
@@ -26,7 +28,7 @@
 
     legacyPackages = nixpkgsFor system;
 
-    devShell = pkgs.mkShell {
+    devShells.default = pkgs.mkShell {
       name = "nix";
       ENVRC = "nix";
       buildInputs = with pkgs; [ pkgs.nix jq ];

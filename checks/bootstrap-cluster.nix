@@ -8,14 +8,7 @@
     config.replaceStdenv = import ../stdenv.nix;
   };
 
-  pkgs = import inputs.nixpkgs {
-    inherit system;
-    overlays = [
-      inputs.self.overlays.default
-      inputs.self.overlays.cluster
-    ];
-    config.replaceStdenv = import ../stdenv.nix;
-  };
+  pkgs = inputs.nixpkgs-default.legacyPackages.${system};
 in
 {
   zlib = pkgs.zlib;

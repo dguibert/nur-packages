@@ -16,13 +16,22 @@ let
     bintools = binutils;
     libc = glibc;
   };
-in
 
-pkgs.stdenv.override {
-  cc = gcc;
-  overrides = self: super: {
-    inherit glibc binutils gcc;
-  };
-  allowedRequisites = pkgs.stdenv.allowedRequisites ++
-    [ glibc.out glibc.dev glibc.bin binutils pkgs.nss_sss ];
-}
+  thisStdenv = pkgs.stdenv.override {
+    cc = gcc;
+    overrides = self: super: {
+      inherit glibc binutils gcc;
+      inherit (pkgs) fetchurl;
+    };
+    allowedRequisites = pkgs.stdenv.allowedRequisites ++
+                        [ glibc.out glibc.dev glibc.bin binutils pkgs.nss_sss ];
+  }; in thisStdenv
+
+  # (prevStage: {
+  #   inherit config overlays;
+  #   stdenv = import ./generic {
+  #   }
+  # })
+  # (vanillaPackages: {
+  # config.replaceStdenv vanillaPackages -> stdenv
+  # })
