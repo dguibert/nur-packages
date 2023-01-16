@@ -6,11 +6,13 @@
   inputs.nix.follows = "upstream/nix";
   inputs.flake-utils.follows = "upstream/flake-utils";
 
-  outputs = { self, nixpkgs, nix, flake-utils, upstream, ... }: let
+  outputs = { self, nixpkgs, nix, flake-utils, upstream, ... }@inputs: let
+    inherit (self) outputs;
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
         overlays =  upstream.legacyPackages.${system}.overlays ++ [
+          nix.overlays.default
           upstream.overlays.cluster
           upstream.overlays.store-spartan
         ];
@@ -19,6 +21,11 @@
     };
   in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system: {
     legacyPackages = nixpkgsFor system;
+
+    apps = import ../../apps {
+      inherit (self) lib;
+      inherit system inputs outputs;
+    };
   })) // {
     lib = nixpkgs.lib;
   };

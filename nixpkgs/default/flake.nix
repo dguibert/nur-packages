@@ -19,5 +19,7 @@
     legacyPackages = nixpkgsFor system;
   })) // {
     lib = nixpkgs.lib;
+
+    overlays = upstream.overlays;
   };
 }
