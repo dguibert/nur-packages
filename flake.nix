@@ -34,6 +34,12 @@
       buildInputs = with pkgs; [ pkgs.nix jq ];
     };
 
+    apps = import ./apps {
+      inherit system;
+      inherit (outputs) lib;
+      inherit inputs outputs;
+    };
+
     checks = inputs.flake-utils.lib.flattenTree (import ./checks { inherit inputs outputs system;
                                                                lib = inputs.nixpkgs.lib; });
   })) // rec {
