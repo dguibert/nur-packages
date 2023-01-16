@@ -8,6 +8,16 @@
 
   inputs.nixpkgs-default.url = "path:nixpkgs/default";
 
+  # for overlays/updated-from-flake.nix
+  inputs.dwm-src.url = "github:dguibert/dwm/pu";
+  inputs.dwm-src.flake = false;
+  inputs.st-src.url = "github:dguibert/st/pu";
+  inputs.st-src.flake = false;
+  inputs.dwl-src.url = "github:dguibert/dwl/pu";
+  inputs.dwl-src.flake = false;
+  inputs.mako-src.url = "github:emersion/mako/master";
+  inputs.mako-src.flake = false;
+
   outputs = { self, nixpkgs, nix, flake-utils, ... }@inputs: let
     inherit (self) outputs;
 
@@ -17,6 +27,7 @@
         overlays =  [
           self.overlays.default
           self.overlays.extra-builtins
+          self.overlays.updated-from-flake
           nix.overlays.default
         ];
         config.allowUnfree = true;
