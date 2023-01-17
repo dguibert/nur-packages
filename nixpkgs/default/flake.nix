@@ -6,7 +6,8 @@
   inputs.nix.follows = "upstream/nix";
   inputs.flake-utils.follows = "upstream/flake-utils";
 
-  outputs = { self, nixpkgs, nix, flake-utils, upstream, ... }: let
+  outputs = { self, nixpkgs, nix, flake-utils, upstream, ... }@inputs: let
+    inherit (self) outputs;
     nixpkgsFor = system:
       import nixpkgs {
         inherit system;
