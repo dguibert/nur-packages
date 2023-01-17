@@ -17,6 +17,11 @@
     };
   in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system: {
     legacyPackages = nixpkgsFor system;
+
+    apps = import ../../apps {
+      inherit (self) lib;
+      inherit system inputs outputs;
+    };
   })) // {
     lib = nixpkgs.lib;
 

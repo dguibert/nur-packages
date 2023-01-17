@@ -28,5 +28,7 @@
     };
   })) // {
     lib = nixpkgs.lib;
+
+    overlays = upstream.overlays;
   };
 }
