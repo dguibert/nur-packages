@@ -18,6 +18,13 @@ final: prev: with prev; {
       doInstallCheck = false;
     }) else drv;
 
+    narHash = pkg: version: hash: builtins.trace "${pkg.name} with new hash: ${hash}" lib.upgradeOverride pkg (_: {
+      inherit version;
+      src = pkg.src.overrideAttrs (_: {
+        outputHash = hash;
+      });
+    });
+  });
 
   #nix = if nixStore == "/nix" then prev.nix
   #  else final.lib.upstreamFails prev.nix;
@@ -29,43 +36,4 @@ final: prev: with prev; {
 
   openssh = final.lib.dontCheck prev.openssh;
 
-  pythonOverrides = prev.lib.composeOverlays [
-    (prev.pythonOverrides or (_:_: {}))
-    (python-self: python-super: {
-      flask-limiter = lib.upgradeOverride python-super.flask-limiter (o: rec {
-        version = "2.6.2";
-
-        src = fetchFromGitHub {
-          owner = "alisaifee";
-          repo = "flask-limiter";
-          rev = version;
-          sha256 = "sha256-eWOdJ7m3cY08ASN/X+7ILJK99iLJJwCY8294fwJiDew=";
-        };
-      });
-      annexremote = lib.upgradeOverride python-super.annexremote (o: rec {
-        version = "1.6.0";
-
-        # use fetchFromGitHub instead of fetchPypi because the test suite of
-        # the package is not included into the PyPI tarball
-        src = fetchFromGitHub {
-          rev = "v${version}";
-          owner = "Lykos153";
-          repo = "AnnexRemote";
-          sha256 = "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
-        };
-
-      });
-      dnspython = final.lib.upstreamFails python-super.dnspython;
-    })
-  ];
-
-  datalad = lib.upgradeOverride prev.datalad (o: rec {
-    version = "0.16.5";
-    src = fetchFromGitHub {
-      owner = "datalad";
-      repo = "datalad";
-      rev = "refs/tags/${version}";
-      sha256 = "sha256-F5UFW0/XqntrHclpj3TqoAwuHJbiiv5a7/4MnFoJ1dE=";
-    };
-  });
 }
