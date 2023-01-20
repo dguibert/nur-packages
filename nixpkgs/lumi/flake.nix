@@ -12,21 +12,20 @@
       import nixpkgs {
         inherit system;
         overlays =  upstream.legacyPackages.${system}.overlays ++ [
+          nix.overlays.default
+          upstream.overlays.cluster
+          upstream.overlays.store-lumi
         ];
         config.allowUnfree = true;
         config.replaceStdenv = import "${upstream}/stdenv.nix";
     };
-  in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system: {
+  in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system: {
     legacyPackages = nixpkgsFor system;
 
     apps = import ../../apps {
       inherit (self) lib;
       inherit system inputs outputs;
     };
-
-    checks = inputs.flake-utils.lib.flattenTree (import ../../checks { inherit inputs outputs system;
-                                                                       pkgs = self.legacyPackages.${system};
-                                                                       lib = inputs.nixpkgs.lib; });
   })) // {
     lib = nixpkgs.lib;
 

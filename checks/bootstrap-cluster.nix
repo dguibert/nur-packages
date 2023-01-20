@@ -1,4 +1,4 @@
-{ lib, inputs, outputs, system, ... }@args: let
+{ lib, inputs, outputs, system, pkgs, ... }@args: let
   # fails
   pkgs' = import inputs.nixpkgs {
     inherit system;
@@ -7,8 +7,6 @@
     ];
     config.replaceStdenv = import ../stdenv.nix;
   };
-
-  pkgs = inputs.nixpkgs-default.legacyPackages.${system};
 in
 {
   zlib = pkgs.zlib;

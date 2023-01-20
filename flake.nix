@@ -6,8 +6,6 @@
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-utils.url      = "github:numtide/flake-utils";
 
-  inputs.nixpkgs-default.url = "path:nixpkgs/default";
-
   # for overlays/updated-from-flake.nix
   inputs.dwm-src.url = "github:dguibert/dwm/pu";
   inputs.dwm-src.flake = false;
@@ -53,6 +51,7 @@
     };
 
     checks = inputs.flake-utils.lib.flattenTree (import ./checks { inherit inputs outputs system;
+                                                                       pkgs = self.legacyPackages.${system};
                                                                lib = inputs.nixpkgs.lib; });
   })) // rec {
 

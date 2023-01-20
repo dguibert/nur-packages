@@ -1,4 +1,4 @@
-{ lib, inputs, outputs, system, ... }@args:
+{ lib, inputs, outputs, system, pkgs, ... }@args:
 
 with lib;
 
