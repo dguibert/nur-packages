@@ -36,4 +36,11 @@ final: prev: with prev; {
 
   openssh = final.lib.dontCheck prev.openssh;
 
+  pythonOverrides = prev.lib.composeOverlays [
+    (prev.pythonOverrides or (_:_: {}))
+    (python-self: python-super: {
+      annexremote = final.lib.narHash python-super.annexremote "1.6.0" "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
+      dnspython = final.lib.upstreamFails python-super.dnspython;
+    })
+  ];
 }
