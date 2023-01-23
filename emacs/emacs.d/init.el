@@ -759,6 +759,7 @@ Refer to `org-agenda-prefix-format' for more information."
 ;  (setq visual-fill-column-width 100
 ;        visual-fill-column-center-text 0)
 ;  (visual-fill-column-mode 1))
+(use-package org-collector :ensure t)
 
 (use-package visual-fill-column :ensure t)
 ;  :hook (org-mode . efs/org-mode-visual-fill))
