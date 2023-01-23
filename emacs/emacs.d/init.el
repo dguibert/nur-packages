@@ -748,6 +748,9 @@ Refer to `org-agenda-prefix-format' for more information."
 
 (use-package ol-notmuch :ensure t)
 
+(use-package org-contrib :ensure t)
+(require 'org-collector)
+
 (use-package org-bullets
   :ensure t
   :after org
@@ -759,7 +762,6 @@ Refer to `org-agenda-prefix-format' for more information."
 ;  (setq visual-fill-column-width 100
 ;        visual-fill-column-center-text 0)
 ;  (visual-fill-column-mode 1))
-(use-package org-collector :ensure t)
 
 (use-package visual-fill-column :ensure t)
 ;  :hook (org-mode . efs/org-mode-visual-fill))
