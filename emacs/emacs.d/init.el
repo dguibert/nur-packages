@@ -583,6 +583,12 @@ do not already have one."
           ("i" "interruption" entry (file+olp+datetree "~/Documents/roam/tracker.org")
            "* IN-PROGRESS %?  :interruption:work:\n%U\n- ref :: %a\n"
            :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("s" "sport" entry (file+olp+datetree "~/Documents/roam/sport.org")
+           "* %^T %?  :sport:%^g%^{TYPE}p%^{TIME}p%^{DISTANCE}p%^{HEARTRATE}p%^{MAXHEARRATE}p%^{PACE}p"
+           :prepend t :tree-type month :jump-to-captured t)
+          ("S" "sport (planned)" entry (file+olp+datetree "~/Documents/roam/sport.org")
+           "* %^t %?  :sport:%^g%^{TIME}p%^{DISTANCE}p"
+           :prepend t :tree-type month :jump-to-captured t)
           ("f" "chore"        entry (file "~/Documents/roam/inbox.org")
            "* IN-PROGRESS %?  :chore:\n%U\n"
            :clock-in t :clock-keep t)))
@@ -699,6 +705,9 @@ Refer to `org-agenda-prefix-format' for more information."
      (gnuplot . t)))
   (setq org-plantuml-jar-path "~/bin/plantuml.jar")
 )
+
+(require 'org-tempo) ; for <s TAB to insert code block
+
 ;; *** Refile mapped to SPC y o r
 ;;(map! :leader :desc "org-refile" "y o r" #'org-refile)
 ;;(map! :leader "y o c" #'org-columns)
@@ -832,9 +841,9 @@ Refer to `org-agenda-prefix-format' for more information."
 
 (defun my/org-roam-refresh-agenda-list ()
   (interactive)
-  (setq org-agenda-files
-        (delq nil (delete-dups
-                   (my/org-roam-list-notes-by-tag "Project")))))
+  (setq org-agenda-files (list "~/Documents/roam/")))
+;        (delq nil (delete-dups
+;                   (my/org-roam-list-notes-by-tag "Project")))))
 
 ;; Build the agenda list the first time for the session
 (my/org-roam-refresh-agenda-list)
