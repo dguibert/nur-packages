@@ -1,7 +1,9 @@
 {
   description = "A flake for building my NUR packages";
 
-  inputs.upstream.url = "path:../..";
+  ## dev
+  #inputs.upstream.url = "path:../..";
+  inputs.upstream.url = "github:dguibert/nur-packages/master";
   inputs.nixpkgs.follows = "upstream/nixpkgs";
   inputs.nix.follows = "upstream/nix";
   inputs.flake-utils.follows = "upstream/flake-utils";
