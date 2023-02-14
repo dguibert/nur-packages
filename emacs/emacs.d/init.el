@@ -704,6 +704,37 @@ Refer to `org-agenda-prefix-format' for more information."
      (plantuml . t) ;; UML graphs
      (gnuplot . t)))
   (setq org-plantuml-jar-path "~/bin/plantuml.jar")
+
+  (defun get-image-width (fname)
+    "Returns the min of image width and window width, unless :width
+is defined in an attr_org line."
+    (let* ((link (save-match-data (org-element-context)))
+           (paragraph (let ((e link))
+                        (while (and (setq e (org-element-property
+                                             :parent e))
+                                    (not (eq (org-element-type e)
+                                             'paragraph))))
+                        e))
+           (attr_org (org-element-property :attr_org paragraph))
+           (pwidth (plist-get
+                    (org-export-read-attribute :attr_org  paragraph) :width))
+           (width (when pwidth (string-to-number pwidth))) 
+           open
+           img-buf)
+
+      (unless width
+        (setq open (find-buffer-visiting fname)
+              img-buf (or open (find-file-noselect fname))
+              width (min (window-width nil :pixels)
+                         (car (image-size (with-current-buffer img-buf (image-get-display-property)) :pixels))))
+
+        (unless open (kill-buffer img-buf)))
+      width))
+
+  (defun around-image-display (orig-fun file width)
+    (apply orig-fun (list file (get-image-width file))))
+
+  (advice-add 'org--create-inline-image :around #'around-image-display)
 )
 
 (require 'org-tempo) ; for <s TAB to insert code block
