@@ -38,10 +38,10 @@
 
     legacyPackages = nixpkgsFor system;
 
-    devShells.default = pkgs.mkShell {
-      name = "nix";
-      ENVRC = "nix";
-      buildInputs = with pkgs; [ pkgs.nix jq ];
+    devShells = import ./shells {
+      inherit system;
+      inherit (outputs) lib;
+      inherit inputs outputs;
     };
 
     apps = import ./apps {
