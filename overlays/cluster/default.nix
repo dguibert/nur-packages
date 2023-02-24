@@ -40,7 +40,7 @@ final: prev: with prev; {
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
       annexremote = final.lib.narHash python-super.annexremote "1.6.0" "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
-      dnspython = final.lib.upstreamFails python-super.dnspython;
+      #dnspython = final.lib.upstreamFails python-super.dnspython;
       flit-scm = final.lib.narHash python-super.flit-scm "1.7.0" "sha256-2nx9kWq/2TzauOW+c67g9a3JZ2dhBM4QzKyK/sqWOPo=";
     })
   ];

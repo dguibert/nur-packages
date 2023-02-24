@@ -47,11 +47,11 @@
         my-texlive
         my-emacs
         gnuplot
-
+        dtach
       ];
     };
   })) // rec {
-    overlays.default = final: prev: 
+    overlays.default = final: prev:
       (import ./overlay.nix final prev) //
       ({
         emacsPgtk = (prev.emacsPgtk.override {
