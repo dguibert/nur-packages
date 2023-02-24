@@ -68,6 +68,7 @@ final: prev: with prev; let
       pkgs.ripgrep
 
       pkgs.xclip
+      pkgs.dtach # for dtache
     ];
 
     ## Optionally override derivations.
