@@ -718,7 +718,7 @@ is defined in an attr_org line."
            (attr_org (org-element-property :attr_org paragraph))
            (pwidth (plist-get
                     (org-export-read-attribute :attr_org  paragraph) :width))
-           (width (when pwidth (string-to-number pwidth))) 
+           (width (when pwidth (string-to-number pwidth)))
            open
            img-buf)
 
@@ -761,7 +761,14 @@ is defined in an attr_org line."
 (use-package org-download
   :ensure t)
 (use-package ob-async
-  :ensure t)
+  :ensure t
+  :config
+  ;; 2022-10-22 cperl: A workaround for :async not working
+  ;; sometimes as described at
+  ;; https://github.com/astahlman/ob-async/issues/75
+  (defun no-hide-overlays (orig-fun &rest args)
+    (setq org-babel-hide-result-overlays nil))
+  (advice-add 'ob-async-org-babel-execute-src-block :before #'no-hide-overlays))
 
 (use-package org-super-agenda
   :ensure t
