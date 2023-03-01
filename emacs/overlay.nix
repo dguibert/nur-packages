@@ -72,6 +72,16 @@ final: prev: with prev; let
     ];
 
     ## Optionally override derivations.
+    override = epkgs: epkgs // {
+      ob-async = epkgs.ob-async.overrideAttrs (o: {
+        src = fetchFromGitHub {
+          owner = "astahlman";
+          repo = "ob-async";
+          rev = "9aac486073f5c356ada20e716571be33a350a982";
+          sha256 = "sha256-cIwyuwoyojc6uiNbWleh+inoRTUqMCZYQ3IydhRkEkw=";
+        };
+      });
+    };
     #override = epkgs: epkgs // {
     #  weechat = epkgs.melpaPackages.weechat.overrideAttrs(old: {
     #    patches = [ ./weechat-el.patch ];
