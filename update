@@ -77,7 +77,7 @@ if ${UPDATE[lumi]:-${UPDATE[default]}}; then
     )
 fi
 
-if ${UPDATE[default]:-${UPDATE[default]}}; then
+if ${UPDATE[host]:-${UPDATE[default]}}; then
     git checkout host/default || git checkout -b host/default master
     git-is-merged host/default master || git merge master
     (
