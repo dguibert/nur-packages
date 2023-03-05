@@ -21,7 +21,7 @@
         config.allowUnfree = true;
         config.replaceStdenv = import "${upstream}/stdenv.nix";
     };
-  in (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system: {
+  in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system: {
     legacyPackages = nixpkgsFor system;
 
     apps = import ../../apps {
