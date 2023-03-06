@@ -14,6 +14,9 @@
       import nixpkgs {
         inherit system;
         overlays =  upstream.legacyPackages.${system}.overlays ++ [
+          (final: prev: {
+            libuv = dontCheck prev.libuv;
+          })
         ];
         config.allowUnfree = true;
         config.replaceStdenv = import "${upstream}/stdenv.nix";
