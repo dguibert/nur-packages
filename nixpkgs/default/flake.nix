@@ -15,7 +15,10 @@
         inherit system;
         overlays =  upstream.legacyPackages.${system}.overlays ++ [
           (final: prev: {
-            libuv = dontCheck prev.libuv;
+            libuv = prev.libuv.overrideAttrs (o: {
+              doCheck = false;
+              doInstallCheck = false;
+            });
           })
         ];
         config.allowUnfree = true;
