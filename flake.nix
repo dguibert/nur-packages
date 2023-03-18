@@ -68,12 +68,6 @@
     perSystem = {config, self', inputs', pkgs, system, ...}: {
       legacyPackages = nixpkgsFor system;
 
-      #devShells = import ./shells {
-      #  inherit system;
-      #  inherit (outputs) lib;
-      #  inherit inputs outputs;
-      #};
-
       apps = import ./apps {
         inherit system;
         inherit (outputs) lib;
