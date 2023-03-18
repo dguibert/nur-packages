@@ -19,19 +19,6 @@
   outputs = inputs@{ self, flake-parts, nixpkgs, nix,... }: let
     inherit (self) outputs;
 
-    nixpkgsFor = system:
-      import nixpkgs {
-        inherit system;
-        overlays =  [
-          (final: prev: import ./overlays/default final prev)
-          (final: prev: import ./overlays/extra-builtins final prev)
-          (final: prev: import ./overlays/updated-from-flake.nix final prev)
-          nix.overlays.default
-        ];
-        config.allowUnfree = true;
-        config.allowUnsupportedSystem = true;
-    };
-
   in flake-parts.lib.mkFlake { inherit inputs; } {
     flake = {
       lib = nixpkgs.lib;
@@ -56,16 +43,15 @@
     imports = [
       #./home/profiles
       #./hosts
-      #./modules/all-modules.nix
+      ./modules/all-modules.nix
       #./lib
       ./apps
       ./checks
       ./shells
     ];
 
-    perSystem = {config, self', inputs', pkgs, system, ...}: {
-      legacyPackages = nixpkgsFor system;
-    };
+    #perSystem = {config, self', inputs', pkgs, system, ...}: {
+    #};
   };
 
 }
