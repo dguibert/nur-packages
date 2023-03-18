@@ -61,18 +61,13 @@
       #./hosts
       #./modules/all-modules.nix
       #./lib
+      ./apps
       ./checks
       ./shells
     ];
 
     perSystem = {config, self', inputs', pkgs, system, ...}: {
       legacyPackages = nixpkgsFor system;
-
-      apps = import ./apps {
-        inherit system;
-        inherit (outputs) lib;
-        inherit inputs outputs;
-      };
     };
   };
 
