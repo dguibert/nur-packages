@@ -1,35 +1,22 @@
-{ lib
-, inputs
-, outputs
-, system
-, ...
-}:
+{config, lib, ...}: let
 
-with lib;
+  mapShells = p: lib.mapAttrs' (fn: _:
+    lib.nameValuePair
+    (lib.removeSuffix ".nix" fn)
+      (p + "/${fn}"))
+      (builtins.readDir p);
 
-mapAttrs'
-  (name: type:
-  let
-    name' = removeSuffix ".nix" name;
-  in
-  {
-    name = name';
-    value =
-      let
-        file = ./. + "/${name}";
-      in
-      builtins.trace "evaluating devShell for ${name'} (${system})"
-        import
-        file
-        {
-          pkgs = inputs.self.legacyPackages.${system};
-          inherit inputs outputs;
-        };
-  })
-  (filterAttrs
-    (name: type:
+  filterFn = name: type:
+    (name != "all-modules") ||
     (type == "directory" && builtins.pathExists "${toString ./.}/${name}/default.nix") ||
-    (type == "regular" && hasSuffix ".nix" name && ! (hasSuffix "@.nix" name) && ! (name == "default.nix") && ! (name == "overlays.nix")) ||
-    (type == "symlink" && hasSuffix ".nix" name && ! (name == "default.nix") && ! (name == "overlays.nix") && ! (name == "common.nix"))
-    )
-    (builtins.readDir ./.))
+    (type == "regular" && lib.hasSuffix ".nix" name && ! (lib.hasSuffix "@.nix" name) && ! (name == "default.nix") && ! (name == "overlays.nix")) ||
+    (type == "symlink" && lib.hasSuffix ".nix" name && ! (name == "default.nix") && ! (name == "overlays.nix") && ! (name == "common.nix"));
+  
+  shells = lib.attrValues (
+    lib.filterAttrs
+      filterFn
+      (mapShells ./.)
+  );
+in {
+  imports = shells;
+}

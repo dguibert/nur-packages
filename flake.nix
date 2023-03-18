@@ -23,9 +23,9 @@
       import nixpkgs {
         inherit system;
         overlays =  [
-          self.overlays.default
-          self.overlays.extra-builtins
-          self.overlays.updated-from-flake
+          (final: prev: import ./overlays/default final prev)
+          (final: prev: import ./overlays/extra-builtins final prev)
+          (final: prev: import ./overlays/updated-from-flake.nix final prev)
           nix.overlays.default
         ];
         config.allowUnfree = true;
@@ -56,14 +56,23 @@
       "x86_64-linux"
       "aarch64-linux"
     ];
-    perSystem = { config, system, ... }: {
+    imports = [
+      #./home/profiles
+      #./hosts
+      #./modules/all-modules.nix
+      #./lib
+      #./checks
+      ./shells
+    ];
+
+    perSystem = {config, self', inputs', pkgs, system, ...}: {
       legacyPackages = nixpkgsFor system;
 
-      devShells = import ./shells {
-        inherit system;
-        inherit (outputs) lib;
-        inherit inputs outputs;
-      };
+      #devShells = import ./shells {
+      #  inherit system;
+      #  inherit (outputs) lib;
+      #  inherit inputs outputs;
+      #};
 
       apps = import ./apps {
         inherit system;

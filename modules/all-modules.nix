@@ -20,7 +20,7 @@
 
 in {
 
-  imports = flakePartsModules;
+  #imports = flakePartsModules;
 
   options.flake.modules = lib.mkOption {
     type = lib.types.anything;
