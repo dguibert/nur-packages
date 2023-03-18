@@ -61,7 +61,7 @@
       #./hosts
       #./modules/all-modules.nix
       #./lib
-      #./checks
+      ./checks
       ./shells
     ];
 
@@ -79,10 +79,6 @@
         inherit (outputs) lib;
         inherit inputs outputs;
       };
-
-      checks = inputs.flake-utils.lib.flattenTree (import ./checks { inherit inputs outputs system;
-                                                                 pkgs = self.legacyPackages.${system};
-                                                                 lib = inputs.nixpkgs.lib; });
     };
   };
 
