@@ -16,7 +16,7 @@
   inputs.mako-src.url = "github:emersion/mako/master";
   inputs.mako-src.flake = false;
 
-  outputs = { self, nixpkgs, nix, flake-utils, ... }@inputs: let
+  outputs = inputs@{ self, flake-parts, nixpkgs, nix,... }: let
     inherit (self) outputs;
 
     nixpkgsFor = system:
@@ -32,46 +32,49 @@
         config.allowUnsupportedSystem = true;
     };
 
-  in (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
-       let pkgs = nixpkgsFor system; in
-       rec {
+  in flake-parts.lib.mkFlake { inherit inputs; } {
+    flake = {
+      lib = nixpkgs.lib;
+      ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
+      nixosModules = import ./modules;
 
-    legacyPackages = nixpkgsFor system;
+      overlays = import ./overlays { inherit inputs; lib = inputs.nixpkgs.lib; };
 
-    devShells = import ./shells {
-      inherit system;
-      inherit (outputs) lib;
-      inherit inputs outputs;
-    };
-
-    apps = import ./apps {
-      inherit system;
-      inherit (outputs) lib;
-      inherit inputs outputs;
-    };
-
-    checks = inputs.flake-utils.lib.flattenTree (import ./checks { inherit inputs outputs system;
-                                                                       pkgs = self.legacyPackages.${system};
-                                                               lib = inputs.nixpkgs.lib; });
-  })) // rec {
-
-    lib = nixpkgs.lib;
-
-    ## - TODO: NixOS-related outputs such as nixosModules and nixosSystems.
-    nixosModules = import ./modules;
-
-    overlays = import ./overlays { inherit inputs; lib = inputs.nixpkgs.lib; };
-
-    templates = {
-      env_flake = {
-        path = ./templates/env_flake;
-        description = "A bery basic env for my project";
+      templates = {
+        env_flake = {
+          path = ./templates/env_flake;
+          description = "A bery basic env for my project";
+        };
+        terraform = {
+          path = ./templates/terraform;
+          description = "A template to use terranix/terraform";
+        };
       };
-      terraform = {
-        path = ./templates/terraform;
-        description = "A template to use terranix/terraform";
-      };
-    };
 
+    };
+    systems = [
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
+    perSystem = { config, system, ... }: {
+      legacyPackages = nixpkgsFor system;
+
+      devShells = import ./shells {
+        inherit system;
+        inherit (outputs) lib;
+        inherit inputs outputs;
+      };
+
+      apps = import ./apps {
+        inherit system;
+        inherit (outputs) lib;
+        inherit inputs outputs;
+      };
+
+      checks = inputs.flake-utils.lib.flattenTree (import ./checks { inherit inputs outputs system;
+                                                                 pkgs = self.legacyPackages.${system};
+                                                                 lib = inputs.nixpkgs.lib; });
+    };
   };
+
 }
