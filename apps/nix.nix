@@ -1,7 +1,6 @@
 { config, inputs, ... }:
 {
-  perSystem = {config, self', inputs', pkgs, system, ...}: {
-    apps.nix = inputs.flake-utils.lib.mkApp {
+  perSystem = {config, self', inputs', pkgs, system, ...}: let
       drv = let
         name = "nix-${builtins.replaceStrings [ "/" ] [ "-" ] pkgs.nixStore}";
         in pkgs.writeScriptBin name (with pkgs; let
@@ -31,6 +30,11 @@
         export NIX_STORE=${nixStore}/store
         $@
       '');
+
+    in {
+    checks.app-nix = drv;
+    apps.nix = inputs.flake-utils.lib.mkApp {
+      inherit drv;
     };
   };
 }
