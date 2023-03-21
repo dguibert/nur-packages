@@ -19,6 +19,12 @@
               doCheck = false;
               doInstallCheck = false;
             });
+
+            glibcLocales = prev.glibcLocales.overrideAttrs (o: {
+              LOCALEDEF_FLAGS = o.LOCALEDEF_FLAGS ++ [
+                "-c" # https://sourceware.org/bugzilla/show_bug.cgi?id=28845 quiet to generate C.UTF-8
+              ];
+            });
           })
         ];
         config.allowUnfree = true;
