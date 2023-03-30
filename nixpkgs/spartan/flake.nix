@@ -17,6 +17,23 @@
           nix.overlays.default
           upstream.overlays.cluster
           upstream.overlays.store-spartan
+          (final: prev: {
+            libuv = prev.libuv.overrideAttrs (o: {
+              doCheck = false;
+              doInstallCheck = false;
+            });
+
+            patchelf = prev.patchelf.overrideAttrs (o: {
+              doCheck = false; # ./replace-add-needed.sh: line 14: ldd: not found
+              doInstallCheck = false;
+            });
+
+            glibcLocales = prev.glibcLocales.overrideAttrs (o: {
+              LOCALEDEF_FLAGS = o.LOCALEDEF_FLAGS ++ [
+                "-c" # https://sourceware.org/bugzilla/show_bug.cgi?id=28845 quiet to generate C.UTF-8
+              ];
+            });
+          })
         ];
         config.allowUnfree = true;
         config.replaceStdenv = import "${upstream}/stdenv.nix";
@@ -28,6 +45,10 @@
       inherit (self) lib;
       inherit system inputs outputs;
     };
+
+    checks = inputs.flake-utils.lib.flattenTree (import ../../checks { inherit inputs outputs system;
+                                                                       pkgs = self.legacyPackages.${system};
+                                                                       lib = inputs.nixpkgs.lib; });
   })) // {
     lib = nixpkgs.lib;
 
