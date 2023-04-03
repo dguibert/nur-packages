@@ -7,11 +7,11 @@
         NIX_CONF_DIR =
           let
             nixConf = pkgs.writeTextDir "opt/nix.conf" ''
-              sandbox = false
+              sandbox = true
               auto-optimise-store = true
               allowed-users = *
               system-features = recursive-nix nixos-test benchmark big-parallel kvm
-              sandbox-fallback = false
+              sandbox-fallback = true
               keep-outputs = true       # Nice for developers
               keep-derivations = true   # Idem
               experimental-features = nix-command flakes recursive-nix ca-derivations
