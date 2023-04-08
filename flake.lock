@@ -34,6 +34,22 @@
         "type": "github"
       }
     },
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1673956053,
+        "narHash": "sha256-4gtG9iQuiKITOjNQQeQIpoIB6b16fm+504Ch3sNKLd8=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "35bb57c0c8d8b62bbfd284272c928ceb64ddbde9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "locked": {
         "lastModified": 1676283394,
@@ -84,6 +100,7 @@
     },
     "nix": {
       "inputs": {
+        "flake-compat": "flake-compat",
         "lowdown-src": "lowdown-src",
         "nixpkgs": [
           "nixpkgs"
@@ -91,11 +108,11 @@
         "nixpkgs-regression": "nixpkgs-regression"
       },
       "locked": {
-        "lastModified": 1677092839,
-        "narHash": "sha256-eOYtGasgCak3b0c77YMiDovE+vTontdCIMvXqvd99Rk=",
+        "lastModified": 1680867894,
+        "narHash": "sha256-m8iKwNRhvpbb+rSookvNBo+tpcSiKNuNMCJjgBIZvus=",
         "owner": "dguibert",
         "repo": "nix",
-        "rev": "61474bf035754b394886f6aeada0cba3a2f1666a",
+        "rev": "ae65635db1a3227bca71b8f2feddf930f80c12a5",
         "type": "github"
       },
       "original": {
