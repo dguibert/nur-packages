@@ -34,6 +34,22 @@
         "type": "github"
       }
     },
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1673956053,
+        "narHash": "sha256-4gtG9iQuiKITOjNQQeQIpoIB6b16fm+504Ch3sNKLd8=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "35bb57c0c8d8b62bbfd284272c928ceb64ddbde9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "locked": {
         "lastModified": 1676283394,
@@ -84,6 +100,7 @@
     },
     "nix": {
       "inputs": {
+        "flake-compat": "flake-compat",
         "lowdown-src": "lowdown-src",
         "nixpkgs": [
           "upstream",
@@ -92,11 +109,11 @@
         "nixpkgs-regression": "nixpkgs-regression"
       },
       "locked": {
-        "lastModified": 1677092839,
-        "narHash": "sha256-eOYtGasgCak3b0c77YMiDovE+vTontdCIMvXqvd99Rk=",
+        "lastModified": 1680867894,
+        "narHash": "sha256-m8iKwNRhvpbb+rSookvNBo+tpcSiKNuNMCJjgBIZvus=",
         "owner": "dguibert",
         "repo": "nix",
-        "rev": "61474bf035754b394886f6aeada0cba3a2f1666a",
+        "rev": "ae65635db1a3227bca71b8f2feddf930f80c12a5",
         "type": "github"
       },
       "original": {
@@ -108,11 +125,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1680761228,
-        "narHash": "sha256-0l3kjAtdJWWcfuOeFlqBH0pAlgcJPy8m2hFfCKKIuwU=",
+        "lastModified": 1680980592,
+        "narHash": "sha256-r1XENp/bZUDo/G3xtNNJ2uIfzxrvZAwYnbuFgXuWXHc=",
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "0631bf23b01af2b1678a3c421c3e4e3ff024aeff",
+        "rev": "22ac7f0a3c00b38007a0fa81b7a850402bb7e7e1",
         "type": "github"
       },
       "original": {
@@ -183,11 +200,11 @@
         "st-src": "st-src"
       },
       "locked": {
-        "lastModified": 1680761288,
-        "narHash": "sha256-p/4QgWOWegw7WCibe3kfP4RT+JJ2/jpX0aG2/6MPndA=",
+        "lastModified": 1680982059,
+        "narHash": "sha256-BAteTLU6hfdMa2sCDYE6EHP5A04hHNR/yN2GYA7wK48=",
         "owner": "dguibert",
         "repo": "nur-packages",
-        "rev": "f9a0087cd44edf0fd9d8583cb3eb7b408124c485",
+        "rev": "52af59e2d5e0378bf02acad9640e9b72c037a43d",
         "type": "github"
       },
       "original": {
