@@ -3,10 +3,10 @@
       import inputs.nixpkgs {
         inherit system;
         overlays =  [
-          (final: prev: import ../../overlays/default final prev)
-          (final: prev: import ../../overlays/extra-builtins final prev)
-          (final: prev: import ../../overlays/updated-from-flake.nix final prev)
-          (final: prev: import ../../overlays/emacs.nix final prev)
+          (final: prev: import ../../overlays/default final (prev // { inherit inputs; }))
+          (final: prev: import ../../overlays/extra-builtins final (prev // { inherit inputs; }))
+          (final: prev: import ../../overlays/updated-from-flake.nix final (prev // { inherit inputs; }))
+          (final: prev: import ../../overlays/emacs.nix final (prev // { inherit inputs; }))
           inputs.nix.overlays.default
           inputs.emacs-overlay.overlay
         ];
