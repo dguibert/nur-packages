@@ -17,5 +17,7 @@ in
 {
   perSystem = {config, self', inputs', pkgs, system, ...}: {
     _module.args.pkgs = nixpkgsFor system;
+
+    legacyPackages = nixpkgsFor system;
   };
 }
