@@ -124,12 +124,13 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1680980592,
-        "narHash": "sha256-r1XENp/bZUDo/G3xtNNJ2uIfzxrvZAwYnbuFgXuWXHc=",
-        "owner": "dguibert",
-        "repo": "nixpkgs",
-        "rev": "22ac7f0a3c00b38007a0fa81b7a850402bb7e7e1",
-        "type": "github"
+        "lastModified": 1681201933,
+        "narHash": "sha256-3HVJl+wFGhmWUeGdi3+tGZ/BsqDtq6r9bJPfEaWJRTc=",
+        "ref": "refs/heads/pu",
+        "rev": "a7a5b76e8036d6d3f49e2be93cd4951ccfb0fad1",
+        "revCount": 472368,
+        "type": "git",
+        "url": "file:///home/dguibert/code/nixpkgs?refs=github/staging"
       },
       "original": {
         "owner": "dguibert",
