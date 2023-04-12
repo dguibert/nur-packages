@@ -130,7 +130,7 @@
         "rev": "a7a5b76e8036d6d3f49e2be93cd4951ccfb0fad1",
         "revCount": 472368,
         "type": "git",
-        "url": "file:///home/dguibert/code/nixpkgs?refs=github/staging"
+        "url": "file:///home/dguibert/code/nixpkgs?refs=refs/remotes/github/staging"
       },
       "original": {
         "owner": "dguibert",
