@@ -952,6 +952,7 @@ capture was not aborted."
 
            :unnarrowed t))))
 
+(use-package pdf-tools :ensure t) ;; required for org-noter
 (use-package org-noter
   :ensure t
   :after (:any org pdf-view)
