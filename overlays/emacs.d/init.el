@@ -1083,3 +1083,14 @@ capture was not aborted."
               (lambda (&key data &allow-other-keys)
                 (let ((shrface-request-url url))
                   (shrface-html-export-as-org data))))))
+
+(use-package denote
+  :ensure t
+  :config
+  (setq
+   denote-directory (expand-file-name "~/Documents/denotes/")
+   denote-known-keywords '("project" "testing" "emacs" "denote")
+   denote-file-type nil ;; default Org
+   )
+  (add-hook 'dired-mode-hook #'denote-dired-mode)
+  )
