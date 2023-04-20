@@ -1,3 +1,4 @@
 envs/* filter=git-crypt diff=git-crypt annex.largefiles=nothing
+private.el filter=git-crypt diff=git-crypt annex.largefiles=nothing
 * annex.largefiles=nothing
 
