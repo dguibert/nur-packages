@@ -42,13 +42,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1681819035,
-        "narHash": "sha256-o5P0lER7damSYdZEuQ0NYYDfKsLZBu1Hue9mjjyRq4M=",
-        "ref": "744db3a02be17b79681b6d50cbd8591bd193656f",
-        "rev": "744db3a02be17b79681b6d50cbd8591bd193656f",
-        "revCount": 9659,
-        "type": "git",
-        "url": "file:///home/dguibert/code/emacs-overlay"
+        "lastModified": 1682073345,
+        "narHash": "sha256-YvDFqY65Vcvxce2i07bUHhPvZ7YGZ/cVWEtsgBGnkIg=",
+        "owner": "nix-community",
+        "repo": "emacs-overlay",
+        "rev": "372c8287a251f2a4dc7a1929f6368ba78582c3a2",
+        "type": "github"
       },
       "original": {
         "owner": "nix-community",
