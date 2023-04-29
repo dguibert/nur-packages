@@ -9,6 +9,7 @@
           (final: prev: import ../../overlays/updated-from-flake.nix final (prev // { inherit inputs; }))
           (final: prev: import ../../overlays/emacs.nix final (prev // { inherit inputs; }))
           (import ../../overlays/store-spartan.nix)
+          (import ../../overlays/cluster)
           inputs.emacs-overlay.overlay
           (final: prev: {
             libuv = prev.libuv.overrideAttrs (o: {

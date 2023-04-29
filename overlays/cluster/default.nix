@@ -34,7 +34,7 @@ final: prev: with prev; {
   nixos-option = null;
   fish = final.lib.dontCheck prev.fish;
 
-  openssh = final.lib.dontCheck prev.openssh;
+  openssh = final.lib.upstreamFails prev.openssh;
 
   pythonOverrides = prev.lib.composeOverlays [
     (prev.pythonOverrides or (_:_: {}))
