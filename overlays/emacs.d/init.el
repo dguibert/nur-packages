@@ -1099,3 +1099,37 @@ capture was not aborted."
    )
   (add-hook 'dired-mode-hook #'denote-dired-mode)
   )
+
+(use-package citar
+  :ensure t
+  :custom
+  (citar-bibliography '("~/Documents/denotes/references.bib"))
+;;  (org-cite-global-bibliography '("~/Documents/denotes/references.bib"))
+;;  (org-cite-insert-processor 'citar)
+;;  (org-cite-follow-processor 'citar)
+;;  (org-cite-activate-processor 'citar)
+;;  (citar-bibliography org-cite-global-bibliography)
+;;  ;; optional: org-cite-insert is also bound to C-c C-x C-@
+;;  :bind
+;;  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert))
+)
+
+;; https://github.com/pprevos/citar-denote
+(use-package citar-denote
+  :ensure t
+  :config
+  (citar-denote-mode)
+  :custom
+  (citar-open-always-create-notes t)
+  :bind
+  ("C-c d c c" . citar-create-note)
+  ("C-c d c o" . citar-denote-open-note)
+  ("C-c d c d" . citar-denote-dwim)
+  ("C-c d c a" . citar-denote-add-citekey)
+  ("C-c d c k" . citar-denote-remove-citekey)
+  ("C-c d c e" . citar-denote-open-reference-entry)
+  ("C-c d c r" . citar-denote-find-reference)
+  ("C-c d c f" . citar-denote-find-citation)
+  ("C-c d c n" . citar-denote-cite-nocite)
+  ("C-c d c m" . citar-denote-reference-nocite)
+  )
