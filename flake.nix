@@ -2,7 +2,8 @@
   description = "A flake for building my NUR packages";
 
   inputs.emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.emacs-overlay.url    = "github:nix-community/emacs-overlay";
+  #inputs.emacs-overlay.url    = "github:nix-community/emacs-overlay";
+  inputs.emacs-overlay.url    = "github:dguibert/emacs-overlay/fix";
   inputs.flake-utils.url      = "github:numtide/flake-utils";
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
