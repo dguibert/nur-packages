@@ -30,7 +30,6 @@ in builtins.trace "spartan overlay" {
       #  };
 
       #});
-      dnspython = final.lib.upstreamFails python-super.dnspython;
     })
   ];
 
