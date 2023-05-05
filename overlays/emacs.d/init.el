@@ -367,6 +367,10 @@
   ;; (has own entire key-map, doesn't allow text-file editing).
   (setq auto-mode-alist (rassq-delete-all #'git-rebase-mode auto-mode-alist))
   )
+
+(use-package forge
+  :ensure t
+  :after magit)
 ;(require 'cl-lib)
 ;(setq auto-mode-alist
 ;      (cl-remove-if (lambda (x) (eq (cdr x) 'git-rebase-mode))

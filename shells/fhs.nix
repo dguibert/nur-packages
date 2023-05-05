@@ -23,6 +23,8 @@
         pkgconfig
         gitMinimal
         findutils
+        nix
+        openssh
       ];
       multiPkgs = pkgs: with pkgs; [
       ];
