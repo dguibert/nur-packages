@@ -33,14 +33,14 @@ in builtins.trace "spartan overlay" {
     })
   ];
 
-  datalad = lib.upgradeOverride prev.datalad (o: rec {
-    version = "0.16.5";
-    src = fetchFromGitHub {
-      owner = "datalad";
-      repo = "datalad";
-      rev = "refs/tags/${version}";
-      sha256 = "sha256-F5UFW0/XqntrHclpj3TqoAwuHJbiiv5a7/4MnFoJ1dE=";
-    };
-  });
+  #datalad = lib.upgradeOverride prev.datalad (o: rec {
+  #  version = "0.16.5";
+  #  src = fetchFromGitHub {
+  #    owner = "datalad";
+  #    repo = "datalad";
+  #    rev = "refs/tags/${version}";
+  #    sha256 = "sha256-F5UFW0/XqntrHclpj3TqoAwuHJbiiv5a7/4MnFoJ1dE=";
+  #  };
+  #});
 }
 
