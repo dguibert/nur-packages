@@ -38,7 +38,6 @@
 (setq solarized-use-variable-pitch nil
       solarized-scale-org-headlines nil)
 
-
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
@@ -817,145 +816,6 @@ is defined in an attr_org line."
 (use-package visual-fill-column :ensure t)
 ;  :hook (org-mode . efs/org-mode-visual-fill))
 
-; https://rgoswami.me/posts/org-note-workflow/
-; https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
-(use-package org-roam
-  :ensure t
-  :demand t  ;; Ensure org-roam is loaded by default
-  :init
-  (setq org-roam-v2-ack t)
-  :custom
-  (org-roam-directory "~/Documents/roam")
-  (org-roam-completion-everywhere t)
-  (org-roam-dailies-capture-templates
-   '(("d" "default" entry "* %<%I:%M %p>: %?"
-             :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
-  (org-roam-capture-templates
-   '(("d" "default" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t)
-     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
-      :unnarrowed t)
-     ("b" "book notes" plain (file "~/Documents/roam/templates/BookNoteTemplate.org")
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t)
-     ))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n I" . org-roam-node-insert-immediate)
-         ("C-c n p" . my/org-roam-find-project)
-         ("C-c n t" . my/org-roam-capture-task)
-         ("C-c n b" . my/org-roam-capture-inbox)
-         :map org-mode-map
-         ("C-M-i" . completion-at-point)
-         :map org-roam-dailies-map
-         ("Y" . org-roam-dailies-capture-yesterday)
-         ("T" . org-roam-dailies-capture-tomorrow))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-  :config
-  (setq org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
-        org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
-        )
-  (require 'org-roam-dailies) ;; Ensure the keymap is available
-                                        ;(org-roam-db-autosync-mode)
-  (org-roam-setup))
-
-(defun org-roam-node-insert-immediate (arg &rest args)
-  (interactive "P")
-  (let ((args (push arg args))
-        (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-                                                  '(:immediate-finish t)))))
-    (apply #'org-roam-node-insert args)))
-
-(defun my/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
-
-(defun my/org-roam-list-notes-by-tag (tag-name)
-  (mapcar #'org-roam-node-file
-          (seq-filter
-           (my/org-roam-filter-by-tag tag-name)
-           (org-roam-node-list))))
-
-(defun my/org-roam-refresh-agenda-list ()
-  (interactive)
-  (setq org-agenda-files (list "~/Documents/roam/")))
-;        (delq nil (delete-dups
-;                   (my/org-roam-list-notes-by-tag "Project")))))
-
-;; Build the agenda list the first time for the session
-(my/org-roam-refresh-agenda-list)
-
-(defun my/org-roam-project-finalize-hook ()
-  "Adds the captured project file to `org-agenda-files' if the
-capture was not aborted."
-  ;; Remove the hook since it was added temporarily
-  (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-
-  ;; Add project file to the agenda list if the capture was confirmed
-  (unless org-note-abort
-    (with-current-buffer (org-capture-get :buffer)
-      (add-to-list 'org-agenda-files (buffer-file-name)))))
-
-(defun my/org-roam-find-project ()
-  (interactive)
-  ;; Add the project file to the agenda after capture is finished
-  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-
-  ;; Select a project file to open, creating it if necessary
-  (org-roam-node-find
-   nil
-   nil
-   (my/org-roam-filter-by-tag "Project")
-   :templates
-   '(("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
-      :unnarrowed t))))
-
-(defun my/org-roam-capture-inbox ()
-  (interactive)
-  (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("i" "inbox" plain "* %?"
-                                   :if-new (file+head "inbox.org" "#+title: Inbox\n")))))
-
-(defun my/org-roam-capture-task ()
-  (interactive)
-  ;; Add the project file to the agenda after capture is finished
-  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-
-  ;; Capture the new task, creating the project file if necessary
-  (org-roam-capture- :node (org-roam-node-read
-                            nil
-                            (my/org-roam-filter-by-tag "Project"))
-                     :templates '(("p" "project" plain "** TODO %?"
-                                   :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                          "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
-                                                          ("Tasks"))))))
-
-(use-package org-roam-bibtex
-  :ensure t
-  :after (org-roam)
-  :hook (org-roam-mode . org-roam-bibtex-mode)
-  :config
-  (setq org-roam-bibtex-preformat-keywords
-        '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
-  (setq orb-templates
-        '(("r" "ref" plain (function org-roam-capture--get-point)
-           ""
-           :file-name "${slug}"
-           :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
-
-- tags ::
-- keywords :: ${keywords}
-
-\n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
-
-           :unnarrowed t))))
-
 (use-package pdf-tools :ensure t) ;; required for org-noter
 (use-package org-noter
   :ensure t
@@ -994,31 +854,9 @@ capture was not aborted."
 ;;                       :prepend t
 ;;                       :kill-buffer t))
 
-(use-package org-ref
-  :ensure t
-  :config
-  (setq
-   org-ref-completion-library 'org-ref-ivy-cite
-   org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
-   org-ref-default-bibliography (list "/home/dguibert/Documents/bib.bib")
-   org-ref-bibliography-notes "/home/dguibert/Documents/notes/bibnotes.org"
-   org-ref-note-title-format "* TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
-   org-ref-notes-directory "/home/dguibert/Documents/notes"
-   org-ref-notes-function 'orb-edit-notes
-   ))
-
-
 (use-package cmake-mode :ensure t)
 
 (use-package all-the-icons :ensure t)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(helm-minibuffer-history-key "M-p")
-)
 
 ;; support multiple email accounts (required in private.el)
 (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
@@ -1098,6 +936,145 @@ capture was not aborted."
    denote-file-type nil ;; default Org
    )
   (add-hook 'dired-mode-hook #'denote-dired-mode)
+  (setq denote-infer-keywords t)
+  (setq denote-sort-keywords t)
+  (setq denote-file-type nil) ; Org is the default, set others here
+  (setq denote-prompts '(title keywords))
+  (setq denote-excluded-directories-regexp nil)
+  (setq denote-excluded-keywords-regexp nil)
+
+  ;; Pick dates, where relevant, with Org's advanced interface:
+  (setq denote-date-prompt-use-org-read-date t)
+
+
+  ;; Read this manual for how to specify `denote-templates'.  We do not
+  ;; include an example here to avoid potential confusion.
+  (setq denote-templates
+      '((report . "* Some heading\n\n* Another heading")
+        (project . "* Goals
+
+* Tasks
+
+** TODO add initial taks
+
+* Dates
+
+")
+        ;(project . '(concat "* Goals"
+        ;                 "\n\n%?\n\n"
+        ;                 "* Tasks"
+        ;                 "\n"
+        ;                 "** TODO add initial tasks"
+        ;                 "\n\n"
+        ;                 "* Dates"
+        ;                 "\n\n"
+        ;                 )
+        ;         )
+        ))
+
+;;;;  (org-roam-capture-templates
+;;;;   '(("d" "default" plain
+;;;;      "%?"
+;;;;      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+;;;;      :unnarrowed t)
+;;;;     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+;;;;      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+;;;;      :unnarrowed t)
+;;;;     ("b" "book notes" plain (file "~/Documents/roam/templates/BookNoteTemplate.org")
+;;;;      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+;;;;       :unnarrowed t)
+;;;;     ))
+;;(defun my/org-roam-capture-inbox ()
+;;  (interactive)
+;;  (org-roam-capture- :node (org-roam-node-create)
+;;                     :templates '(("i" "inbox" plain "* %?"
+;;                                   :if-new (file+head "inbox.org" "#+title: Inbox\n")))))
+;;
+;;(defun my/org-roam-capture-task ()
+;;  (interactive)
+;;  ;; Add the project file to the agenda after capture is finished
+;;  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+;;
+;;  ;; Capture the new task, creating the project file if necessary
+;;  (org-roam-capture- :node (org-roam-node-read
+;;                            nil
+;;                            (my/org-roam-filter-by-tag "Project"))
+;;                     :templates '(("p" "project" plain "** TODO %?"
+;;                                   :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+;;                                                          "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+;;                                                          ("Tasks"))))))
+
+
+
+  ;; We allow multi-word keywords by default.  The author's personal
+  ;; preference is for single-word keywords for a more rigid workflow.
+  (setq denote-allow-multi-word-keywords t)
+
+  (setq denote-date-format nil) ; read doc string
+
+  ;; By default, we do not show the context of links.  We just display
+  ;; file names.  This provides a more informative view.
+  (setq denote-backlinks-show-context t)
+
+  ;; Also see `denote-link-backlinks-display-buffer-action' which is a bit
+  ;; advanced.
+
+  ;; If you use Markdown or plain text files (Org renders links as buttons
+  ;; right away)
+  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+
+  ;; We use different ways to specify a path for demo purposes.
+  (setq denote-dired-directories
+        (list denote-directory
+              (thread-last denote-directory (expand-file-name "attachments"))
+              (expand-file-name "~/Documents/books")))
+
+  ;; Generic (great if you rename files Denote-style in lots of places):
+  ;; (add-hook 'dired-mode-hook #'denote-dired-mode)
+  ;;
+  ;; OR if only want it in `denote-dired-directories':
+  (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
+
+  ;; Here is a custom, user-level command from one of the examples we
+  ;; showed in this manual.  We define it here and add it to a key binding
+  ;; below.
+  (defun my-denote-journal ()
+    "Create an entry tagged 'journal', while prompting for a title."
+    (interactive)
+    (denote
+     (denote-title-prompt)
+     '("journal")))
+
+  ;; Denote DOES NOT define any key bindings.  This is for the user to
+  ;; decide.  For example:
+  :bind
+  (:map global-map
+    ("C-c n j" . my-denote-journal) ; our custom command
+    ("C-c n n" . denote)
+    ("C-c n N" . denote-type)
+    ("C-c n d" . denote-date)
+    ;("C-c n z" . denote-signature) ; "zettelkasten" mnemonic
+    ("C-c n s" . denote-subdirectory)
+    ("C-c n t" . denote-template)
+    ;; If you intend to use Denote with a variety of file types, it is
+    ;; easier to bind the link-related commands to the `global-map', as
+    ;; shown here.  Otherwise follow the same pattern for `org-mode-map',
+    ;; `markdown-mode-map', and/or `text-mode-map'.
+    ("C-c n i" . denote-link) ; "insert" mnemonic
+    ("C-c n I" . denote-link-add-links)
+    ("C-c n b" . denote-link-backlinks)
+    ("C-c n f f" . denote-link-find-file)
+    ("C-c n f b" . denote-link-find-backlink)
+    ;; Note that `denote-rename-file' can work from any context, not just
+    ;; Dired bufffers.  That is why we bind it here to the `global-map'.
+    ("C-c n r" . denote-rename-file)
+    ("C-c n R" . denote-rename-file-using-front-matter)
+
+  ;; Key bindings specifically for Dired.
+   :map dired-mode-map
+    ("C-c C-d C-i" . denote-link-dired-marked-notes)
+    ("C-c C-d C-r" . denote-dired-rename-marked-files)
+    ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   )
 
 (use-package citar
