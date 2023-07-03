@@ -39,7 +39,7 @@ final: prev: with prev; let
     config = ./emacs.d/init.el;
 
     # Package is optional, defaults to pkgs.emacs
-    package = pkgs.emacsPgtk;
+    package = pkgs.emacs-pgtk;
 
     alwaysEnsure = false;
 
@@ -98,7 +98,7 @@ in {
   #    prev.gtk3-x11
   #  ];
   #});
-  emacsPgtk = (prev.emacsPgtk.override {
+  emacs-pgtk = (prev.emacs-pgtk.override {
   }).overrideAttrs (old : {
     name = "emacs-pgtk";
     version = inputs.emacs-src.shortRev;
