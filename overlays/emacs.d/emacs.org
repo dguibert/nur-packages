@@ -509,16 +509,6 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
                   (let ((shrface-request-url url))
                     (shrface-html-export-as-org data))))))
 
-  (use-package denote
-    :ensure t
-    :config
-    (setq
-     denote-directory (expand-file-name "~/Documents/denotes/")
-     denote-known-keywords '("project" "testing" "emacs" "denote")
-     denote-file-type nil ;; default Org
-     )
-    (add-hook 'dired-mode-hook #'denote-dired-mode)
-    )
 #+end_src
 
 * Server
@@ -1148,7 +1138,7 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 
 #+end_src
 
-* magit
+* Magit
 :PROPERTIES:
 :ID:       99e7efb4-7af3-4d2f-a97e-4ebaca3501b1
 :END:
@@ -1165,4 +1155,31 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
   (use-package forge
     :ensure t
     :after magit)
+#+end_src
+
+* Denote (note taking)
+:PROPERTIES:
+:ID:       9d837c97-2026-45f0-a3b1-f861b7f186c4
+:END:
+#+begin_src emacs-lisp
+(use-package denote
+  :ensure t
+  :config
+  (setq
+   denote-directory (expand-file-name "~/Documents/denotes/")
+   denote-known-keywords '("project" "testing" "emacs" "denote")
+   denote-file-type nil ;; default Org
+   )
+  (add-hook 'dired-mode-hook #'denote-dired-mode)
+  )
+
+(use-package citar
+  :custom
+  (citar-bibliography '("~/Documents/bib.bib"
+                        "~/Documents/biblio/biblio.bib"
+                        "~/Documents/cv/dguibert.bib"
+                       )))
+
+(use-package citar-denote)
+(citar-denote-mode)
 #+end_src
