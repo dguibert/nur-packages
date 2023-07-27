@@ -301,14 +301,14 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
              (my/org-roam-filter-by-tag tag-name)
              (org-roam-node-list))))
 
-  (defun my/org-roam-refresh-agenda-list ()
-    (interactive)
-    (setq org-agenda-files (list "~/Documents/roam/")))
-  ;        (delq nil (delete-dups
-  ;                   (my/org-roam-list-notes-by-tag "Project")))))
-
-  ;; Build the agenda list the first time for the session
-  (my/org-roam-refresh-agenda-list)
+;  (defun my/org-roam-refresh-agenda-list ()
+;    (interactive)
+;    (setq org-agenda-files (list "~/Documents/roam/")))
+;  ;        (delq nil (delete-dups
+;  ;                   (my/org-roam-list-notes-by-tag "Project")))))
+;
+;  ;; Build the agenda list the first time for the session
+;  (my/org-roam-refresh-agenda-list)
 
   (defun my/org-roam-project-finalize-hook ()
     "Adds the captured project file to `org-agenda-files' if the
@@ -537,17 +537,7 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 
   (add-hook 'org-capture-prepare-finalize-hook 'org-id-get-create)
 
-  (defun my/org-add-ids-to-headlines-in-file ()
-    "Add ID properties to all headlines in the current file which
-  do not already have one."
-    (interactive)
-    (org-map-entries 'org-id-get-create))
-
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (add-hook 'before-save-hook 'my/org-add-ids-to-headlines-in-file nil 'local)))
-
-  (defun efs/org-mode-setup ()
+    (defun efs/org-mode-setup ()
     (org-indent-mode)
     (variable-pitch-mode 1)
     (visual-line-mode 1))
@@ -656,6 +646,7 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
     ;; I like to have something different than ellipsis because I often use them
     ;; myself.
     ;;(setq org-ellipsis " [+]")
+    (setq org-agenda-files '("~/Documents/roam"))
     (custom-set-faces '(org-ellipsis ((t (:foreground "gray40" :underline nil)))))
 
     (defun my-org-settings ()
@@ -1183,3 +1174,4 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 (use-package citar-denote)
 (citar-denote-mode)
 #+end_src
+
