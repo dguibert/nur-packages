@@ -54,7 +54,7 @@ if ${UPDATE[spartan]:-${UPDATE[default]}}; then
     git checkout host/spartan
     git-is-merged host/spartan master || git merge master
     (
-        nix run --no-write-lock-file .#nix -- nix flake lock --update-input upstream --commit-lock-file
+        nix run --no-write-lock-file .#nix -- nix flake lock --update-input nixpkgs --commit-lock-file
     )
 fi
 
@@ -62,7 +62,7 @@ if ${UPDATE[levante]:-${UPDATE[default]}}; then
     git checkout host/levante || git checkout -b host/levante master
     git-is-merged host/levante master || git merge master
     (
-        nix run --no-write-lock-file .#nix -- nix flake lock --update-input upstream --commit-lock-file
+        nix run --no-write-lock-file .#nix -- nix flake lock --update-input nixpkgs --commit-lock-file
     )
 fi
 
@@ -70,7 +70,7 @@ if ${UPDATE[lumi]:-${UPDATE[default]}}; then
     git checkout host/lumi || git checkout -b host/lumi master
     git-is-merged host/lumi master || git merge master
     (
-        nix run --no-write-lock-file .#nix -- nix flake lock --update-input upstream --commit-lock-file
+        nix run --no-write-lock-file .#nix -- nix flake lock --update-input nixpkgs --commit-lock-file
     )
 fi
 
@@ -78,8 +78,7 @@ if ${UPDATE[host]:-${UPDATE[default]}}; then
     git checkout host/default || git checkout -b host/default master
     git-is-merged host/default master || git merge master
     (
-        nix run --no-write-lock-file .#nix -- nix flake lock --update-input upstream --commit-lock-file
+        nix run --no-write-lock-file .#nix -- nix flake lock --update-input nixpkgs --commit-lock-file
     )
 fi
 
-git checkout master
