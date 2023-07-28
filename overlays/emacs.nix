@@ -35,13 +35,13 @@ final: prev: with prev; let
     # NB: Config files cannot contain unicode characters, since
     #     they're being parsed in nix, which lacks unicode
     #     support.
-    # config = ./emacs.org;
-    config = ./emacs.d/init.el;
+    config = ./emacs.d/emacs.org;
+    # config = ./emacs.d/init.el;
 
     # Package is optional, defaults to pkgs.emacs
     package = pkgs.emacs-pgtk;
 
-    alwaysEnsure = false;
+    alwaysEnsure = true;
 
     # For Org mode babel files, by default only code blocks with
     # `:tangle yes` are considered. Setting `alwaysTangle` to `true`
