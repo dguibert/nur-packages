@@ -5,6 +5,7 @@ let
     "mpi.2021.2.0" = { irc_id=17729; build=215; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17729/l_mpi_oneapi_p_2021.2.0.215_offline.sh
     "mpi.2021.3.0" = { irc_id=17947; build=294; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/17947/l_mpi_oneapi_p_2021.3.0.294_offline.sh
     "mpi.2021.3.1" = { irc_id=18016; build=315; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/18016/l_mpi_oneapi_p_2021.3.1.315_offline.sh
+    "mpi.2021.4.0" = { irc_id=18186; build=441; dir_name="mpi"; }; # https://registrationcenter-download.intel.com/akdlm/irc_nas/tec/18186/l_mpi_oneapi_p_2021.4.0.441_offline.sh
 
     #"tbb.'2021.1.1': {'irc_id': '17378', build: '119'}}
     # mkl.'2021.1.1': {'irc_id': '17402', build: '52'}}
@@ -20,6 +21,7 @@ let
     "mpi.2021.2.0" = { sha256="sha256-0NTN0R7a/y5yheOPU33vzP8443owZ8AvSvQ6NimtSqM="; url_name="mpi_oneapi"; };
     "mpi.2021.3.0" = { sha256="sha256-BMSPhk7kxyOxtMpi8r6owE1dfj3hkXH9YrF4aLx5vDY="; url_name="mpi_oneapi"; };
     "mpi.2021.3.1" = { sha256="sha256-g3asb+bSdtob6K2qJo03sxNt3dLAHtCPdf0cRJYHXTo="; url_name="mpi_oneapi"; };
+    "mpi.2021.4.0" = { sha256="0a9a9z1b5rx9fxz5hblxnmkvk11vxb9246s33hmx02qxqrr70jyc"; url_name="mpi_oneapi"; };
 
     # tbb version('2021.1.1', sha256='535290e3910a9d906a730b24af212afa231523cf13a668d480bade5f2a01b53b'
     #mkl.version('2021.1.1', sha256='818b6bd9a6c116f4578cda3151da0612ec9c3ce8b2c8a64730d625ce5b13cc0c', expand=False)
@@ -368,6 +370,23 @@ in rec {
     };
 
     mpi = oneapiPackage { name = "mpi"; version = "2021.3.1"; } mpi_attrs;
+
+    /* Return a modified stdenv that uses Intel compilers */
+    stdenv = mkStdEnv compilers;
+    legacyStdenv = mkLegacyStdEnv compilers;
+  };
+
+  oneapiPackages_2021_4_0 = with oneapiPackages_2021_4_0; {
+    unwrapped = oneapiPackage { name = "compilers"; version = "2021.3.0"; } compilers_attrs;
+
+    compilers = wrapCCWith {
+      cc = unwrapped;
+      #extraPackages = [ /*redist*/ final.which final.binutils unwrapped ];
+      extraPackages = [ unwrapped.runtime gcc /* for ifx */];
+      extraBuildCommands = mkExtraBuildCommands "13.0.0" unwrapped unwrapped.runtime;
+    };
+
+    mpi = oneapiPackage { name = "mpi"; version = "2021.4.0"; } mpi_attrs;
 
     /* Return a modified stdenv that uses Intel compilers */
     stdenv = mkStdEnv compilers;
