@@ -11,7 +11,7 @@
         host=$1
         drv=$2
         set -x
-        ${config.apps.nix.program} nix copy --from $host --derivation $drv
+        ${config.apps.nix.program} nix copy --from $host --derivation $drv --no-check-sigs
         ${config.apps.nix.program} nix build -L --option extra-substituters $host?trusted=1 $drv^*
         ${config.apps.nix.program} nix copy --to $host $drv^* --no-check-sigs
       '');
