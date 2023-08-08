@@ -14,7 +14,7 @@ in builtins.trace "spartan overlay" {
           owner = "alisaifee";
           repo = "flask-limiter";
           rev = version;
-          sha256 = "sha256-eWOdJ7m3cY08ASN/X+7ILJK99iLJJwCY8294fwJiDew=";
+          sha256 = "sha256-WWv0R32/+/VEROP1hyw0lTJrZOtUNZy6TAtUyxEEORA=";
         };
       });
       annexremote = lib.narHash python-super.annexremote "1.6.0" "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc";
