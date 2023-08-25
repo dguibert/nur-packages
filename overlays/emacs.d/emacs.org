@@ -1,3 +1,42 @@
+#+title: DG Emacs Config
+#+author: David Guibert
+#+Description: Personal Emacs config.
+#+startup: showeverything
+#+options: toc:2
+
+* Table of Contents :toc:
+- [[#package-management][Package management]]
+- [[#evil-mode][Evil mode]]
+- [[#general-keybindings][General Keybindings]]
+- [[#ivy-counsel][Ivy (counsel)]]
+- [[#gui-tweaks][Gui Tweaks]]
+  - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars and Scrollbars]]
+  - [[#turn-off-some-crufty-defaults][Turn off some crufty defaults]]
+  - [[#zooming-inout][Zooming In/Out]]
+- [[#org-mode][Org Mode]]
+  - [[#enabling-table-of-contents][Enabling Table of Contents]]
+  - [[#enabling-org-bullets][Enabling Org Bullets]]
+  - [[#disable-electric-indent][Disable Electric Indent]]
+  - [[#source-code-block-tag-expansion-structure-templates][Source code block tag expansion (structure templates)]]
+- [[#sudo-edit][Sudo edit]]
+- [[#which-key][Which-Key]]
+- [[#raw-configuration-from-initel][Raw configuration from init.el]]
+- [[#server][Server]]
+- [[#org-mode-1][Org-mode]]
+  - [[#org-mode-configuration][org-mode configuration]]
+  - [[#org-id][Org-Id]]
+  - [[#org-caldav][org-caldav]]
+- [[#theme][Theme]]
+- [[#notmuch][Notmuch]]
+- [[#magit][Magit]]
+- [[#denote-note-taking][Denote (note taking)]]
+  - [[#create-note-using-org-capture][Create note using Org capture]]
+  - [[#use-org-dynamic-blocks][Use Org dynamic blocks]]
+  - [[#minibuffer-histories][Minibuffer histories]]
+  - [[#split-an-org-subtree-into-its-own-note][Split an Org subtree into its own note]]
+- [[#terminal][Terminal]]
+  - [[#eat-emulate-a-terminal][Eat (emulate a terminal)]]
+
 * Package management
 :PROPERTIES:
 :ID:       692d50dc-6b4e-47bf-b35c-0686ec3cb38c
@@ -20,12 +59,236 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 #+begin_src emacs-lisp
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 #+end_src
+* Evil mode
+#+begin_src emacs-lisp
+  (use-package evil
+    :ensure t
+    :init ;; tweak evil's configuration before loading it
+    (setq
+         evil-search-module 'evil-search
+         evil-vsplit-window-right t
+         evil-split-window-below t
+         evil-want-integration t
+         evil-want-keybinding nil)
+    :config ;; tweak evil after loading it
+    (evil-mode)
+    (evil-set-initial-state 'message-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal)
+  )
+(use-package evil-collection
+    :after evil
+    :config
+    (setq evil-collection-mode-list '(dashboard dired ibuffer))
+    (evil-collection-init))
+#+end_src
+* General Keybindings
+#+begin_src emacs-lisp
+  (use-package general
+    :config
+    (general-evil-setup)
+    (general-create-definer dg/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC" ;; set leader
+      :global-prefix "C-SPC") ;; access leader in insert mode
+
+    (dg/leader-keys
+    "." '(find-file :wk "Find file")
+    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "TAB TAB" '(comment-line :wk "Comment lines"))
+
+  (dg/leader-keys
+    "b" '(:ignore t :wk "buffer")
+    "b b" '(switch-to-buffer :wk "Switch buffer")
+    "b i" '(ibuffer :wk "Ibuffer")
+    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b n" '(next-buffer :wk "Next buffer")
+    "b p" '(previous-buffer :wk "Previous buffer")
+    "b r" '(revert-buffer :wk "Reload buffer"))
+
+  (dg/leader-keys
+    "e" '(:ignore t :wk "Evaluate")
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e e" '(eval-expression :wk "Evaluate and elisp expression")
+    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+    "e r" '(eval-region :wk "Evaluate elisp in region"))
+
+   (dg/leader-keys
+    "h" '(:ignore t :wk "Help")
+    "h f" '(describe-function :wk "Describe function")
+    "h v" '(describe-variable :wk "Describe variable")
+    "h r r" '((lambda () (interactive) (load-file user-init-file)) :wk "Reload emacs config"))
+
+   (dg/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+)
+#+end_src
+
+* Ivy (counsel)
+
+    Ivy, a generic completion mechanism for Emacs.
+    Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
+    Ivy-rich allows us to add descriptions alongside the commands in M-x.
+
+    #+begin_src emacs-lisp
+(use-package counsel
+  :after ivy
+  :config (counsel-mode))
+
+(use-package ivy
+  :bind
+  ;; ivy-resume resumes the last Ivy-based completion.
+  (("C-c C-r" . ivy-resume)
+   ("C-x B" . ivy-switch-buffer-other-window))
+  :diminish
+  :custom
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+  :config
+  (ivy-mode))
+
+(use-package all-the-icons-ivy-rich
+  :init (all-the-icons-ivy-rich-mode 1))
+
+(use-package ivy-rich
+  :after ivy
+  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+  :custom
+  (ivy-virtual-abbreviate 'full
+                          ivy-rich-switch-buffer-align-virtual-buffer t
+                          ivy-rich-path-style 'abbrev)
+  :config
+  (ivy-set-display-transformer 'ivy-switch-buffer
+                               'ivy-rich-switch-buffer-transformer))
+    #+end_src
+
+
+* Gui Tweaks
+** Disable Menubar, Toolbars and Scrollbars
+
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+; emacs-nox does not have scroll bars
+(if (boundp 'scroll-bar-mode) (scroll-bar-mode -1) nil)
+#+end_src
+** Turn off some crufty defaults
+:PROPERTIES:
+:ID:       3fc0f504-f1ae-4202-b7ae-e9f77a526fca
+:END:
+
+#+begin_src emacs-lisp
+(setq
+ inhibit-startup-message t inhibit-startup-echo-area-message (user-login-name)
+ initial-major-mode 'fundamental-mode initial-scratch-message nil
+ fill-column 120
+ locale-coding-system 'utf-8
+ )
+
+(setq-default
+ tab-width 2
+ indent-tabs-mode nil
+ )
+
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+** Zooming In/Out
+
+You can use the bindings CTRL plus =/- for zooming in/out. You can also use CTRL plus the mouse wheel for zooming in/out.
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+#+end_src
+
+* Org Mode
+** Enabling Table of Contents
+
+#+begin_src emacs-lisp
+  (use-package toc-org
+      :commands toc-org-enable
+      :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+
+** Enabling Org Bullets
+
+Org-bullets gives us attractive bullets rather than asterisks.
+
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'org-indent-mode)
+  (use-package org-bullets
+    :ensure t
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    ;:custom
+    ;(org-bullets-bullet-list '("◉" "○" "●" "►" "•"))
+    )
+#+end_src
+
+** Disable Electric Indent
+
+Org mode source blocks have some really weird and annoying default indentation behavior. I think this has to do with electric-indent-mode, which is turned on by default in Emacs. So let’s turn it OFF!
+
+#+begin_src emacs-lisp
+(electric-indent-mode -1)
+#+end_src
+
+** Source code block tag expansion (structure templates)
+
+Org-tempo is not a separate package but a module within org that can be enabled. Org-tempo allows for ‘<s’ followed by TAB to expand to a begin_src tag.
+#+begin_src emacs-lisp
+  (require 'org-tempo) ; for <s TAB to insert code block
+
+(add-to-list 'org-structure-template-alist '("sh" . "src shell")) ; <sh TAB
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp")) ; <el TAB
+(add-to-list 'org-structure-template-alist '("py" . "src python")) ; <py TAB
+#+end_src
+
+* Sudo edit
+[[https://github.com/nflath/sudo-edit][sudo-edit]] gives us the ability to open files with sudo privileges or switch over to editing with sudo privileges if we initially opened the file without such privileges.
+
+#+begin_src emacs-lisp
+(use-package sudo-edit
+  :config
+    (dg/leader-keys
+      "f u" '(sudo-edit-find-file :wk "Sudo find file")
+      "f U" '(sudo-edit :wk "Sudo edit file")))
+#+end_src
+
+* Which-Key
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :init
+      (which-key-mode 1)
+    :diminish which-key-mode
+    :config
+    (setq which-key-side-window-location 'bottom
+	  which-key-sort-order #'which-key-key-order-alpha
+	  which-key-sort-uppercase-first nil
+	  which-key-add-column-padding 1
+	  which-key-max-display-columns nil
+	  which-key-min-display-lines 6
+	  which-key-side-window-slot -10
+	  which-key-side-window-max-height 0.25
+	  which-key-idle-delay 0.3
+	  which-key-max-description-length 25
+	  which-key-allow-imprecise-window-fit t
+	  which-key-separator " → " ))
+#+end_src
+
 * Raw configuration from init.el
 :PROPERTIES:
 :ID:       7ff82e2a-3d81-4265-80fe-abb14eebf786
 :END:
 #+begin_src emacs-lisp
-  
+
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
@@ -50,85 +313,16 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
    mouse-yank-at-point t
    )
 
-  (use-package evil
-    :ensure t
-    :init ;; tweak evil's configuration before loading it
-    (setq
-         evil-search-module 'evil-search
-         evil-vsplit-window-right t
-         evil-split-window-below t
-         evil-want-integration t
-         evil-want-keybinding nil)
-    :config ;; tweak evil after loading it
-    (evil-mode)
-    (evil-set-initial-state 'message-buffer-mode 'normal)
-    (evil-set-initial-state 'dashboard-mode 'normal)
-  )
-
-  (use-package which-key
-    :ensure t
-    :init (which-key-mode)
-    :diminish which-key-mode
-    :config
-    (setq which-key-idle-delay 0.3))
-
-  (use-package evil-leader
-    :ensure t
-    :config
-    (evil-leader/set-leader "<SPC>")
-    (global-evil-leader-mode)
-    (evil-leader/set-key
-      "<SPC>" 'counsel-M-x
-      "bd" 'kill-buffer
-      "br" 'revert-buffer
-      "qq" 'kill-buffers-kill-terminal
-      "qs" 'save-buffers-kill-emacs
-      "sa" 'counsel-ag
-      "w" evil-window-map
-      )
-    )
-
   (use-package direnv
     :ensure t
     :config
     (add-to-list 'warning-suppress-types '(direnv))
     (direnv-mode))
 
-  (use-package evil-collection
-    :after evil
-    :ensure t
-    :custom (evil-collection-setup-minibuffer t)
-    :init (evil-collection-init)
-    )
-
   (use-package notmuch-agenda
     :defer t
     :ensure nil
     :commands notmuch-agenda-insert-part)
-
-  (use-package general
-    :ensure t
-    :config
-    (general-create-definer rune/leader-keys
-      :keymaps '(normal insert visual emacs)
-      :prefix "SPC"
-      :global-prefix "C-SPC")
-
-    (rune/leader-keys
-      "t"  '(:ignore t :which-key "toggles")
-      "tt" '(counsel-load-theme :which-key "choose theme")))
-
-  (use-package hydra
-    :ensure t)
-
-  (defhydra hydra-text-scale (:timeout 4)
-    "scale text"
-    ("j" text-scale-increase "in")
-    ("k" text-scale-decrease "out")
-    ("f" nil "finished" :exit t))
-
-  (rune/leader-keys
-    "ts" '(hydra-text-scale/body :which-key "scale text"))
 
   ;(define-key notmuch-show-mode-map "d"
   ;  (lambda ()
@@ -138,57 +332,12 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
   ;        (notmuch-show-tag (list "-deleted -inbox"))
   ;      (notmuch-show-tag (list "+deleted")))))
 
-  (use-package ivy
-    :ensure t
-    :diminish
-    :config
-    (ivy-mode 1))
-
-  (use-package ivy-rich
-    :ensure t)
-
-  (use-package counsel
-    :ensure t
-    :bind (("M-x" . counsel-M-x)
-           ("C-x b" . counsel-ibuffer)
-           ("C-x C-f" . counsel-find-file)
-           :map minibuffer-local-map
-           ("C-r" . 'counsel-minibuffer-history)))
-
-  (use-package helpful
-    :ensure t
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable)
-    :bind
-    ([remap describe-function] . counsel-describe-function)
-    ([remap describe-command] . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
-    ([remap describe-key] . helpful-key))
-
   (use-package rainbow-delimiters
     :ensure t
     :hook (prog-mode . rainbow-delimiters-mode))
 
   (use-package gnuplot
     :ensure t)
-
-  (use-package projectile
-    :ensure t
-    :diminish projectile-mode
-    :config (projectile-mode)
-    :custom ((projectile-completion-system 'ivy))
-    :bind-keymap
-    ("C-c p" . projectile-command-map)
-    :init
-    ;; NOTE: Set this to the folder where you keep your Git repos!
-    (when (file-directory-p "~/Projects/Code")
-      (setq projectile-project-search-path '("~/Projects/Code")))
-    (setq projectile-switch-project-action #'projectile-dired))
-
-  (use-package counsel-projectile
-    :ensure t
-    :config (counsel-projectile-mode))
 
   ;(require 'cl-lib)
   ;(setq auto-mode-alist
@@ -429,8 +578,6 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 
 
   (use-package cmake-mode :ensure t)
-
-  (use-package all-the-icons :ensure t)
 
   (custom-set-variables
    ;; custom-set-variables was added by Custom.
@@ -725,74 +872,15 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
     ;; *** Agenda
     (setq org-log-into-drawer t) ;; hide the log state change history a bit better
     (setq org-deadline-warning-days 7)
-    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
     (setq org-habit-show-habits-only-for-today nil)
     (setq org-habit-graph-column 65)
     (setq org-duration-format 'h:mm) ;; show hours at max, not days
     (setq org-agenda-compact-blocks t)
     ;; default show today
     (setq org-agenda-span 'day)
-    (setq org-agenda-start-day "-0d")
-    (setq org-agenda-start-on-weekday nil)
-    (setq org-agenda-custom-commands
-          '(("d" "Done tasks" tags "/DONE|CANCELED")
-            ("g" "Plan Today"
-             ((agenda "" ((org-agenda-span 'day)))
-              (org-agenda-skip-function '(org-agenda-skip-deadline-if-not-today))
-              (org-agenda-entry-types '(:deadline))
-              (org-agenda-overriding-header "Today's Deadlines ")))))
+    ;(setq org-agenda-start-day "-0d")
+   ; (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-window-setup 'only-window)
-
-    (setq org-agenda-prefix-format
-          '((agenda . " %i %(vulpea-agenda-category 12)%?-12t% s")
-            (todo . " %i %(vulpea-agenda-category 12) ")
-            (tags . " %i %(vulpea-agenda-category 12) ")
-            (search . " %i %(vulpea-agenda-category 12) ")))
-
-    (defun vulpea-buffer-prop-get (name)
-      "Get a buffer property called NAME as a string."
-      (org-with-point-at 1
-        (when (re-search-forward (concat "^#\\+" name ": \\(.*\\)")
-                                 (point-max) t)
-          (buffer-substring-no-properties
-           (match-beginning 1)
-           (match-end 1)))))
-
-    (defun vulpea-agenda-category (&optional len)
-      "Get category of item at point for agenda.
-
-  Category is defined by one of the following items:
-
-  - CATEGORY property
-  - TITLE keyword
-  - TITLE property
-  - filename without directory and extension
-
-  When LEN is a number, resulting string is padded right with
-  spaces and then truncated with ... on the right if result is
-  longer than LEN.
-
-  Usage example:
-
-    (setq org-agenda-prefix-format
-          '((agenda . \" %(vulpea-agenda-category) %?-12t %12s\")))
-
-  Refer to `org-agenda-prefix-format' for more information."
-      (let* ((file-name (when buffer-file-name
-                          (file-name-sans-extension
-                           (file-name-nondirectory buffer-file-name))))
-             (title (vulpea-buffer-prop-get "title"))
-             (category (org-get-category))
-             (result
-              (or (if (and
-                       title
-                       (string-equal category file-name))
-                      title
-                    category)
-                  "")))
-        (if (numberp len)
-            (s-truncate len (s-pad-right len " " result))
-          result)))
 
     ;; ** Org Annotate
 
@@ -854,7 +942,7 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
   ;; *** Refile mapped to SPC y o r
   ;;(map! :leader :desc "org-refile" "y o r" #'org-refile)
   ;;(map! :leader "y o c" #'org-columns)
-  (rune/leader-keys
+  (dg/leader-keys
     "yor" #'org-refile
     "yoc" #'org-columns
     "X" #'org-capture
@@ -899,8 +987,10 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
                 :and (:priority "A" :not (:todo ("DONE" "CANCELED")))
                 :order 2)
                (:name "Due Soon" :deadline future :order 4)
-               (:name "Todo" :not (:habit t) :order 5)
+               (:name "Todo (not habit)" :not (:habit t) :order 5)
+               (:todo "TODO" :order 6)
                (:name "Waiting" :todo ("WAITING" "HOLD") :order 9)))
+      (org-agenda nil "a")
     :config
     (setq org-super-agenda-header-map nil)
     (org-super-agenda-mode t))
@@ -910,53 +1000,33 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
   (use-package org-contrib :ensure t)
   (require 'org-collector)
 
-  (use-package org-bullets
-    :ensure t
-    :after org
-    :hook (org-mode . org-bullets-mode)
-    :custom
-    (org-bullets-bullet-list '("◉" "○" "●" "►" "•")))
-
 
 #+end_src
-** Strutures templates
-:PROPERTIES:
-:ID:       d8c153c9-d0a6-4ea4-bc1d-49cd8f426352
-:END:
+** Org-Id
 #+begin_src emacs-lisp
-  (require 'org-tempo) ; for <s TAB to insert code block
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell")) ; <sh TAB
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp")) ; <el TAB
-(add-to-list 'org-structure-template-alist '("py" . "src python")) ; <py TAB
+(use-package org-id-cleanup)
 #+end_src
 
-* Turn off some crufty defaults
-:PROPERTIES:
-:ID:       3fc0f504-f1ae-4202-b7ae-e9f77a526fca
-:END:
-
+** org-caldav
 #+begin_src emacs-lisp
-(setq
- inhibit-startup-message t inhibit-startup-echo-area-message (user-login-name)
- initial-major-mode 'fundamental-mode initial-scratch-message nil
- fill-column 120
- locale-coding-system 'utf-8
- )
-
-(setq-default
- tab-width 2
- indent-tabs-mode nil
- )
-
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-(tool-bar-mode -1)
-; emacs-nox does not have scroll bars
-(if (boundp 'scroll-bar-mode) (scroll-bar-mode -1) nil)
-(menu-bar-mode -1)
+(use-package org-caldav
+ :config
+    (setq org-caldav-inbox "~/org/cal_inbox.org")
+	  (setq org-caldav-calendar-id "calendar")
+	  (setq org-caldav-url "http://localhost:1080/users/david.guibert@atos.net")
+	  (setq org-caldav-files '("~/org/calendar.org"))
+    (setq org-caldav-save-directory "~/org")
+    (setq org-caldav-debug-level 2)
+)
+  (defun my/caldav-sync-perso ()
+    "Sync my local calendar in ~/org/calendar.org with my remote calendar"
+    (interactive)
+    (let ((org-caldav-inbox "~/org/cal_inbox.org")
+	  (org-caldav-calendar-id "calendar")
+	  (org-caldav-url "http://localhost:1080/users/david.guibert@atos.net")
+	  (org-caldav-files '("~/org/calendar.org")))
+      (call-interactively 'org-caldav-sync)))
 #+end_src
-
 * Theme
 :PROPERTIES:
 :ID:       867c0c49-54ce-4c0f-b62a-95dd2cfb90b9
@@ -968,7 +1038,13 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 (setq solarized-use-variable-pitch nil
       solarized-scale-org-headlines nil)
 
-(use-package all-the-icons :ensure t)
+(use-package all-the-icons
+:if (display-graphic-p)
+)
+
+(use-package all-the-icons-dired
+  :hook (dired-mode .(lambda() (all-the-icons-dired-mode t))))
+
 (use-package doom-themes
   :ensure t
   :after all-the-icons
@@ -1152,6 +1228,9 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 :PROPERTIES:
 :ID:       9d837c97-2026-45f0-a3b1-f861b7f186c4
 :END:
+https://protesilaos.com/emacs/denote
+[[https://www.youtube.com/watch?v=mLzFJcLpDFI][Emacs: introduction to Denote (simple note-taking)]]
+
 #+begin_src emacs-lisp
 (use-package denote
   :ensure t
@@ -1175,3 +1254,101 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 (citar-denote-mode)
 #+end_src
 
+** Create note using Org capture
+
+For integration with org-capture, the user must first add the relevant template. Such as:
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'org-capture
+  (add-to-list 'org-capture-templates
+               '("N" "New note (with Denote)" plain
+               (file denote-last-path)
+               (function
+                (lambda ()
+                  (denote-org-capture-with-prompts :title :keywords :subdirectory)))
+                 :no-save t
+                 :immediate-finish nil
+                 :kill-buffer t
+                 :jump-to-captured t)))
+#+end_src
+
+** Use Org dynamic blocks
+
+Denote can optionally integrate with Org mode’s “dynamic blocks” facility. Start by loading the relevant library:
+
+#+begin_src emacs-lisp
+;; Register Denote's Org dynamic blocks
+(require 'denote-org-dblock)
+#+end_src
+
+These two types of blocks are named denote-links and denote-backlinks respectively. The latter does not accept any parameters, while the former does, which we explain below by also demonstrating how dynamic blocks are written.
+
+A dynamic block looks like this:
+
+#+BEGIN: denote-links :regexp "_journal"
+
+#+END:
+
+Depending on one’s workflow, the dynamic block can be instructed to list only those links which are missing from the current buffer (similar to denote-add-missing-links). Adding the :missing-only parameter with a non-nil value achieves this effect.
+
+** Minibuffer histories
+#+begin_src emacs-lisp
+(require 'savehist)
+(setq savehist-file (locate-user-emacs-file "savehist"))
+(setq history-length 1000)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history t)
+(add-hook 'after-init-hook #'savehist-mode)
+#+end_src
+
+** Split an Org subtree into its own note
+
+With Org files in particular, it is common to have nested headings which could be split off into their own standalone notes. In Org parlance, an entry with all its subheadings is a “subtree”. With the following code, the user places the point inside the heading they want to split off and invokes the command my-denote-org-extract-subtree. It will create a note using the heading’s text and tags for the new file. The contents of the subtree become the contents of the new note and are removed from the old one.
+
+#+begin_src emacs-lisp
+(defun my-denote-org-extract-subtree (&optional silo)
+  "Create new Denote note using current Org subtree.
+Make the new note use the Org file type, regardless of the value
+of `denote-file-type'.
+
+With an optional SILO argument as a prefix (\\[universal-argument]),
+ask user to select a SILO from `my-denote-silo-directories'.
+
+Use the subtree title as the note's title.  If available, use the
+tags of the heading are used as note keywords.
+
+Delete the original subtree."
+  (interactive
+   (list (when current-prefix-arg
+           (completing-read "Select a silo: " my-denote-silo-directories nil t))))
+  (if-let ((text (org-get-entry))
+           (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment)))
+      (let ((element (org-element-at-point))
+            (tags (org-get-tags))
+            (denote-user-enforced-denote-directory silo))
+        (delete-region (org-entry-beginning-position)
+                       (save-excursion (org-end-of-subtree t) (point)))
+        (denote heading
+                tags
+                'org
+                nil
+                (or
+                 ;; Check PROPERTIES drawer for :created: or :date:
+                 (org-element-property :CREATED element)
+                 (org-element-property :DATE element)
+                 ;; Check the subtree for CLOSED
+                 (org-element-property :raw-value
+                                       (org-element-property :closed element))))
+        (insert text))
+    (user-error "No subtree to extract; aborting")))
+#+end_src
+
+* Terminal
+** Eat (emulate a terminal)
+#+begin_src emacs-lisp
+(use-package eat
+  :config
+  (eat-eshell-mode)
+  (setq eshell-visualcommands '())
+)
+#+end_src
