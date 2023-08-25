@@ -1241,6 +1241,29 @@ https://protesilaos.com/emacs/denote
    denote-file-type nil ;; default Org
    )
   (add-hook 'dired-mode-hook #'denote-dired-mode)
+  (dg/leader-keys
+    "n" '(:ignore t :wk "Denote")
+    "n n" #'denote
+    "n n" #'denote
+    "n N" #'denote-type
+    "n d" #'denote-date
+    "n z" #'denote-signature ; "zettelkasten" mnemonic
+    "n s" #'denote-subdirectory
+    "n t" #'denote-template
+    ;; If you intend to use Denote with a variety of file types, it is
+    ;; easier to bind the link-related commands to the `global-map', as
+    ;; shown here.  Otherwise follow the same pattern for `org-mode-map',
+    ;; `markdown-mode-map', and/or `text-mode-map'.
+    "n i" #'denote-link ; "insert" mnemonic
+    "n I" #'denote-add-links
+    "n b" #'denote-backlinks
+    "n f f" #'denote-find-link
+    "n f b" #'denote-find-backlink
+    ;; Note that `denote-rename-file' can work from any context, not just
+    ;; Dired bufffers.  That is why we bind it here to the `global-map'.
+    "n r" #'denote-rename-file
+    "n R" #'denote-rename-file-using-front-matter
+    )
   )
 
 (use-package citar
@@ -1248,7 +1271,7 @@ https://protesilaos.com/emacs/denote
   (citar-bibliography '("~/Documents/bib.bib"
                         "~/Documents/biblio/biblio.bib"
                         "~/Documents/cv/dguibert.bib"
-                       )))
+                        )))
 
 (use-package citar-denote)
 (citar-denote-mode)
