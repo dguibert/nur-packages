@@ -324,14 +324,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
     :ensure nil
     :commands notmuch-agenda-insert-part)
 
-  ;(define-key notmuch-show-mode-map "d"
-  ;  (lambda ()
-  ;    "toggle deleted tag for message"
-  ;    (interactive)
-  ;    (if (member "deleted" (notmuch-show-get-tags))
-  ;        (notmuch-show-tag (list "-deleted -inbox"))
-  ;      (notmuch-show-tag (list "+deleted")))))
-
   (use-package rainbow-delimiters
     :ensure t
     :hook (prog-mode . rainbow-delimiters-mode))
@@ -1094,7 +1086,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
     (setq user-full-name "David Guibert")
     :bind
     (:map notmuch-search-mode-map
-     ("d" . (lambda() "mark message as deleted" (interactive) (notmuch-show-tag (list "+deleted" "-inbox"))))
+     ("d" . (lambda() "mark message as deleted" (interactive) (notmuch-seach-add-tag (list "+deleted" "-inbox"))))
      ("u" . notmuch-mark-read)
      ("i" . notmuch-mark-inbox)
      ("g" . notmuch-refresh-this-buffer)
@@ -1104,8 +1096,8 @@ Org-tempo is not a separate package but a module within org that can be enabled.
         "toggle deleted tag for message"
         (interactive)
         (if (member "deleted" (notmuch-show-get-tags))
-            (notmuch-show-tag (list "-deleted" "-inbox"))
-          (notmuch-show-tag (list "+deleted")))))
+            (notmuch-show-tag (list "-deleted"))
+          (notmuch-show-tag (list "+deleted" "-inbox")))))
      ("U" . notmuch-mark-read)
      ("u" . notmuch-skip-to-unread)
      )
