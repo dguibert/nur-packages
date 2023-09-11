@@ -8,6 +8,8 @@
           (final: prev: import ../../overlays/extra-builtins final (prev // { inherit inputs; }))
           (final: prev: import ../../overlays/updated-from-flake.nix final (prev // { inherit inputs; }))
           (final: prev: import ../../overlays/emacs.nix final (prev // { inherit inputs; }))
+          (import ../../overlays/store-lumi.nix)
+          (import ../../overlays/cluster)
           inputs.emacs-overlay.overlay
         ];
         config.allowUnfree = true;

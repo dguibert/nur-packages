@@ -31,7 +31,7 @@ final: prev: with prev; {
   nix = final.lib.dontCheck prev.nix;
   nix_2_3 = final.lib.upstreamFails prev.nix_2_3;
   nixStable = final.lib.upstreamFails prev.nixStable;
-  nixos-option = null;
+  #nixos-option = null;
   fish = final.lib.dontCheck prev.fish;
 
   openssh = final.lib.dontCheck prev.openssh;
@@ -39,9 +39,9 @@ final: prev: with prev; {
   pythonOverrides = prev.lib.composeOverlays [
     (prev.pythonOverrides or (_:_: {}))
     (python-self: python-super: {
-      annexremote = final.lib.narHash python-super.annexremote "1.6.0" "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
-      #dnspython = final.lib.upstreamFails python-super.dnspython;
-      flit-scm = final.lib.narHash python-super.flit-scm "1.7.0" "sha256-2nx9kWq/2TzauOW+c67g9a3JZ2dhBM4QzKyK/sqWOPo=";
+  #:    annexremote = final.lib.narHash python-super.annexremote "1.6.0" "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
+  #:    #dnspython = final.lib.upstreamFails python-super.dnspython;
+      flask-limiter = final.lib.narHash python-super.flask-limiter "3.1.0" "sha256-WWv0R32/+/VEROP1hyw0lTJrZOtUNZy6TAtUyxEEORA=";
     })
   ];
 }
