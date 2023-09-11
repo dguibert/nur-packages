@@ -1,7 +1,8 @@
 final: prev: with final; let
 in builtins.trace "spartan overlay" {
   #nixStore = builtins.trace "nixStore=/home_nfs_robin_ib/bguibertd/nix" "/home_nfs_robin_ib/bguibertd/nix";
-  nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
+  #nixStore = builtins.trace "nixStore=/home_nfs/bguibertd/nix" "/home_nfs/bguibertd/nix";
+  nixStore = builtins.trace "nixStore=/scratch_na/users/bguibertd/nix" "/scratch_na/users/bguibertd/nix";
 
   pythonOverrides = prev.lib.composeOverlays [
     (prev.pythonOverrides or (_:_: {}))
@@ -30,18 +31,17 @@ in builtins.trace "spartan overlay" {
       #  };
 
       #});
-      dnspython = final.lib.upstreamFails python-super.dnspython;
     })
   ];
 
-  datalad = lib.upgradeOverride prev.datalad (o: rec {
-    version = "0.16.5";
-    src = fetchFromGitHub {
-      owner = "datalad";
-      repo = "datalad";
-      rev = "refs/tags/${version}";
-      sha256 = "sha256-F5UFW0/XqntrHclpj3TqoAwuHJbiiv5a7/4MnFoJ1dE=";
-    };
-  });
+  #datalad = lib.upgradeOverride prev.datalad (o: rec {
+  #  version = "0.16.5";
+  #  src = fetchFromGitHub {
+  #    owner = "datalad";
+  #    repo = "datalad";
+  #    rev = "refs/tags/${version}";
+  #    sha256 = "sha256-F5UFW0/XqntrHclpj3TqoAwuHJbiiv5a7/4MnFoJ1dE=";
+  #  };
+  #});
 }
 
