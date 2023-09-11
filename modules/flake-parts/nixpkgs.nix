@@ -8,10 +8,13 @@
           (final: prev: import ../../overlays/extra-builtins final (prev // { inherit inputs; }))
           (final: prev: import ../../overlays/updated-from-flake.nix final (prev // { inherit inputs; }))
           (final: prev: import ../../overlays/emacs.nix final (prev // { inherit inputs; }))
+          (import ../../overlays/store-levante.nix)
+          (import ../../overlays/cluster)
           inputs.emacs-overlay.overlay
         ];
         config.allowUnfree = true;
         config.allowUnsupportedSystem = true;
+        config.replaceStdenv = import ../../stdenv.nix;
     };
 in
 {
