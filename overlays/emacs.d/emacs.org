@@ -36,6 +36,7 @@
   - [[#split-an-org-subtree-into-its-own-note][Split an Org subtree into its own note]]
 - [[#terminal][Terminal]]
   - [[#eat-emulate-a-terminal][Eat (emulate a terminal)]]
+- [[#syntax-modes][syntax modes]]
 
 * Package management
 :PROPERTIES:
@@ -569,9 +570,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
      ))
 
 
-  (use-package cmake-mode :ensure t)
-
-  (custom-set-variables
+(custom-set-variables
    ;; custom-set-variables was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
@@ -1371,4 +1370,12 @@ Delete the original subtree."
   (eat-eshell-mode)
   (setq eshell-visualcommands '())
 )
+#+end_src
+
+* syntax modes
+#+begin_src emacs-lisp
+(use-package cmake-mode :ensure t)
+(use-package dockerfile-mode :ensure t)
+
+
 #+end_src
