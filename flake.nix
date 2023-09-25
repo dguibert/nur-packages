@@ -8,6 +8,7 @@
   inputs.nixpkgs.url          = "github:dguibert/nixpkgs/pu";
   inputs.nix.url              = "github:dguibert/nix/pu";
 
+  inputs.flake-parts.url = "github:hercules-ci/flake-parts";
 
   # for overlays/updated-from-flake.nix
   inputs.dwl-src.flake = false;
