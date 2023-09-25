@@ -20,7 +20,7 @@
         patch
         texinfo
         diffutils
-        pkgconfig
+        pkg-config
         gitMinimal
         findutils
         nix

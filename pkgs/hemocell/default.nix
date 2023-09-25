@@ -5,7 +5,7 @@
 , mpi ? hdf5.mpi
 , cmake
 , testCase ? "pipeflow"
-, pkgconfig
+, pkg-config
 # [  9%] Performing update_custom step for 'hemocell'
 #  /tmp/nix-build-hemocell-pipeflow-1.4.drv-0/hemocell-1.4/scripts/safe_libhemocell_compilation.sh
 #  /tmp/nix-build-hemocell-pipeflow-1.4.drv-0/hemocell-1.4/scripts/safe_libhemocell_compilation.sh: line 9: flock: command not found
@@ -47,5 +47,5 @@ stdenv.mkDerivation {
     ls -R
   '';
 
-  buildInputs = [ cmake hdf5 mpi pkgconfig flock procps ];
+  buildInputs = [ cmake hdf5 mpi pkg-config flock procps ];
 }

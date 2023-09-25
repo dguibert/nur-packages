@@ -6,7 +6,7 @@
 , which
 , gfortran
 , zlib
-, pkgconfig
+, pkg-config
 , cubew, cubelib
 , autoreconfHook
 }:
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
     url = "http://perftools.pages.jsc.fz-juelich.de/cicd/scorep/tags/scorep-7.1/scorep-7.1.tar.gz";
     sha256 = "sha256-mN6kl5ggAfuC2jQpylVmmykXoIWMcaviz+fNETOB8fc=";
   };
-  buildInputs = [ otf2 mpi which gfortran zlib pkgconfig cubew cubelib /*opari*/
+  buildInputs = [ otf2 mpi which gfortran zlib pkg-config cubew cubelib /*opari*/
   ];
   nativeBuildInputs = [ autoreconfHook ];
   configureFlags = [

@@ -7,7 +7,7 @@
 , libbfd
 , zlib
 , libiberty
-, pkgconfig
+, pkg-config
 }:
 
 stdenv.mkDerivation {
@@ -33,7 +33,7 @@ stdenv.mkDerivation {
     cmake
     #(boost.override { enableStatic=true; }).all
     boost
-    otf2 git libbfd zlib libiberty pkgconfig
+    otf2 git libbfd zlib libiberty pkg-config
   ];
 #  meta.broken = true;
 }
