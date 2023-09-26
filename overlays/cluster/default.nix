@@ -41,7 +41,7 @@ final: prev: with prev; {
     (python-self: python-super: {
   #:    annexremote = final.lib.narHash python-super.annexremote "1.6.0" "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
   #:    #dnspython = final.lib.upstreamFails python-super.dnspython;
-      flask-limiter = final.lib.narHash python-super.flask-limiter "3.1.0" "sha256-WWv0R32/+/VEROP1hyw0lTJrZOtUNZy6TAtUyxEEORA=";
+      flask-limiter = final.lib.narHash python-super.flask-limiter "3.3.1" "sha256-UtmMd180bwFm426YevARq6r7DL182dI7dGAUPFKLWuM=";
     })
   ];
 }
