@@ -42,6 +42,7 @@ final: prev: with prev; {
   #:    annexremote = final.lib.narHash python-super.annexremote "1.6.0" "sha256-h03gkRAMmOq35zzAq/OuctJwPAbP0Idu4Lmeu0RycDc=";
   #:    #dnspython = final.lib.upstreamFails python-super.dnspython;
       flask-limiter = final.lib.narHash python-super.flask-limiter "3.3.1" "sha256-UtmMd180bwFm426YevARq6r7DL182dI7dGAUPFKLWuM=";
+      versioneer = final.lib.narHash python-super.versioneer "0.29" "sha256-3b7Wfhd24Vym5XCeN/M1832Q1VzvlWi3quTRaZrID2s=";
     })
   ];
 }
