@@ -29,7 +29,10 @@ final: prev: with prev; {
   #nix = if nixStore == "/nix" then prev.nix
   #  else final.lib.upstreamFails prev.nix;
   nix = final.lib.dontCheck prev.nix;
-  nix_2_3 = final.lib.upstreamFails prev.nix_2_3;
+  nix_2_15 = final.lib.upstreamFails prev.nix_2_15;
+  nix_2_16 = final.lib.upstreamFails prev.nix_2_16;
+  nix_2_17 = final.lib.upstreamFails prev.nix_2_17;
+  nix_2_18 = final.lib.upstreamFails prev.nix_2_18;
   nixStable = final.lib.upstreamFails prev.nixStable;
   #nixos-option = null;
   fish = final.lib.dontCheck prev.fish;
