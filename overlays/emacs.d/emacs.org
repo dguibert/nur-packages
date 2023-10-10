@@ -36,6 +36,7 @@
   - [[#split-an-org-subtree-into-its-own-note][Split an Org subtree into its own note]]
 - [[#terminal][Terminal]]
   - [[#eat-emulate-a-terminal][Eat (emulate a terminal)]]
+- [[#syntax-modes][syntax modes]]
 
 * Package management
 :PROPERTIES:
@@ -569,9 +570,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
      ))
 
 
-  (use-package cmake-mode :ensure t)
-
-  (custom-set-variables
+(custom-set-variables
    ;; custom-set-variables was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
@@ -581,6 +580,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
   ;; support multiple email accounts (required in private.el)
   (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
+  (add-to-list 'load-path (expand-file-name "site-lisp" (substitute-in-file-name "$HOME/.emacs.private")))
   (require 'private nil t) ;; t=no signaling an error
 
   (savehist-mode 1)
@@ -1241,7 +1241,7 @@ https://protesilaos.com/emacs/denote
   (dg/leader-keys
     "n" '(:ignore t :wk "Denote")
     "n n" #'denote
-    "n n" #'denote
+    "n c" #'denote-open-or-create
     "n N" #'denote-type
     "n d" #'denote-date
     "n z" #'denote-signature ; "zettelkasten" mnemonic
@@ -1371,4 +1371,12 @@ Delete the original subtree."
   (eat-eshell-mode)
   (setq eshell-visualcommands '())
 )
+#+end_src
+
+* syntax modes
+#+begin_src emacs-lisp
+(use-package cmake-mode :ensure t)
+(use-package dockerfile-mode :ensure t)
+
+
 #+end_src
