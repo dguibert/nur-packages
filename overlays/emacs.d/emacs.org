@@ -37,6 +37,7 @@
 - [[#terminal][Terminal]]
   - [[#eat-emulate-a-terminal][Eat (emulate a terminal)]]
 - [[#syntax-modes][syntax modes]]
+- [[#bibtex][Bibtex]]
 
 * Package management
 :PROPERTIES:
@@ -165,7 +166,6 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
     #+end_src
-
 
 * Gui Tweaks
 ** Disable Menubar, Toolbars and Scrollbars
@@ -1379,4 +1379,22 @@ Delete the original subtree."
 (use-package dockerfile-mode :ensure t)
 
 
+#+end_src
+
+* Bibtex
+Emacs bibtex-mode uses templates to add new entries. To add a reference, use the bibtex-entry function (C-c C-b). Use the minibuffer completion to select the relevant type. Emacs also provides a shortcut for each type of literature. To see a list of possible entry types, use the C-c C-e ? keyboard shortcut.
+
+ You can also use bibtex-fill-entry function (C-c C-q) to align the text. The table below summarises the most salient keyboard shortcuts and functions available in bibtex-mode.
+
+See [[https://lucidmanager.org/productivity/emacs-bibtex-mode/][Manage your literature with Emacs BibTeX Mode]] for more details.
+
+BibTeX is old but stable software that was last updated in 1988 and has as such some minor limitations. The BibLaTeX dialect is a newer version. To change bibtex-mode to BibLaTeX, change the bibtex-dialect variable in the configuration to biblatex.
+#+begin_src emacs-lisp
+(use-package bibtex
+    :custom
+    (bibtex-dialect 'BibTeX)
+    (bibtex-user-optional-fields
+     '(("keywords" "Keywords to describe the entry" "")
+       ("file" "Link to document file." ":")))
+    (bibtex-align-at-equal-sign t))
 #+end_src
