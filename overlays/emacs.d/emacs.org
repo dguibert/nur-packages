@@ -29,11 +29,13 @@
 - [[#theme][Theme]]
 - [[#notmuch][Notmuch]]
 - [[#magit][Magit]]
+- [[#org-roam-note][Org-roam (note)]]
 - [[#denote-note-taking][Denote (note taking)]]
   - [[#create-note-using-org-capture][Create note using Org capture]]
   - [[#use-org-dynamic-blocks][Use Org dynamic blocks]]
   - [[#minibuffer-histories][Minibuffer histories]]
   - [[#split-an-org-subtree-into-its-own-note][Split an Org subtree into its own note]]
+  - [[#consult-notes][Consult-notes]]
 - [[#terminal][Terminal]]
   - [[#eat-emulate-a-terminal][Eat (emulate a terminal)]]
 - [[#syntax-modes][syntax modes]]
@@ -380,145 +382,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
   (use-package visual-fill-column :ensure t)
   ;  :hook (org-mode . efs/org-mode-visual-fill))
-
-  ; https://rgoswami.me/posts/org-note-workflow/
-  ; https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
-  (use-package org-roam
-    :ensure t
-    :demand t  ;; Ensure org-roam is loaded by default
-    :init
-    (setq org-roam-v2-ack t)
-    :custom
-    (org-roam-directory "~/Documents/roam")
-    (org-roam-completion-everywhere t)
-    (org-roam-dailies-capture-templates
-     '(("d" "default" entry "* %<%I:%M %p>: %?"
-               :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
-    (org-roam-capture-templates
-     '(("d" "default" plain
-        "%?"
-        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-        :unnarrowed t)
-       ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
-        :unnarrowed t)
-       ("b" "book notes" plain (file "~/Documents/roam/templates/BookNoteTemplate.org")
-        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-         :unnarrowed t)
-       ))
-    :bind (("C-c n l" . org-roam-buffer-toggle)
-           ("C-c n f" . org-roam-node-find)
-           ("C-c n i" . org-roam-node-insert)
-           ("C-c n I" . org-roam-node-insert-immediate)
-           ("C-c n p" . my/org-roam-find-project)
-           ("C-c n t" . my/org-roam-capture-task)
-           ("C-c n b" . my/org-roam-capture-inbox)
-           :map org-mode-map
-           ("C-M-i" . completion-at-point)
-           :map org-roam-dailies-map
-           ("Y" . org-roam-dailies-capture-yesterday)
-           ("T" . org-roam-dailies-capture-tomorrow))
-    :bind-keymap
-    ("C-c n d" . org-roam-dailies-map)
-    :config
-    (setq org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
-          org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
-          )
-    (require 'org-roam-dailies) ;; Ensure the keymap is available
-                                          ;(org-roam-db-autosync-mode)
-    (org-roam-setup))
-
-  (defun org-roam-node-insert-immediate (arg &rest args)
-    (interactive "P")
-    (let ((args (push arg args))
-          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-                                                    '(:immediate-finish t)))))
-      (apply #'org-roam-node-insert args)))
-
-  (defun my/org-roam-filter-by-tag (tag-name)
-    (lambda (node)
-      (member tag-name (org-roam-node-tags node))))
-
-  (defun my/org-roam-list-notes-by-tag (tag-name)
-    (mapcar #'org-roam-node-file
-            (seq-filter
-             (my/org-roam-filter-by-tag tag-name)
-             (org-roam-node-list))))
-
-;  (defun my/org-roam-refresh-agenda-list ()
-;    (interactive)
-;    (setq org-agenda-files (list "~/Documents/roam/")))
-;  ;        (delq nil (delete-dups
-;  ;                   (my/org-roam-list-notes-by-tag "Project")))))
-;
-;  ;; Build the agenda list the first time for the session
-;  (my/org-roam-refresh-agenda-list)
-
-  (defun my/org-roam-project-finalize-hook ()
-    "Adds the captured project file to `org-agenda-files' if the
-  capture was not aborted."
-    ;; Remove the hook since it was added temporarily
-    (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-
-    ;; Add project file to the agenda list if the capture was confirmed
-    (unless org-note-abort
-      (with-current-buffer (org-capture-get :buffer)
-        (add-to-list 'org-agenda-files (buffer-file-name)))))
-
-  (defun my/org-roam-find-project ()
-    (interactive)
-    ;; Add the project file to the agenda after capture is finished
-    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-
-    ;; Select a project file to open, creating it if necessary
-    (org-roam-node-find
-     nil
-     nil
-     (my/org-roam-filter-by-tag "Project")
-     :templates
-     '(("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
-        :unnarrowed t))))
-
-  (defun my/org-roam-capture-inbox ()
-    (interactive)
-    (org-roam-capture- :node (org-roam-node-create)
-                       :templates '(("i" "inbox" plain "* %?"
-                                     :if-new (file+head "inbox.org" "#+title: Inbox\n")))))
-
-  (defun my/org-roam-capture-task ()
-    (interactive)
-    ;; Add the project file to the agenda after capture is finished
-    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-
-    ;; Capture the new task, creating the project file if necessary
-    (org-roam-capture- :node (org-roam-node-read
-                              nil
-                              (my/org-roam-filter-by-tag "Project"))
-                       :templates '(("p" "project" plain "** TODO %?"
-                                     :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                            "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
-                                                            ("Tasks"))))))
-
-  (use-package org-roam-bibtex
-    :ensure t
-    :after (org-roam)
-    :hook (org-roam-mode . org-roam-bibtex-mode)
-    :config
-    (setq org-roam-bibtex-preformat-keywords
-          '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
-    (setq orb-templates
-          '(("r" "ref" plain (function org-roam-capture--get-point)
-             ""
-             :file-name "${slug}"
-             :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
-
-  - tags ::
-  - keywords :: ${keywords}
-
-  \n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
-
-             :unnarrowed t))))
 
   (use-package pdf-tools :ensure t) ;; required for org-noter
   (use-package org-noter
@@ -1054,8 +917,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
   ;  (load-theme 'doom-solarized-light t)
   ;  )
   (doom-themes-visual-bell-config)
-  (setq doom-themes-treemacs-theme "doom-colors")
-  (doom-themes-treemacs-config)
+  (doom-themes-neotree-config)
 
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
@@ -1226,6 +1088,147 @@ Org-tempo is not a separate package but a module within org that can be enabled.
     :after magit)
 #+end_src
 
+* Org-roam (note)
+#+begin_src emacs-lisp
+  ; https://rgoswami.me/posts/org-note-workflow/
+  ; https://lucidmanager.org/productivity/taking-notes-with-emacs-org-mode-and-org-roam/
+  (use-package org-roam
+    :ensure t
+    :demand t  ;; Ensure org-roam is loaded by default
+    :init
+    (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory "~/Documents/roam")
+    (org-roam-completion-everywhere t)
+    (org-roam-dailies-capture-templates
+     '(("d" "default" entry "* %<%I:%M %p>: %?"
+               :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+    (org-roam-capture-templates
+     '(("d" "default" plain
+        "%?"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+        :unnarrowed t)
+       ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+        :unnarrowed t)
+       ("b" "book notes" plain (file "~/Documents/roam/templates/BookNoteTemplate.org")
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+       ))
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert)
+           ("C-c n I" . org-roam-node-insert-immediate)
+           ("C-c n p" . my/org-roam-find-project)
+           ("C-c n t" . my/org-roam-capture-task)
+           ("C-c n b" . my/org-roam-capture-inbox)
+           :map org-mode-map
+           ("C-M-i" . completion-at-point)
+           :map org-roam-dailies-map
+           ("Y" . org-roam-dailies-capture-yesterday)
+           ("T" . org-roam-dailies-capture-tomorrow))
+    :bind-keymap
+    ("C-c n d" . org-roam-dailies-map)
+    :config
+    (setq org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
+          org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
+          )
+    (require 'org-roam-dailies) ;; Ensure the keymap is available
+                                          ;(org-roam-db-autosync-mode)
+    (org-roam-setup))
+
+  (defun org-roam-node-insert-immediate (arg &rest args)
+    (interactive "P")
+    (let ((args (push arg args))
+          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                    '(:immediate-finish t)))))
+      (apply #'org-roam-node-insert args)))
+
+  (defun my/org-roam-filter-by-tag (tag-name)
+    (lambda (node)
+      (member tag-name (org-roam-node-tags node))))
+
+  (defun my/org-roam-list-notes-by-tag (tag-name)
+    (mapcar #'org-roam-node-file
+            (seq-filter
+             (my/org-roam-filter-by-tag tag-name)
+             (org-roam-node-list))))
+
+;  (defun my/org-roam-refresh-agenda-list ()
+;    (interactive)
+;    (setq org-agenda-files (list "~/Documents/roam/")))
+;  ;        (delq nil (delete-dups
+;  ;                   (my/org-roam-list-notes-by-tag "Project")))))
+;
+;  ;; Build the agenda list the first time for the session
+;  (my/org-roam-refresh-agenda-list)
+
+  (defun my/org-roam-project-finalize-hook ()
+    "Adds the captured project file to `org-agenda-files' if the
+  capture was not aborted."
+    ;; Remove the hook since it was added temporarily
+    (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+
+    ;; Add project file to the agenda list if the capture was confirmed
+    (unless org-note-abort
+      (with-current-buffer (org-capture-get :buffer)
+        (add-to-list 'org-agenda-files (buffer-file-name)))))
+
+  (defun my/org-roam-find-project ()
+    (interactive)
+    ;; Add the project file to the agenda after capture is finished
+    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+
+    ;; Select a project file to open, creating it if necessary
+    (org-roam-node-find
+     nil
+     nil
+     (my/org-roam-filter-by-tag "Project")
+     :templates
+     '(("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
+        :unnarrowed t))))
+
+  (defun my/org-roam-capture-inbox ()
+    (interactive)
+    (org-roam-capture- :node (org-roam-node-create)
+                       :templates '(("i" "inbox" plain "* %?"
+                                     :if-new (file+head "inbox.org" "#+title: Inbox\n")))))
+
+  (defun my/org-roam-capture-task ()
+    (interactive)
+    ;; Add the project file to the agenda after capture is finished
+    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+
+    ;; Capture the new task, creating the project file if necessary
+    (org-roam-capture- :node (org-roam-node-read
+                              nil
+                              (my/org-roam-filter-by-tag "Project"))
+                       :templates '(("p" "project" plain "** TODO %?"
+                                     :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                            "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+                                                            ("Tasks"))))))
+
+  (use-package org-roam-bibtex
+    :ensure t
+    :after (org-roam)
+    :hook (org-roam-mode . org-roam-bibtex-mode)
+    :config
+    (setq org-roam-bibtex-preformat-keywords
+          '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+    (setq orb-templates
+          '(("r" "ref" plain (function org-roam-capture--get-point)
+             ""
+             :file-name "${slug}"
+             :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
+
+  - tags ::
+  - keywords :: ${keywords}
+
+  \n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
+
+             :unnarrowed t))))
+#+end_src
 * Denote (note taking)
 :PROPERTIES:
 :ID:       9d837c97-2026-45f0-a3b1-f861b7f186c4
@@ -1366,6 +1369,26 @@ Delete the original subtree."
                                        (org-element-property :closed element))))
         (insert text))
     (user-error "No subtree to extract; aborting")))
+#+end_src
+
+** Consult-notes
+#+begin_src emacs-lisp
+(use-package consult-notes
+  :commands (consult-notes
+             consult-notes-search-in-all-notes
+             ;; if using org-roam 
+             consult-notes-org-roam-find-node
+             consult-notes-org-roam-find-node-relation)
+  :config
+  (setq consult-notes-file-dir-sources
+        '(("Org"              ?o "~/Documents/roam")
+          ("Denote"        ?n "~/Documents/notes")
+          ("Work"           ?w "~/work/notes")))
+  (consult-notes-org-headings-mode)
+  (when (locate-library "denote")
+    (consult-notes-denote-mode))
+  ;; search only for text files in denote dir
+  (setq consult-notes-denote-files-function (function denote-directory-text-only-files)))
 #+end_src
 
 * Terminal
