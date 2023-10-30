@@ -1126,6 +1126,9 @@ Org-tempo is not a separate package but a module within org that can be enabled.
        (completing-read prompt collection nil nil nil
                         (quote notmuch-address-history))))
     :config
+    (dg/leader-keys
+      "m m" #'notmuch
+    )
     (setq notmuch-show-logo nil)
     ;; Writing email
     ;;(setq message-default-mail-headers "Cc: \nBcc: \n") ;; Always show BCC
