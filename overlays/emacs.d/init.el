@@ -7,5 +7,9 @@
 (require 'use-package)
 
 (require 'org)
-(org-babel-load-file (expand-file-name "emacs.org" user-emacs-directory))
+(let* ((file (expand-file-name "emacs.org" user-emacs-directory))
+       (base-name (file-name-sans-extension file))
+       (exported-file (concat base-name ".el")))
+  (org-babel-tangle-file file exported-file "emacs-lisp")
+  (load-file exported-file))
 ;(org-babel-load-file (expand-file-name "emacs.org"))
