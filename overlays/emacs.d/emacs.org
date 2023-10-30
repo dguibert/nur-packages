@@ -150,6 +150,8 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
   (setq ivy-count-format "(%d/%d) ")
   (setq enable-recursive-minibuffers t)
   :config
+  (setq ivy-re-builders-alist
+        '((t . ivy--regex-ignore-order)))
   (ivy-mode))
 
 (use-package all-the-icons-ivy-rich
