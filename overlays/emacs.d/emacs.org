@@ -24,6 +24,7 @@
 - [[#server][Server]]
 - [[#org-mode-1][Org-mode]]
   - [[#org-mode-configuration][org-mode configuration]]
+  - [[#org-attach][Org attach]]
   - [[#org-id][Org-Id]]
   - [[#org-caldav][org-caldav]]
 - [[#theme][Theme]]
@@ -533,36 +534,36 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 :ID:       3e3e1483-e380-4eb8-8ab1-d3a58820c8e7
 :END:
 #+begin_src emacs-lisp
-  ;; Org Mode Configuration ------------------------------------------------------
+;; Org Mode Configuration ------------------------------------------------------
 
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+(add-hook 'org-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
 
-  (add-hook 'org-capture-prepare-finalize-hook 'org-id-get-create)
+(add-hook 'org-capture-prepare-finalize-hook 'org-id-get-create)
 
-    (defun efs/org-mode-setup ()
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (visual-line-mode 1))
+(defun efs/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
 
-  ; https://emacs.stackexchange.com/a/63562
-  (defun ek/babel-ansi ()
-    (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
-      (save-excursion
-        (goto-char beg)
-        (when (looking-at org-babel-result-regexp)
-          (let ((end (org-babel-result-end))
-                (ansi-color-context-region nil))
-            (ansi-color-apply-on-region beg end))))))
+                                        ; https://emacs.stackexchange.com/a/63562
+(defun ek/babel-ansi ()
+  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char beg)
+      (when (looking-at org-babel-result-regexp)
+        (let ((end (org-babel-result-end))
+              (ansi-color-context-region nil))
+          (ansi-color-apply-on-region beg end))))))
 
-  (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+(add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
 
-  (defun efs/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
   ;; Set faces for heading levels
   (dolist (face '((org-level-1 . 1.2)
@@ -583,281 +584,287 @@ Org-tempo is not a separate package but a module within org that can be enabled.
   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-  ; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
-  (use-package org :ensure t
-    :hook (org-mode . efs/org-mode-setup)
-    :init
-    ;; Proper code blocks
-    (setq org-src-fontify-natively t)
-    (setq org-src-tab-acts-natively t)
-    ;; Babel languages
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((python  . t)
-       (shell   . t)
-       ;(C       . t)
-       ;(C++     . t)
-       ;(fortran . t)
-       ;(awk     . t)
-       (gnuplot . t)
-       (latex   . t)
-       (emacs-lisp . t)))
+                                        ; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
+(use-package org :ensure t
+  :hook (org-mode . efs/org-mode-setup)
+  :init
+  ;; Proper code blocks
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  ;; Babel languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python  . t)
+     (shell   . t)
+                                        ;(C       . t)
+                                        ;(C++     . t)
+                                        ;(fortran . t)
+                                        ;(awk     . t)
+     (gnuplot . t)
+     (latex   . t)
+     (emacs-lisp . t)))
     ;;; execute block evaluation without confirmation
-    (setq org-latex-listings t)
-    ;(setq org-confirm-babel-evaluate nil)
-    (setq org-ellipsis " ▾")
-    ;; Agenda
-    (setq org-agenda-start-with-log-mode t)
-    (setq org-log-done 'time)
-    (setq org-log-into-drawer t)
-    ;; Encoding
-    (setq org-export-coding-system 'utf-8)
-    (prefer-coding-system 'utf-8)
-    (set-charset-priority 'unicode)
-    (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
-    ;; Don't allow editing of folded regions
-    (setq org-catch-invisible-edits 'error)
-    ;; Start agenda on Monday
-    (setq org-agenda-start-on-weekday 1)
-    ;; Enable indentation view, does not effect file
-    (setq org-startup-indented t)
-    ;; Attachments
-    (setq org-id-method (quote uuidgen))
-    (setq org-attach-directory "attach/")
-    (efs/org-font-setup)
+  (setq org-latex-listings t)
+                                        ;(setq org-confirm-babel-evaluate nil)
+  (setq org-ellipsis " ▾")
+  ;; Agenda
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  ;; Encoding
+  (setq org-export-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (set-charset-priority 'unicode)
+  (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+  ;; Don't allow editing of folded regions
+  (setq org-catch-invisible-edits 'error)
+  ;; Start agenda on Monday
+  (setq org-agenda-start-on-weekday 1)
+  ;; Enable indentation view, does not effect file
+  (setq org-startup-indented t)
+  ;; Attachments
+  (setq org-id-method (quote uuidgen))
+  (setq org-attach-directory "attach/")
+  (efs/org-font-setup)
 
-    :bind
-    (("\C-ca" . org-agenda)
-     ("\C-cl" . org-store-link)
-     ("\C-cc" . org-capture)
-     )
-    :config
-    ;;(org-mode-config)
-    (setq org-extend-today-until 4
-          org-use-effective-time t)
-    (setq org-todo-keywords
-          '((sequence "TODO(t)"
-                      "IN-PROGRESS(p)"
-                      "|"
-                      "DONE(d)"
-                      "HOLD(h@/!)"
-                      "CANCELED(c@/!)"
-                      "HANDLED(l@/!)")
-            (sequence "|" "PAUSE(p)" "CHAT(c)" "EMAIL(e)" "MEETING(m)" "REVIEW(r)" "GEEK(g)")))
+  :bind
+  (("\C-ca" . org-agenda)
+   ("\C-cl" . org-store-link)
+   ("\C-cc" . org-capture)
+   )
+  :config
+  ;;(org-mode-config)
+  (setq org-extend-today-until 4
+        org-use-effective-time t)
+  (setq org-todo-keywords
+        '((sequence "TODO(t)"
+                    "IN-PROGRESS(p)"
+                    "|"
+                    "DONE(d)"
+                    "HOLD(h@/!)"
+                    "CANCELED(c@/!)"
+                    "HANDLED(l@/!)")
+          (sequence "|" "PAUSE(p)" "CHAT(c)" "EMAIL(e)" "MEETING(m)" "REVIEW(r)" "GEEK(g)")))
 
     ;;; Look & Feel
 
-    ;; I like to have something different than ellipsis because I often use them
-    ;; myself.
-    ;;(setq org-ellipsis " [+]")
-    (setq org-agenda-files '("~/Documents/roam"))
-    (custom-set-faces '(org-ellipsis ((t (:foreground "gray40" :underline nil)))))
+  ;; I like to have something different than ellipsis because I often use them
+  ;; myself.
+  ;;(setq org-ellipsis " [+]")
+  (setq org-agenda-files '("~/Documents/roam"))
+  (custom-set-faces '(org-ellipsis ((t (:foreground "gray40" :underline nil)))))
 
-    (defun my-org-settings ()
-      (org-display-inline-images)
-      (setq fill-column 75)
-      (abbrev-mode)
-      (org-indent-mode)
-      nil)
+  (defun my-org-settings ()
+    (org-display-inline-images)
+    (setq fill-column 75)
+    (abbrev-mode)
+    (org-indent-mode)
+    nil)
 
-    (add-hook 'org-mode-hook #'my-org-settings)
+  (add-hook 'org-mode-hook #'my-org-settings)
 
-    (setq org-tags-column 69)
+  (setq org-tags-column 69)
 
-    ;; src block indentation / editing / syntax highlighting
-    (setq org-src-fontify-natively t
-          org-src-window-setup 'current-window ;; edit in current window
-          org-src-preserve-indentation t ;; do not put two spaces on the left
-          org-src-tab-acts-natively t)
+  ;; src block indentation / editing / syntax highlighting
+  (setq org-src-fontify-natively t
+        org-src-window-setup 'current-window ;; edit in current window
+        org-src-preserve-indentation t ;; do not put two spaces on the left
+        org-src-tab-acts-natively t)
 
-    ;; *** Templates
-    ;; the %a refer to the place you are in emacs when you make the capture
-    ;; that's very neat when you do that in an email for example.
-    (setq org-capture-templates
-          '(("t" "todo"         entry (file "~/Documents/roam/inbox.org")
-             "* TODO %?\n%U\n- ref :: %a\n")
-            ;; time tracker (clocked tasks)
-            ("g" "geek"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* GEEK %?         :perso:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("c" "chat"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* CHAT %?         :work:chat:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("e" "email"        entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* EMAIL %?        :work:email:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("m" "meeting"      entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* MEETING %?      :work:meeting:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("r" "review"       entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* REVIEW %?       :work:review:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("w" "work"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* IN-PROGRESS %?  :work:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("p" "pause"        entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* PAUSE %?        :pause:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("i" "interruption" entry (file+olp+datetree "~/Documents/roam/tracker.org")
-             "* IN-PROGRESS %?  :interruption:work:\n%U\n- ref :: %a\n"
-             :prepend t :tree-type week :clock-in t :clock-keep t)
-            ("s" "sport" entry (file+olp+datetree "~/Documents/roam/sport.org")
-             "* %^T %?  :sport:%^g%^{TYPE}p%^{TIME}p%^{DISTANCE}p%^{HEARTRATE}p%^{MAXHEARRATE}p%^{PACE}p"
-             :prepend t :tree-type month :jump-to-captured t)
-            ("S" "sport (planned)" entry (file+olp+datetree "~/Documents/roam/sport.org")
-             "* %^t %?  :sport:%^g%^{TIME}p%^{DISTANCE}p"
-             :prepend t :tree-type month :jump-to-captured t)
-            ("f" "chore"        entry (file "~/Documents/roam/inbox.org")
-             "* IN-PROGRESS %?  :chore:\n%U\n"
-             :clock-in t :clock-keep t)))
+  ;; *** Templates
+  ;; the %a refer to the place you are in emacs when you make the capture
+  ;; that's very neat when you do that in an email for example.
+  (setq org-capture-templates
+        '(("t" "todo"         entry (file "~/Documents/roam/inbox.org")
+           "* TODO %?\n%U\n- ref :: %a\n")
+          ;; time tracker (clocked tasks)
+          ("g" "geek"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* GEEK %?         :perso:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("c" "chat"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* CHAT %?         :work:chat:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("e" "email"        entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* EMAIL %?        :work:email:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("m" "meeting"      entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* MEETING %?      :work:meeting:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("r" "review"       entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* REVIEW %?       :work:review:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("w" "work"         entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* IN-PROGRESS %?  :work:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("p" "pause"        entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* PAUSE %?        :pause:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("i" "interruption" entry (file+olp+datetree "~/Documents/roam/tracker.org")
+           "* IN-PROGRESS %?  :interruption:work:\n%U\n- ref :: %a\n"
+           :prepend t :tree-type week :clock-in t :clock-keep t)
+          ("s" "sport" entry (file+olp+datetree "~/Documents/roam/sport.org")
+           "* %^T %?  :sport:%^g%^{TYPE}p%^{TIME}p%^{DISTANCE}p%^{HEARTRATE}p%^{MAXHEARRATE}p%^{PACE}p"
+           :prepend t :tree-type month :jump-to-captured t)
+          ("S" "sport (planned)" entry (file+olp+datetree "~/Documents/roam/sport.org")
+           "* %^t %?  :sport:%^g%^{TIME}p%^{DISTANCE}p"
+           :prepend t :tree-type month :jump-to-captured t)
+          ("f" "chore"        entry (file "~/Documents/roam/inbox.org")
+           "* IN-PROGRESS %?  :chore:\n%U\n"
+           :clock-in t :clock-keep t)))
 
-    ;; How to create default clocktable
-    (setq org-clock-clocktable-default-properties
-          '(:scope subtree :maxlevel 4 :timestamp t :link t :tags t :narrow 36! :match "work"))
+  ;; How to create default clocktable
+  (setq org-clock-clocktable-default-properties
+        '(:scope subtree :maxlevel 4 :timestamp t :link t :tags t :narrow 36! :match "work"))
 
-    ;; How to display default clock report in agenda view
-    (setq org-agenda-clockreport-parameter-plist
-          '(:lang "en" :maxlevel 4 :fileskip0 t :link t :indent t :narrow 80!))
+  ;; How to display default clock report in agenda view
+  (setq org-agenda-clockreport-parameter-plist
+        '(:lang "en" :maxlevel 4 :fileskip0 t :link t :indent t :narrow 80!))
 
-    ;; *** Projectile; default TODO file to create in your projects
-    (setq org-projectile-file "inbox.org")
+  ;; *** Projectile; default TODO file to create in your projects
+  (setq org-projectile-file "inbox.org")
 
-    (setq org-refile-targets
-          '((nil :maxlevel . 5)
-            (org-agenda-files :maxlevel . 5)))
+  (setq org-refile-targets
+        '((nil :maxlevel . 5)
+          (org-agenda-files :maxlevel . 5)))
 
-    ;; *** Agenda
-    (setq org-log-into-drawer t) ;; hide the log state change history a bit better
-    (setq org-deadline-warning-days 7)
-    (setq org-habit-show-habits-only-for-today nil)
-    (setq org-habit-graph-column 65)
-    (setq org-duration-format 'h:mm) ;; show hours at max, not days
-    (setq org-agenda-compact-blocks t)
-    ;; default show today
-    (setq org-agenda-span 'day)
-    ;(setq org-agenda-start-day "-0d")
-   ; (setq org-agenda-start-on-weekday nil)
-    (setq org-agenda-window-setup 'only-window)
+  ;; *** Agenda
+  (setq org-log-into-drawer t) ;; hide the log state change history a bit better
+  (setq org-deadline-warning-days 7)
+  (setq org-habit-show-habits-only-for-today nil)
+  (setq org-habit-graph-column 65)
+  (setq org-duration-format 'h:mm) ;; show hours at max, not days
+  (setq org-agenda-compact-blocks t)
+  ;; default show today
+  (setq org-agenda-span 'day)
+                                        ;(setq org-agenda-start-day "-0d")
+                                        ; (setq org-agenda-start-on-weekday nil)
+  (setq org-agenda-window-setup 'only-window)
 
-    ;; ** Org Annotate
+  ;; ** Org Annotate
 
-    ;; Ability to take annotate some files, can of double usage with org-capture.
-    ;; Still, I keep that keyboard shortcut here.
-    ;; (evil-leader/set-key "oa" 'org-annotate-file)
-    (setq org-annotate-file-storage-file "~/Documents/roam/annotations.org")
+  ;; Ability to take annotate some files, can of double usage with org-capture.
+  ;; Still, I keep that keyboard shortcut here.
+  ;; (evil-leader/set-key "oa" 'org-annotate-file)
+  (setq org-annotate-file-storage-file "~/Documents/roam/annotations.org")
 
-    ;; ** Org colums
-    ;; Can be nice sometime to have that column view
-    ;; give a felling of Excel view
-    (setq org-columns-default-format
-          "%TODO %3PRIORITY %40ITEM(Task) %17Effort(Estimated Effort){:} %CLOCKSUM %8TAGS(TAG)")
+  ;; ** Org colums
+  ;; Can be nice sometime to have that column view
+  ;; give a felling of Excel view
+  (setq org-columns-default-format
+        "%TODO %3PRIORITY %40ITEM(Task) %17Effort(Estimated Effort){:} %CLOCKSUM %8TAGS(TAG)")
 
-    ;; Org Babel
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '(;; other Babel languages
-       (shell . t)
-       ;;(http . t) ; require ob-http
-       (clojure . t)
-       (haskell . t)
-       (plantuml . t) ;; UML graphs
-       (gnuplot . t)))
-    (setq org-plantuml-jar-path "~/bin/plantuml.jar")
+  ;; Org Babel
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(;; other Babel languages
+     (shell . t)
+     ;;(http . t) ; require ob-http
+     (clojure . t)
+     (haskell . t)
+     (plantuml . t) ;; UML graphs
+     (gnuplot . t)))
+  (setq org-plantuml-jar-path "~/bin/plantuml.jar")
 
-    (defun get-image-width (fname)
-      "Returns the min of image width and window width, unless :width
+  (defun get-image-width (fname)
+    "Returns the min of image width and window width, unless :width
   is defined in an attr_org line."
-      (let* ((link (save-match-data (org-element-context)))
-             (paragraph (let ((e link))
-                          (while (and (setq e (org-element-property
-                                               :parent e))
-                                      (not (eq (org-element-type e)
-                                               'paragraph))))
-                          e))
-             (attr_org (org-element-property :attr_org paragraph))
-             (pwidth (plist-get
-                      (org-export-read-attribute :attr_org  paragraph) :width))
-             (width (when pwidth (string-to-number pwidth)))
-             open
-             img-buf)
+    (let* ((link (save-match-data (org-element-context)))
+           (paragraph (let ((e link))
+                        (while (and (setq e (org-element-property
+                                             :parent e))
+                                    (not (eq (org-element-type e)
+                                             'paragraph))))
+                        e))
+           (attr_org (org-element-property :attr_org paragraph))
+           (pwidth (plist-get
+                    (org-export-read-attribute :attr_org  paragraph) :width))
+           (width (when pwidth (string-to-number pwidth)))
+           open
+           img-buf)
 
-        (unless width
-          (setq open (find-buffer-visiting fname)
-                img-buf (or open (find-file-noselect fname))
-                width (min (window-width nil :pixels)
-                           (car (image-size (with-current-buffer img-buf (image-get-display-property)) :pixels))))
+      (unless width
+        (setq open (find-buffer-visiting fname)
+              img-buf (or open (find-file-noselect fname))
+              width (min (window-width nil :pixels)
+                         (car (image-size (with-current-buffer img-buf (image-get-display-property)) :pixels))))
 
-          (unless open (kill-buffer img-buf)))
-        width))
+        (unless open (kill-buffer img-buf)))
+      width))
 
-    (defun around-image-display (orig-fun file width)
-      (apply orig-fun (list file (get-image-width file))))
+  (defun around-image-display (orig-fun file width)
+    (apply orig-fun (list file (get-image-width file))))
 
-    (advice-add 'org--create-inline-image :around #'around-image-display)
+  (advice-add 'org--create-inline-image :around #'around-image-display)
   )
 
-  ;; *** Refile mapped to SPC y o r
-  ;;(map! :leader :desc "org-refile" "y o r" #'org-refile)
-  ;;(map! :leader "y o c" #'org-columns)
-  (dg/leader-keys
-    "yor" #'org-refile
-    "yoc" #'org-columns
-    "X" #'org-capture
-    ;X ;; capture a new task, write a description, the n C-c C-c, save that in tracker.org
-    ;mco ;; stop clock on that task, if you capture a new time tracking tasks you don't need to clock-out
-    "mco" #'org-clock-out
-    ;no;; jump to current time tracked tasks
-    "no" #'org-clock-goto
-    ;q ;;add/remove tags to that task
-    "yt" #'org-agenda-set-tags
-    )
+;; *** Refile mapped to SPC y o r
+;;(map! :leader :desc "org-refile" "y o r" #'org-refile)
+;;(map! :leader "y o c" #'org-columns)
+(dg/leader-keys
+  "yor" #'org-refile
+  "yoc" #'org-columns
+  "X" #'org-capture
+                                        ;X ;; capture a new task, write a description, the n C-c C-c, save that in tracker.org
+                                        ;mco ;; stop clock on that task, if you capture a new time tracking tasks you don't need to clock-out
+  "mco" #'org-clock-out
+                                        ;no;; jump to current time tracked tasks
+  "no" #'org-clock-goto
+                                        ;q ;;add/remove tags to that task
+  "yt" #'org-agenda-set-tags
+  )
 
-  (use-package org-mime
-    :ensure t)
+(use-package org-mime
+  :ensure t)
 
-  (use-package org-download
-    :ensure t)
-  (use-package ob-async
-    :ensure t
-    :config
-    ;; 2022-10-22 cperl: A workaround for :async not working
-    ;; sometimes as described at
-    ;; https://github.com/astahlman/ob-async/issues/75
-    (defun no-hide-overlays (orig-fun &rest args)
-      (setq org-babel-hide-result-overlays nil))
-    (advice-add 'ob-async-org-babel-execute-src-block :before #'no-hide-overlays))
+(use-package ob-async
+  :ensure t
+  :config
+  ;; 2022-10-22 cperl: A workaround for :async not working
+  ;; sometimes as described at
+  ;; https://github.com/astahlman/ob-async/issues/75
+  (defun no-hide-overlays (orig-fun &rest args)
+    (setq org-babel-hide-result-overlays nil))
+  (advice-add 'ob-async-org-babel-execute-src-block :before #'no-hide-overlays))
 
-  (use-package org-super-agenda
-    :ensure t
-    :after org-agenda
-    :custom (org-super-agenda-groups
-             '( ;; Each group has an implicit boolean OR operator between its selectors.
-               (:name "Overdue" :deadline past :order 0)
-               (:name "Evening Habits" :and (:habit t :tag "evening") :order 8)
-               (:name "Habits" :habit t :order 6)
-               (:name "Today" ;; Optionally specify section name
-                :time-grid t  ;; Items that appear on the time grid (scheduled/deadline with time)
-                :order 3)     ;; capture the today first but show it in order 3
-               (:name "Low Priority" :priority "C" :tag "maybe" :order 7)
-               (:name "Due Today" :deadline today :order 1)
-               (:name "Important"
-                :and (:priority "A" :not (:todo ("DONE" "CANCELED")))
-                :order 2)
-               (:name "Due Soon" :deadline future :order 4)
-               (:name "Todo (not habit)" :not (:habit t) :order 5)
-               (:todo "TODO" :order 6)
-               (:name "Waiting" :todo ("WAITING" "HOLD") :order 9)))
-      (org-agenda nil "a")
-    :config
-    (setq org-super-agenda-header-map nil)
-    (org-super-agenda-mode t))
+(use-package org-super-agenda
+  :ensure t
+  :after org-agenda
+  :custom (org-super-agenda-groups
+           '( ;; Each group has an implicit boolean OR operator between its selectors.
+             (:name "Overdue" :deadline past :order 0)
+             (:name "Evening Habits" :and (:habit t :tag "evening") :order 8)
+             (:name "Habits" :habit t :order 6)
+             (:name "Today" ;; Optionally specify section name
+                    :time-grid t  ;; Items that appear on the time grid (scheduled/deadline with time)
+                    :order 3)     ;; capture the today first but show it in order 3
+             (:name "Low Priority" :priority "C" :tag "maybe" :order 7)
+             (:name "Due Today" :deadline today :order 1)
+             (:name "Important"
+                    :and (:priority "A" :not (:todo ("DONE" "CANCELED")))
+                    :order 2)
+             (:name "Due Soon" :deadline future :order 4)
+             (:name "Todo (not habit)" :not (:habit t) :order 5)
+             (:todo "TODO" :order 6)
+             (:name "Waiting" :todo ("WAITING" "HOLD") :order 9)))
+  (org-agenda nil "a")
+  :config
+  (setq org-super-agenda-header-map nil)
+  (org-super-agenda-mode t))
 
-  (use-package ol-notmuch :ensure t)
+(use-package ol-notmuch :ensure t)
 
-  (use-package org-contrib :ensure t)
-  (require 'org-collector)
+(use-package org-contrib :ensure t)
+(require 'org-collector)
 
 
+#+end_src
+** Org attach
+#+begin_src emacs-lisp
+(use-package org-attach-screenshot
+  :bind (("C-c i" . org-attach-screenshot))
+  :config
+  (setq org-attach-screenshot-command-line "screenshot %f")
+  )
 #+end_src
 ** Org-Id
 #+begin_src emacs-lisp
