@@ -37,7 +37,9 @@
     "emacs-overlay": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": ["nixpkgs"],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
@@ -157,7 +159,10 @@
     },
     "gitignore": {
       "inputs": {
-        "nixpkgs": ["pre-commit-hooks", "nixpkgs"]
+        "nixpkgs": [
+          "pre-commit-hooks",
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1660459072,
@@ -210,7 +215,9 @@
       "inputs": {
         "flake-compat": "flake-compat",
         "lowdown-src": "lowdown-src",
-        "nixpkgs": ["nixpkgs"],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "nixpkgs-regression": "nixpkgs-regression"
       },
       "locked": {
@@ -230,11 +237,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1699563381,
-        "narHash": "sha256-3J+AOSzdrTsB82szhl+Fe3EZMM7TlCtOveX1lEXgB70=",
+        "lastModified": 1699637573,
+        "narHash": "sha256-8Gte+STEzsqByLENmN99ynx1a9Bp2guiUiRYSmdb5qs=",
         "owner": "dguibert",
         "repo": "nixpkgs",
-        "rev": "557dc8c96adf5674c47e497f5c964220032e08c2",
+        "rev": "bc3257a7d28627c27a0ac230c900e32fdccb4881",
         "type": "github"
       },
       "original": {
@@ -313,9 +320,13 @@
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_2",
-        "flake-utils": ["flake-utils"],
+        "flake-utils": [
+          "flake-utils"
+        ],
         "gitignore": "gitignore",
-        "nixpkgs": ["nixpkgs"],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "nixpkgs-stable": "nixpkgs-stable_2"
       },
       "locked": {
