@@ -24,6 +24,7 @@
           nix-output-monitor
         ];
         shellHook = ''
+          ENVRC=pkgs
           ${config.pre-commit.devShell.shellHook}
         '';
       };
