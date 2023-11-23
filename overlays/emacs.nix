@@ -69,6 +69,9 @@ final: prev: with prev; let
 
       pkgs.xclip
       pkgs.dtach # for dtache
+      (pkgs.writeShellScriptBin "screenshot" ''
+        ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" -t png "${"$"}{1--}"
+      '')
     ];
 
     ## Optionally override derivations.

@@ -18,3 +18,4 @@ shell
 shell-*
 .direnv
 .deploy-gc/
+.pre-commit-config.yaml
