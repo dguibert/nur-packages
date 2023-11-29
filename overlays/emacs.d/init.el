@@ -4,7 +4,10 @@
 (require 'package)
 (setq package-archives nil)
 ;;(package-initialize)
-(require 'use-package)
+(eval-when-compile
+  (require 'use-package))
+;;(require 'diminish)                ;; if you use :diminish
+(require 'bind-key)                ;; if you use any :bind variant
 
 (require 'org)
 (let* ((file (expand-file-name "emacs.org" user-emacs-directory))

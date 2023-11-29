@@ -27,6 +27,8 @@
   - [[#org-attach][Org attach]]
   - [[#org-id][Org-Id]]
   - [[#org-caldav][org-caldav]]
+  - [[#org-tree-slide][org-tree-slide]]
+  - [[#org-present][org-present]]
 - [[#theme][Theme]]
 - [[#notmuch][Notmuch]]
 - [[#magit][Magit]]
@@ -89,6 +91,7 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 * General Keybindings
 #+begin_src emacs-lisp
   (use-package general
+    :defines dg/leader-keys
     :config
     (general-evil-setup)
     (general-create-definer dg/leader-keys
@@ -376,14 +379,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
   ;(require 'tramp)
 
-  ;(defun efs/org-mode-visual-fill ()
-  ;  (setq visual-fill-column-width 100
-  ;        visual-fill-column-center-text 0)
-  ;  (visual-fill-column-mode 1))
-
-  (use-package visual-fill-column :ensure t)
-  ;  :hook (org-mode . efs/org-mode-visual-fill))
-
   (use-package pdf-tools :ensure t) ;; required for org-noter
   (use-package org-noter
     :ensure t
@@ -451,11 +446,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
   (savehist-mode 1)
   (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
-
-  (use-package org-tree-slide
-    :ensure t
-    :custom
-    (org-image-actual-width nil))
 
   (setq ediff-diff-options "-w")
   (setq ediff-split-window-function 'split-window-horizontally)
@@ -577,13 +567,16 @@ Org-tempo is not a separate package but a module within org that can be enabled.
     (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+;(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-date nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-footnote nil :inherit 'fixed-pitch))
                                         ; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
 (use-package org :ensure t
   :hook (org-mode . efs/org-mode-setup)
@@ -890,6 +883,77 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 	  (org-caldav-url "http://localhost:1080/users/david.guibert@atos.net")
 	  (org-caldav-files '("~/org/calendar.org")))
       (call-interactively 'org-caldav-sync)))
+#+end_src
+** org-tree-slide
+#+begin_src emacs-lisp
+(use-package hide-mode-line)
+(defun dg/presentation-setup ()
+  (setq text-scale-mode-amount 3)
+(hide-mode-line-mode 1)
+  (org-display-inline-images) ;; can also use org-starup-with-inline-images
+
+;  (setq-local face-remapping-alist '((default (:height 3) default)
+;(org-block (:height 2.5) italic)))
+  (text-scale-mode 1)
+  )
+(defun dg/presentation-end ()
+;(setq-local face-remapping-alist '((default variable-pitch default))
+(hide-mode-line-mode 0)
+                           (text-scale-mode 0)
+  )
+(use-package org-tree-slide
+  :hook ((org-tree-slide-play . dg/presentation-setup)
+         (org-tree-stop . dg/presentation-end))
+  :custom
+(org-tree-slide-slide-in-effect t)
+  (org-image-actual-width nil))
+#+end_src
+** org-present
+#+begin_src emacs-lisp
+(use-package hide-mode-line)
+(use-package visual-fill-column)
+(use-package org-present)
+(eval-after-load "org-present"
+  '(progn
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+                 (setq visual-fill-column-width 210)
+                 (setq visual-fill-column-center-text t)
+                 (visual-fill-column-mode 1)
+                 (visual-line-mode 1)
+                 (hide-mode-line-mode 1)
+                 (setq header-line-format " ")
+                 (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                                    (header-line (:height 4.0) variable-pitch)
+                                                    (org-document-title (:height 4.0) org-document-title)
+                                                    (org-code (:height 1.55) org-code)
+                                                    (org-verbatim (:height 1.55) org-verbatim)
+                                                    ;(org-block (:height 1.25) org-block)
+                                                    (org-block-begin-line (:height 0.7) org-block)))
+                 ;(org-present-big)
+                 (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+                 ;; reset font customizations
+                 (setq-local face-remapping-alist '((default variable-pitch default)))
+                 ;; stop centering the presentation
+                 (visual-fill-column-mode 0)
+                 (visual-line-mode 0)
+                 (hide-mode-line-mode 0)
+                 (setq header-line-format nil)
+                 (org-present-small)
+                 (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)))))
+#+end_src
+
+#+begin_src emacs-lisp
+(dg/leader-keys
+  "s s" '(org-present :wk "launch org-present")
+  "<left>" '(org-present-next :wk "org-present-next")
+  "<right>" '(org-present-prev :wk "org-present-prev"))
 #+end_src
 * Theme
 :PROPERTIES:
@@ -1383,7 +1447,7 @@ Delete the original subtree."
 (use-package consult-notes
   :commands (consult-notes
              consult-notes-search-in-all-notes
-             ;; if using org-roam 
+             ;; if using org-roam
              consult-notes-org-roam-find-node
              consult-notes-org-roam-find-node-relation)
   :config
