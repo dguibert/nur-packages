@@ -1,13 +1,30 @@
-{ mkDerivation
-, lib, fetchurl, licenceFile ? null, patchelf
-, fontconfig, libpng12, libICE, ncurses, libSM, libX11, libXau, libXext, libXpm, libXrender, zlib
-, makeWrapper, gcc
-, qtbase, qtscript, qtx11extras, qtxmlpatterns
-, libGLU, libGL
+{
+  mkDerivation,
+  lib,
+  fetchurl,
+  licenceFile ? null,
+  patchelf,
+  fontconfig,
+  libpng12,
+  libICE,
+  ncurses,
+  libSM,
+  libX11,
+  libXau,
+  libXext,
+  libXpm,
+  libXrender,
+  zlib,
+  makeWrapper,
+  gcc,
+  qtbase,
+  qtscript,
+  qtx11extras,
+  qtxmlpatterns,
+  libGLU,
+  libGL,
 }:
-
 #assert licenceFile != null;
-
 mkDerivation rec {
   pname = "arm-forge";
   version = "21.0";
@@ -17,17 +34,44 @@ mkDerivation rec {
     sha256 = "sha256-cbcToF1DGjwmvYPMTQtloK/X1/W/V6oR7ftB2pDwF3Q=";
   };
 
-  buildInputs = [ patchelf makeWrapper
+  buildInputs = [
+    patchelf
+    makeWrapper
     qtbase
-    fontconfig libpng12 libICE ncurses libSM libX11 libXau libXext libXpm libXrender
+    fontconfig
+    libpng12
+    libICE
+    ncurses
+    libSM
+    libX11
+    libXau
+    libXext
+    libXpm
+    libXrender
     zlib
   ];
 
-  rPath = "${lib.makeLibraryPath [fontconfig libpng12 libICE ncurses libSM libX11 libXau libXext libXpm libXrender zlib
-    qtbase qtscript qtx11extras qtxmlpatterns libGLU libGL
+  rPath = "${lib.makeLibraryPath [
+    fontconfig
+    libpng12
+    libICE
+    ncurses
+    libSM
+    libX11
+    libXau
+    libXext
+    libXpm
+    libXrender
+    zlib
+    qtbase
+    qtscript
+    qtx11extras
+    qtxmlpatterns
+    libGLU
+    libGL
   ]}:${lib.getLib gcc.cc}/lib:/run/opengl-driver/lib";
 
-  qtWrapperArgs = [ "--suffix LD_LIBRARY_PATH : ${rPath}" ];
+  qtWrapperArgs = ["--suffix LD_LIBRARY_PATH : ${rPath}"];
   dontStrip = true;
   dontPatchELF = true;
 

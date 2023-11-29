@@ -1,6 +1,6 @@
 https://github.com/NixOS/nix/issues/7265
 
-$ nix build && cat ./result;  # Works
+$ nix build && cat ./result; # Works
 $ rm ./result;
 $ nix develop;
 $ genericBuild;

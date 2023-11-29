@@ -1,15 +1,16 @@
-final: prev: with prev; let
+final: prev:
+with prev; let
   # https://gist.github.com/grahamc/2daa060dce38ad18ddfa7927e1b1a1b3
-
-  my-texlive = (texlive.combine {
-    inherit (texlive) scheme-medium
+  my-texlive = texlive.combine {
+    inherit
+      (texlive)
+      scheme-medium
       wrapfig
       capt-of
-
       moderncv
       biblatex
-    ; });
-
+      ;
+  };
 
   overrides = self: super: {
     org-cv = self.trivialBuild {
@@ -21,7 +22,7 @@ final: prev: with prev; let
         rev = "24bcd82348d441d95c2c80fb8ef8b5d6d4b80d95";
         sha256 = "sha256-4jXttJUkmJbWvW+A0euLDV5Mzj9Pjar/No1ETndfln0=";
       };
-      buildInputs = [ self.ox-hugo ];
+      buildInputs = [self.ox-hugo];
     };
   };
 
@@ -64,7 +65,7 @@ final: prev: with prev; let
       #epkgs.org-capture
       #epkgs.ox-icalendar
 
-      pkgs.notmuch   # From main packages set
+      pkgs.notmuch # From main packages set
       pkgs.ripgrep
 
       pkgs.xclip
@@ -75,23 +76,24 @@ final: prev: with prev; let
     ];
 
     ## Optionally override derivations.
-    override = epkgs: epkgs // {
-      ob-async = epkgs.ob-async.overrideAttrs (o: {
-        src = fetchFromGitHub {
-          owner = "astahlman";
-          repo = "ob-async";
-          rev = "9aac486073f5c356ada20e716571be33a350a982";
-          sha256 = "sha256-cIwyuwoyojc6uiNbWleh+inoRTUqMCZYQ3IydhRkEkw=";
-        };
-      });
-    };
+    override = epkgs:
+      epkgs
+      // {
+        ob-async = epkgs.ob-async.overrideAttrs (o: {
+          src = fetchFromGitHub {
+            owner = "astahlman";
+            repo = "ob-async";
+            rev = "9aac486073f5c356ada20e716571be33a350a982";
+            sha256 = "sha256-cIwyuwoyojc6uiNbWleh+inoRTUqMCZYQ3IydhRkEkw=";
+          };
+        });
+      };
     #override = epkgs: epkgs // {
     #  weechat = epkgs.melpaPackages.weechat.overrideAttrs(old: {
     #    patches = [ ./weechat-el.patch ];
     #  });
     #};
   };
-
 in {
   inherit my-texlive;
   inherit my-emacs;
@@ -101,10 +103,12 @@ in {
   #    prev.gtk3-x11
   #  ];
   #});
-  emacs-pgtk = (prev.emacs-pgtk.override {
-  }).overrideAttrs (old : {
-    name = "emacs-pgtk";
-    version = inputs.emacs-src.shortRev;
-    src = inputs.emacs-src;
-  });
+  emacs-pgtk =
+    (prev.emacs-pgtk.override {
+      })
+    .overrideAttrs (old: {
+      name = "emacs-pgtk";
+      version = inputs.emacs-src.shortRev;
+      src = inputs.emacs-src;
+    });
 }

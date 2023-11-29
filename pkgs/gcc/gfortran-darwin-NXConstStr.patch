@@ -23,5 +23,5 @@ index 40804b8..0080299 100644
    fprintf (asm_out_file, "\t.no_dead_strip ");
    assemble_name (asm_out_file, name);
    fputc ('\n', asm_out_file);
--- 
+--
 2.2.1

@@ -1,10 +1,11 @@
-{ lib, fetchurl
-, cubelib
-, qt5
-, perl
-, which
+{
+  lib,
+  fetchurl,
+  cubelib,
+  qt5,
+  perl,
+  which,
 }:
-
 qt5.mkDerivation {
   name = "cubegui-4.6";
   src = fetchurl {
@@ -14,7 +15,7 @@ qt5.mkDerivation {
   #configureFlags = [
   #  "${lib.optionalString stdenv.cc.isIntel or false "--with-nocross-compiler-suite=intel"}"
   #];
-  buildInputs = [ cubelib qt5.qtbase perl which ];
+  buildInputs = [cubelib qt5.qtbase perl which];
   enableParallelBuilding = true;
   meta = {
     # /nix/store/2dfjlvp38xzkyylwpavnh61azi0d168b-binutils-2.31.1/bin/ld: cannot find -lcube.tools.common

@@ -9,7 +9,7 @@ Index: lib/Driver/ToolChains/BareMetal.cpp
 -                                       getTriple().getArchName() + ".a"));
 +                                       getTriple().getArchName()));
  }
- 
+
  void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 Index: test/Driver/baremetal.cpp
 ===================================================================
@@ -22,7 +22,7 @@ Index: test/Driver/baremetal.cpp
 -// CHECK-V6M-C-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m.a"
 +// CHECK-V6M-C-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m"
  // CHECK-V6M-C-SAME: "-o" "{{.*}}.o"
- 
+
  // RUN: %clang -no-canonical-prefixes %s -### -o %t.o 2>&1 \
 @@ -35,7 +35,7 @@
  // CHECK-V6M-DEFAULTCXX: "{{[^"]*}}ld{{(\.(lld|bfd|gold))?}}{{(\.exe)?}}" "{{.*}}.o" "-Bstatic"
@@ -31,7 +31,7 @@ Index: test/Driver/baremetal.cpp
 -// CHECK-V6M-DEFAULTCXX-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m.a"
 +// CHECK-V6M-DEFAULTCXX-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m"
  // CHECK-V6M-DEFAULTCXX-SAME: "-o" "{{.*}}.o"
- 
+
  // RUN: %clangxx -no-canonical-prefixes %s -### -o %t.o 2>&1 \
 @@ -48,7 +48,7 @@
  // CHECK-V6M-LIBCXX: "{{[^"]*}}ld{{(\.(lld|bfd|gold))?}}{{(\.exe)?}}" "{{.*}}.o" "-Bstatic"
@@ -40,7 +40,7 @@ Index: test/Driver/baremetal.cpp
 -// CHECK-V6M-LIBCXX-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m.a"
 +// CHECK-V6M-LIBCXX-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m"
  // CHECK-V6M-LIBCXX-SAME: "-o" "{{.*}}.o"
- 
+
  // RUN: %clangxx -no-canonical-prefixes %s -### -o %t.o 2>&1 \
 @@ -61,7 +61,7 @@
  // CHECK-V6M-LIBSTDCXX: "{{[^"]*}}ld{{(\.(lld|bfd|gold))?}}{{(\.exe)?}}" "{{.*}}.o" "-Bstatic"
@@ -49,5 +49,5 @@ Index: test/Driver/baremetal.cpp
 -// CHECK-V6M-LIBSTDCXX-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m.a"
 +// CHECK-V6M-LIBSTDCXX-SAME: "-lc" "-lm" "-lclang_rt.builtins-armv6m"
  // CHECK-V6M-LIBSTDCXX-SAME: "-o" "{{.*}}.o"
- 
+
  // RUN: %clangxx -no-canonical-prefixes %s -### -o %t.o 2>&1 \

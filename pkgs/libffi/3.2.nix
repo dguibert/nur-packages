@@ -1,11 +1,14 @@
-{ stdenv, lib, fetchurl, fetchpatch
-, autoreconfHook
-
-# libffi is used in darwin stdenv
-# we cannot run checks within it
-, doCheck ? !stdenv.isDarwin, dejagnu
+{
+  stdenv,
+  lib,
+  fetchurl,
+  fetchpatch,
+  autoreconfHook,
+  # libffi is used in darwin stdenv
+  # we cannot run checks within it
+  doCheck ? !stdenv.isDarwin,
+  dejagnu,
 }:
-
 stdenv.mkDerivation rec {
   name = "libffi-3.2.1";
 
@@ -14,7 +17,8 @@ stdenv.mkDerivation rec {
     sha256 = "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh";
   };
 
-  patches = lib.optional stdenv.isCygwin ./3.2.1-cygwin.patch
+  patches =
+    lib.optional stdenv.isCygwin ./3.2.1-cygwin.patch
     ++ lib.optional stdenv.isAarch64 (fetchpatch {
       url = https://src.fedoraproject.org/rpms/libffi/raw/ccffc1700abfadb0969495a6e51b964117fc03f6/f/libffi-aarch64-rhbz1174037.patch;
       sha256 = "1vpirrgny43hp0885rswgv3xski8hg7791vskpbg3wdjdpb20wbc";
@@ -42,7 +46,7 @@ stdenv.mkDerivation rec {
       })
     ];
 
-  outputs = [ "out" "dev" "man" "info" ];
+  outputs = ["out" "dev" "man" "info"];
 
   nativeBuildInputs = lib.optional stdenv.hostPlatform.isRiscV autoreconfHook;
 
@@ -56,7 +60,7 @@ stdenv.mkDerivation rec {
     NIX_HARDENING_ENABLE=''${NIX_HARDENING_ENABLE/fortify/}
   '';
 
-  checkInputs = [ dejagnu ];
+  checkInputs = [dejagnu];
 
   inherit doCheck;
 
@@ -90,7 +94,7 @@ stdenv.mkDerivation rec {
     homepage = http://sourceware.org/libffi/;
     # See https://github.com/atgreen/libffi/blob/master/LICENSE .
     license = licenses.free;
-    maintainers = [ ];
+    maintainers = [];
     platforms = platforms.all;
   };
 }

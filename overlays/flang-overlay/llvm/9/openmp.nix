@@ -1,5 +1,15 @@
-{ stdenv, lib, fetchFromGitHub, cmake, llvm, version, perl, python, gfortran, hwloc }:
-
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+  cmake,
+  llvm,
+  version,
+  perl,
+  python,
+  gfortran,
+  hwloc,
+}:
 stdenv.mkDerivation {
   name = "openmp-${version}";
 
@@ -10,8 +20,8 @@ stdenv.mkDerivation {
     sha256 = "sha256-VLlEFH13Te1MdRbhw5mqcw6z0FNThAXGSfb3rWiRa6s=";
   };
 
-  nativeBuildInputs = [ cmake perl ];
-  buildInputs = [ llvm python gfortran hwloc ];
+  nativeBuildInputs = [cmake perl];
+  buildInputs = [llvm python gfortran hwloc];
 
   cmakeFlags = [
     "-DCMAKE_CXX_FLAGS=-std=c++11"
@@ -25,8 +35,8 @@ stdenv.mkDerivation {
 
   meta = {
     description = "Components required to build an executable OpenMP program";
-    homepage    = http://openmp.llvm.org/;
-    license     = lib.licenses.mit;
-    platforms   = lib.platforms.all;
+    homepage = http://openmp.llvm.org/;
+    license = lib.licenses.mit;
+    platforms = lib.platforms.all;
   };
 }

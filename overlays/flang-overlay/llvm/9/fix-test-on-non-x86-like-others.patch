@@ -4,7 +4,7 @@ diff --git a/test/tools/gold/X86/linkonce_odr_unnamed_addr.ll b/llvm/trunk/test/
 --- a/test/tools/gold/X86/linkonce_odr_unnamed_addr.ll	(revision 372333)
 +++ b/test/tools/gold/X86/linkonce_odr_unnamed_addr.ll	(working copy)
 @@ -3,7 +3,7 @@
- 
+
  ; RUN: opt -module-summary %s -o %t.o
  ; RUN: opt -module-summary %p/Inputs/linkonce_odr_unnamed_addr.ll -o %t2.o
 -; RUN: %gold -plugin %llvmshlibdir/LLVMgold%shlibext \

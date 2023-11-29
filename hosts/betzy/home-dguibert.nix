@@ -1,7 +1,10 @@
-{ config, pkgs, lib
-, ...}@args:
-with lib;
 {
+  config,
+  pkgs,
+  lib,
+  ...
+} @ args:
+with lib; {
   # Choose your themee
   themes.base16 = {
     enable = true;
@@ -10,19 +13,19 @@ with lib;
 
     # Add extra variables for inclusion in custom templates
     extraParams = {
-      fontname = mkDefault  "Inconsolata LGC for Powerline";
-  #headerfontname = mkDefault  "Cabin";
-      bodysize = mkDefault  "10";
-      headersize = mkDefault  "12";
-      xdpi= mkDefault ''
-            Xft.hintstyle: hintfull
+      fontname = mkDefault "Inconsolata LGC for Powerline";
+      #headerfontname = mkDefault  "Cabin";
+      bodysize = mkDefault "10";
+      headersize = mkDefault "12";
+      xdpi = mkDefault ''
+        Xft.hintstyle: hintfull
       '';
     };
   };
   nixpkgs.overlays = [
     (import ./overlay.nix)
     (final: prev: {
-      pinentry = prev.pinentry.override { enabledFlavors = [ "curses" "tty" ]; };
+      pinentry = prev.pinentry.override {enabledFlavors = ["curses" "tty"];};
     })
   ];
   services.gpg-agent.pinentryFlavor = lib.mkForce "curses";
@@ -30,19 +33,22 @@ with lib;
   programs.home-manager.enable = true;
 
   programs.bash.enable = true;
-  programs.bash.bashrcExtra = /*(homes.withoutX11 args).programs.bash.initExtra +*/ ''
-    export PATH=$HOME/bin:$PATH
-    #export LD_LIBRARY_PATH=${pkgs.sssd}/lib:$LD_LIBRARY_PATH
+  programs.bash.bashrcExtra =
+    /*
+    (homes.withoutX11 args).programs.bash.initExtra +
+    */
+    ''
+      export PATH=$HOME/bin:$PATH
+      #export LD_LIBRARY_PATH=${pkgs.sssd}/lib:$LD_LIBRARY_PATH
 
-    case $HOSTNAME in
-      spartan0)
-      ;;
-      spartan*)
-      export TMP=/dev/shm; export TMPDIR=$TMP; export TEMP=$TMP; export TEMPDIR=$TMP
-      ;;
-    esac
-  '';
-
+      case $HOSTNAME in
+        spartan0)
+        ;;
+        spartan*)
+        export TMP=/dev/shm; export TMPDIR=$TMP; export TEMP=$TMP; export TEMPDIR=$TMP
+        ;;
+      esac
+    '';
 
   #programs.bash.historySize = 50000;
   #programs.bash.historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
@@ -51,14 +57,25 @@ with lib;
   programs.bash.historySize = -1; # no truncation
   programs.bash.historyFile = "$HOME/.bash_history";
   programs.bash.historyFileSize = -1; # no truncation
-  programs.bash.historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
-  programs.bash.historyIgnore = [ "ls" "cd" "clear" "[bf]g"
-    " *" "cd -" "history" "history -*" "man" "man *"
-    "pwd" "exit" "date" "* --help:"
+  programs.bash.historyControl = ["erasedups" "ignoredups" "ignorespace"];
+  programs.bash.historyIgnore = [
+    "ls"
+    "cd"
+    "clear"
+    "[bf]g"
+    " *"
+    "cd -"
+    "history"
+    "history -*"
+    "man"
+    "man *"
+    "pwd"
+    "exit"
+    "date"
+    "* --help:"
   ];
 
-
-  programs.bash.shellAliases.ls="ls --color";
+  programs.bash.shellAliases.ls = "ls --color";
 
   programs.bash.initExtra = ''
     export HISTCONTROL
@@ -122,14 +139,14 @@ with lib;
   programs.git.userEmail = "david.guibert@gmail.com";
   programs.git.aliases.files = "ls-files -v --deleted --modified --others --directory --no-empty-directory --exclude-standard";
   programs.git.aliases.wdiff = "diff --word-diff=color --unified=1";
-  programs.git.aliases.bd  = "!git for-each-ref --sort='-committerdate:iso8601' --format='%(committerdate:iso8601)%09%(refname)'";
+  programs.git.aliases.bd = "!git for-each-ref --sort='-committerdate:iso8601' --format='%(committerdate:iso8601)%09%(refname)'";
   programs.git.aliases.bdr = "!git for-each-ref --sort='-committerdate:iso8601' --format='%(committerdate:iso8601)%09%(refname)' refs/remotes/$1";
-  programs.git.aliases.bs="branch -v -v";
-  programs.git.aliases.df="diff";
-  programs.git.aliases.dn="diff --name-only";
-  programs.git.aliases.dp="diff --no-ext-diff";
-  programs.git.aliases.ds="diff --stat -w";
-  programs.git.aliases.dt="difftool";
+  programs.git.aliases.bs = "branch -v -v";
+  programs.git.aliases.df = "diff";
+  programs.git.aliases.dn = "diff --name-only";
+  programs.git.aliases.dp = "diff --no-ext-diff";
+  programs.git.aliases.ds = "diff --stat -w";
+  programs.git.aliases.dt = "difftool";
   #programs.git.ignores
   programs.git.iniContent.clean.requireForce = true;
   programs.git.iniContent.rerere.enabled = true;
@@ -148,19 +165,19 @@ with lib;
 
   # http://ubuntuforums.org/showthread.php?t=1150822
   ## Save and reload the history after each command finishes
-  home.sessionVariables.SQUEUE_FORMAT="%.18i %.25P %35j %.8u %.2t %.10M %.6D %.6C %.6z %.15E %20R %W";
- #home.sessionVariables.SINFO_FORMAT="%30N  %.6D %.6c %15F %10t %20f %P"; # with state
-  home.sessionVariables.SINFO_FORMAT="%30N  %.6D %.6c %15F %20f %P";
-  home.sessionVariables.PATH="$HOME/bin:$PATH";
+  home.sessionVariables.SQUEUE_FORMAT = "%.18i %.25P %35j %.8u %.2t %.10M %.6D %.6C %.6z %.15E %20R %W";
+  #home.sessionVariables.SINFO_FORMAT="%30N  %.6D %.6c %15F %10t %20f %P"; # with state
+  home.sessionVariables.SINFO_FORMAT = "%30N  %.6D %.6c %15F %20f %P";
+  home.sessionVariables.PATH = "$HOME/bin:$PATH";
   #home.sessionVariables.MANPATH="$HOME/man:$MANPATH:/share/man";
   programs.man.enable = false; # RHEL 8 manpath fork bomb
-  home.sessionVariables.PAGER="less -R";
-  home.sessionVariables.EDITOR="vim";
-  home.sessionVariables.GIT_PS1_SHOWDIRTYSTATE=1;
+  home.sessionVariables.PAGER = "less -R";
+  home.sessionVariables.EDITOR = "vim";
+  home.sessionVariables.GIT_PS1_SHOWDIRTYSTATE = 1;
   # ✗ 1    dguibert@vbox-57nvj72 ~ $ systemctl --user status
   # Failed to read server status: Process org.freedesktop.systemd1 exited with status 1
   # ✗ 130    dguibert@vbox-57nvj72 ~ $ export XDG_RUNTIME_DIR=/run/user/$(id -u)
-  home.sessionVariables.XDG_RUNTIME_DIR="/run/user/$(id -u)";
+  home.sessionVariables.XDG_RUNTIME_DIR = "/run/user/$(id -u)";
 
   # Fix stupid java applications like android studio
   home.sessionVariables._JAVA_AWT_WM_NONREPARENTING = "1";
@@ -168,8 +185,15 @@ with lib;
   home.packages = with pkgs; [
     (vim_configurable.override {
       guiSupport = "no";
-      libX11=null; libXext=null; libSM=null; libXpm=null; libXt=null; libXaw=null; libXau=null; libXmu=null;
-      libICE=null;
+      libX11 = null;
+      libXext = null;
+      libSM = null;
+      libXpm = null;
+      libXt = null;
+      libXaw = null;
+      libXau = null;
+      libXmu = null;
+      libICE = null;
     })
 
     rsync

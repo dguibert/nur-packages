@@ -27,27 +27,27 @@ index 806fcd5..5b6f186 100644
 @@ -605,8 +605,7 @@ uptr internal_prctl(int option, uptr arg2, uptr arg3, uptr arg4, uptr arg5) {
  }
  #endif
- 
+
 -uptr internal_sigaltstack(const struct sigaltstack *ss,
 -                         struct sigaltstack *oss) {
 +uptr internal_sigaltstack(const void *ss, void *oss) {
    return internal_syscall(SYSCALL(sigaltstack), (uptr)ss, (uptr)oss);
  }
- 
+
 diff --git a/libsanitizer/sanitizer_common/sanitizer_linux.h b/libsanitizer/sanitizer_common/sanitizer_linux.h
 index 895bfc1..a42df57 100644
 --- a/libsanitizer/sanitizer_common/sanitizer_linux.h
 +++ b/libsanitizer/sanitizer_common/sanitizer_linux.h
 @@ -19,7 +19,6 @@
  #include "sanitizer_platform_limits_posix.h"
- 
+
  struct link_map;  // Opaque type returned by dlopen().
 -struct sigaltstack;
- 
+
  namespace __sanitizer {
  // Dirent structure for getdents(). Note that this structure is different from
 @@ -28,8 +27,7 @@ struct linux_dirent;
- 
+
  // Syscall wrappers.
  uptr internal_getdents(fd_t fd, struct linux_dirent *dirp, unsigned int count);
 -uptr internal_sigaltstack(const struct sigaltstack* ss,
@@ -55,13 +55,13 @@ index 895bfc1..a42df57 100644
 +uptr internal_sigaltstack(const void* ss, void* oss);
  uptr internal_sigprocmask(int how, __sanitizer_sigset_t *set,
      __sanitizer_sigset_t *oldset);
- 
+
 diff --git a/libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc b/libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
 index 891386dc..234e8c6 100644
 --- a/libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
 +++ b/libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
 @@ -273,7 +273,7 @@ static int TracerThread(void* argument) {
- 
+
    // Alternate stack for signal handling.
    InternalScopedBuffer<char> handler_stack_memory(kHandlerStackSize);
 -  struct sigaltstack handler_stack;
@@ -82,6 +82,6 @@ index 2ed5718..6f972ab 100644
    for (int i = 0; i < MAXNS && cnt < nfd; i++) {
      if (statp->_u._ext.nsaddrs[i] && statp->_u._ext.nssocks[i] != -1)
        fds[cnt++] = statp->_u._ext.nssocks[i];
--- 
+--
 2.9.3
 

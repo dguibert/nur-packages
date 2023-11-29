@@ -5,7 +5,7 @@ index cbee89140dd..e1f26b0a096 100644
 @@ -996,13 +996,7 @@ ncrtn.o%s"
      { GPLUSPLUS_BACKWARD_INCLUDE_DIR, "G++", 1, 1,	\
        GPLUSPLUS_INCLUDE_DIR_ADD_SYSROOT, 0 },
- 
+
 -#ifdef LOCAL_INCLUDE_DIR
 -#define INCLUDE_DEFAULTS_MUSL_LOCAL			\
 -    { LOCAL_INCLUDE_DIR, 0, 0, 1, 1, 2 },		\
@@ -13,6 +13,6 @@ index cbee89140dd..e1f26b0a096 100644
 -#else
  #define INCLUDE_DEFAULTS_MUSL_LOCAL
 -#endif
- 
+
  #ifdef PREFIX_INCLUDE_DIR
  #define INCLUDE_DEFAULTS_MUSL_PREFIX			\
