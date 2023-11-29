@@ -27,7 +27,6 @@
   - [[#org-attach][Org attach]]
   - [[#org-id][Org-Id]]
   - [[#org-caldav][org-caldav]]
-  - [[#org-tree-slide][org-tree-slide]]
   - [[#org-present][org-present]]
 - [[#theme][Theme]]
 - [[#notmuch][Notmuch]]
@@ -884,30 +883,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 	  (org-caldav-files '("~/org/calendar.org")))
       (call-interactively 'org-caldav-sync)))
 #+end_src
-** org-tree-slide
-#+begin_src emacs-lisp
-(use-package hide-mode-line)
-(defun dg/presentation-setup ()
-  (setq text-scale-mode-amount 3)
-(hide-mode-line-mode 1)
-  (org-display-inline-images) ;; can also use org-starup-with-inline-images
-
-;  (setq-local face-remapping-alist '((default (:height 3) default)
-;(org-block (:height 2.5) italic)))
-  (text-scale-mode 1)
-  )
-(defun dg/presentation-end ()
-;(setq-local face-remapping-alist '((default variable-pitch default))
-(hide-mode-line-mode 0)
-                           (text-scale-mode 0)
-  )
-(use-package org-tree-slide
-  :hook ((org-tree-slide-play . dg/presentation-setup)
-         (org-tree-stop . dg/presentation-end))
-  :custom
-(org-tree-slide-slide-in-effect t)
-  (org-image-actual-width nil))
-#+end_src
 ** org-present
 #+begin_src emacs-lisp
 (use-package hide-mode-line)
@@ -923,6 +898,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
                  (visual-line-mode 1)
                  (hide-mode-line-mode 1)
                  (setq header-line-format " ")
+                 (org-display-inline-images) ;; can also use org-starup-with-inline-images
                  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
                                                     (header-line (:height 4.0) variable-pitch)
                                                     (org-document-title (:height 4.0) org-document-title)
