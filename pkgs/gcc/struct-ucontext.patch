@@ -57,7 +57,7 @@ index 4512efb..06de45a 100644
 -    struct ucontext uc;
 +    ucontext_t uc;
    };
- 
+
    struct rt_sigframe *rt_;
 diff --git a/libgcc/config/alpha/linux-unwind.h b/libgcc/config/alpha/linux-unwind.h
 index bdbba4a..e84812e 100644
@@ -83,7 +83,7 @@ index 77b7c23..8bf5e82 100644
 -	struct ucontext uc;
 +	ucontext_t uc;
        } *rt_ = context->cfa;
- 
+
        /* The void * cast is necessary to avoid an aliasing warning.
 diff --git a/libgcc/config/i386/linux-unwind.h b/libgcc/config/i386/linux-unwind.h
 index 540a0a2..29efbe3 100644
@@ -125,7 +125,7 @@ index 2304142..30f25ea 100644
 --- a/libgcc/config/nios2/linux-unwind.h
 +++ b/libgcc/config/nios2/linux-unwind.h
 @@ -38,7 +38,7 @@ struct nios2_mcontext {
- 
+
  struct nios2_ucontext {
    unsigned long uc_flags;
 -  struct ucontext *uc_link;
@@ -144,7 +144,7 @@ index 9a2657f..e47493d 100644
 -    struct ucontext uc;
 +    ucontext_t uc;
    } *frame;
- 
+
    /* rt_sigreturn trampoline:
 diff --git a/libgcc/config/sh/linux-unwind.h b/libgcc/config/sh/linux-unwind.h
 index e389cac..0bf43ba 100644
@@ -170,21 +170,21 @@ index 796e976..75f8890 100644
 -    struct ucontext uc;
 +    ucontext_t uc;
    } *rt_;
- 
+
    /* Return if this is not a signal handler.  */
 diff --git a/libgcc/config/xtensa/linux-unwind.h b/libgcc/config/xtensa/linux-unwind.h
 index 9872492..586a9d4 100644
 --- a/libgcc/config/xtensa/linux-unwind.h
 +++ b/libgcc/config/xtensa/linux-unwind.h
 @@ -67,7 +67,7 @@ xtensa_fallback_frame_state (struct _Unwind_Context *context,
- 
+
    struct rt_sigframe {
      siginfo_t info;
 -    struct ucontext uc;
 +    ucontext_t uc;
    } *rt_;
- 
+
    /* movi a2, __NR_rt_sigreturn; syscall */
--- 
+--
 2.9.3
 

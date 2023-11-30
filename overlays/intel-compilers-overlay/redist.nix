@@ -1,22 +1,26 @@
-{ stdenv, lib, fetchannex, glibc, file
-, patchelf
-, version ? "2019.0.117"
-, url
-, sha256
-, preinstDir ? "compilers_and_libraries_${version}/linux"
-, gcc
-, nix-patchtools
-, libpsm2
-, rdma-core
-, mpi
+{
+  stdenv,
+  lib,
+  fetchannex,
+  glibc,
+  file,
+  patchelf,
+  version ? "2019.0.117",
+  url,
+  sha256,
+  preinstDir ? "compilers_and_libraries_${version}/linux",
+  gcc,
+  nix-patchtools,
+  libpsm2,
+  rdma-core,
+  mpi,
 }:
-
 stdenv.mkDerivation rec {
   inherit version;
   name = "intel-compilers-redist-${version}";
 
-  src = fetchannex { inherit url sha256; };
-  nativeBuildInputs= [ file nix-patchtools ];
+  src = fetchannex {inherit url sha256;};
+  nativeBuildInputs = [file nix-patchtools];
 
   dontPatchELF = true;
   dontStrip = true;
@@ -29,18 +33,21 @@ stdenv.mkDerivation rec {
     set +xv
   '';
 
-  libs = (lib.concatStringsSep ":" [
-    "${placeholder "out"}/lib"
-    "${placeholder "out"}/mpi/intel64/lib"
-    "${placeholder "out"}/mpi/intel64/lib/release_mt"
-    "${placeholder "out"}/mpi/intel64/libfabric/lib"
-  ]) + ":" + (lib.makeLibraryPath [
-    stdenv.cc.libc
-    gcc.cc.lib
-    libpsm2
-    rdma-core
-    mpi
-  ]);
+  libs =
+    (lib.concatStringsSep ":" [
+      "${placeholder "out"}/lib"
+      "${placeholder "out"}/mpi/intel64/lib"
+      "${placeholder "out"}/mpi/intel64/lib/release_mt"
+      "${placeholder "out"}/mpi/intel64/libfabric/lib"
+    ])
+    + ":"
+    + (lib.makeLibraryPath [
+      stdenv.cc.libc
+      gcc.cc.lib
+      libpsm2
+      rdma-core
+      mpi
+    ]);
 
   preFixup = ''
     find $out -type d -name ia32_lin -print0 | xargs -0 -i rm -r {}
@@ -62,8 +69,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Intel compilers and libraries ${version}";
-    maintainers = [ lib.maintainers.dguibert ];
+    maintainers = [lib.maintainers.dguibert];
     platforms = lib.platforms.linux;
   };
-
 }

@@ -1,9 +1,9 @@
-{ stdenv
-, fetchFromGitHub
-, perl
-, cudatoolkit
+{
+  stdenv,
+  fetchFromGitHub,
+  perl,
+  cudatoolkit,
 }:
-
 stdenv.mkDerivation {
   pname = "nvptx-tools";
   version = "2018-03-01";
@@ -16,6 +16,7 @@ stdenv.mkDerivation {
   };
 
   buildInputs = [
-    cudatoolkit perl
+    cudatoolkit
+    perl
   ];
 }

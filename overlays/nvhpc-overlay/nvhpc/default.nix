@@ -1,20 +1,20 @@
-{ stdenv, fetchurl
-, lib
-, nix-patchtools
-, more
-, zlib
-, ncurses
-, libxml2
-, glibc
-, file
-, gcc
-, flock
-
-, url
-, version
-, sha256
+{
+  stdenv,
+  fetchurl,
+  lib,
+  nix-patchtools,
+  more,
+  zlib,
+  ncurses,
+  libxml2,
+  glibc,
+  file,
+  gcc,
+  flock,
+  url,
+  version,
+  sha256,
 }:
-
 stdenv.mkDerivation {
   name = "nvhpc-${version}";
   src = fetchurl {
@@ -23,9 +23,21 @@ stdenv.mkDerivation {
   dontPatchELF = true;
   dontStrip = true;
 
-  buildInputs = [ nix-patchtools more file gcc flock /* for makelocalrc */ ];
+  buildInputs = [
+    nix-patchtools
+    more
+    file
+    gcc
+    flock
+    /*
+    for makelocalrc
+    */
+  ];
   libs = lib.makeLibraryPath [
-    stdenv.cc.cc.lib /* libstdc++.so.6 */
+    stdenv.cc.cc.lib
+    /*
+    libstdc++.so.6
+    */
     #llvmPackages_7.llvm # libLLVM.7.so
     stdenv.cc.cc # libm
     stdenv.glibc
@@ -93,15 +105,15 @@ stdenv.mkDerivation {
     # https://github.com/easybuilders/easybuild-easyblocks/issues/1493
     # pgcc-Error-RC file /nix/store/dn3lqas9fr5y5qymw8ay0pj10rc9fwq5-nvhpc-21.5/bin/siterc line 2: switch -pthread already exists
     ${lib.optionalString (!lib.versionAtLeast version "21.7") ''
-      cat > $out/bin/siterc <<EOF
-switch -idirafter arg is shorthand(-I \$arg);
-EOF
-    # switch -pthread is replace(-lpthread) positional(linker);
+            cat > $out/bin/siterc <<EOF
+      switch -idirafter arg is shorthand(-I \$arg);
+      EOF
+          # switch -pthread is replace(-lpthread) positional(linker);
     ''}
   '';
   passthru = {
     isClang = false;
     langFortran = true;
-    hardeningUnsupportedFlags = [ "fortify" "stackprotector" "pie" "pic" "strictoverflow" "format" ];
+    hardeningUnsupportedFlags = ["fortify" "stackprotector" "pie" "pic" "strictoverflow" "format"];
   };
 }

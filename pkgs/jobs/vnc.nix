@@ -1,10 +1,20 @@
-{ pkgs
-, mkJob
+{
+  pkgs,
+  mkJob,
 }:
 with pkgs; {
   job = mkJob {
     name = "vnc-${toString builtins.currentTime}";
-    buildInputs = [ pkgs.tigervnc pkgs.perl pkgs.xorg.xauth pkgs.openssh pkgs.xterm /*pkgs.virtualgl*/ ];
+    buildInputs = [
+      pkgs.tigervnc
+      pkgs.perl
+      pkgs.xorg.xauth
+      pkgs.openssh
+      pkgs.xterm
+      /*
+      pkgs.virtualgl
+      */
+    ];
     script = ''
       ${figlet}/bin/figlet "Node Check"
       set -xuef -o pipefail

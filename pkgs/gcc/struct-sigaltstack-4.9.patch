@@ -7,23 +7,23 @@ index 69c9c10..8e53673 100644
 @@ -599,8 +599,7 @@ uptr internal_prctl(int option, uptr arg2, uptr arg3, uptr arg4, uptr arg5) {
    return internal_syscall(__NR_prctl, option, arg2, arg3, arg4, arg5);
  }
- 
+
 -uptr internal_sigaltstack(const struct sigaltstack *ss,
 -                         struct sigaltstack *oss) {
 +uptr internal_sigaltstack(const void *ss, void *oss) {
    return internal_syscall(__NR_sigaltstack, (uptr)ss, (uptr)oss);
  }
- 
+
 diff --git a/libsanitizer/sanitizer_common/sanitizer_linux.h b/libsanitizer/sanitizer_common/sanitizer_linux.h
 index 6422df1..8e111d1 100644
 --- a/libsanitizer/sanitizer_common/sanitizer_linux.h
 +++ b/libsanitizer/sanitizer_common/sanitizer_linux.h
 @@ -18,7 +18,6 @@
  #include "sanitizer_platform_limits_posix.h"
- 
+
  struct link_map;  // Opaque type returned by dlopen().
 -struct sigaltstack;
- 
+
  namespace __sanitizer {
  // Dirent structure for getdents(). Note that this structure is different from
 @@ -28,8 +27,7 @@ struct linux_dirent;
@@ -41,7 +41,7 @@ index 891386dc..234e8c6 100644
 --- a/libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
 +++ b/libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
 @@ -273,7 +273,7 @@ static int TracerThread(void* argument) {
- 
+
    // Alternate stack for signal handling.
    InternalScopedBuffer<char> handler_stack_memory(kHandlerStackSize);
 -  struct sigaltstack handler_stack;

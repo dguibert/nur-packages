@@ -1,10 +1,12 @@
-{ stdenv, fetchurl, perl
-, coreutils
-, gnugrep
-, nettools
-, procps
+{
+  stdenv,
+  fetchurl,
+  perl,
+  coreutils,
+  gnugrep,
+  nettools,
+  procps,
 }:
-
 stdenv.mkDerivation {
   name = "collectl-4.3.1";
   src = fetchurl {
@@ -12,7 +14,7 @@ stdenv.mkDerivation {
     sha256 = "sha256-IYcmTZdLNqZTyKSwKKxu6rI+GIX4slY6M/BjWPOYifE=";
   };
 
-  buildInputs = [ perl ];
+  buildInputs = [perl];
   installPhase = ''
     sed -i -e "s@/usr/@/@" INSTALL
     export DESTDIR=$out

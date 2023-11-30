@@ -26,7 +26,7 @@ index 77b7c23..8bf5e82 100644
 -	struct ucontext uc;
 +	ucontext_t uc;
        } *rt_ = context->cfa;
- 
+
        /* The void * cast is necessary to avoid an aliasing warning.
 diff --git a/gcc/config/i386/linux-unwind.h b/gcc/config/i386/linux-unwind.h
 index 540a0a2..29efbe3 100644
@@ -74,7 +74,7 @@ index 9a2657f..e47493d 100644
 -    struct ucontext uc;
 +    ucontext_t uc;
    } *frame;
- 
+
    /* rt_sigreturn trampoline:
 diff --git a/gcc/config/sh/linux-unwind.h b/gcc/config/sh/linux-unwind.h
 index e389cac..0bf43ba 100644
@@ -94,14 +94,14 @@ index 9872492..586a9d4 100644
 --- a/gcc/config/xtensa/linux-unwind.h
 +++ b/gcc/config/xtensa/linux-unwind.h
 @@ -67,7 +67,7 @@ xtensa_fallback_frame_state (struct _Unwind_Context *context,
- 
+
    struct rt_sigframe {
      siginfo_t info;
 -    struct ucontext uc;
 +    ucontext_t uc;
    } *rt_;
- 
+
    /* movi a2, __NR_rt_sigreturn; syscall */
--- 
+--
 2.9.3
 

@@ -1,15 +1,18 @@
-{ pkgs ? import <nixpkgs> { inherit system; }
-, system ? builtins.currentSystem
-, stateDir ? "/var"
-, runtimeDir ? "${stateDir}/run"
-, logDir ? "${stateDir}/log"
-, cacheDir ? "${stateDir}/cache"
-, tmpDir ? (if stateDir == "/var" then "/tmp" else "${stateDir}/tmp")
-, forceDisableUserChange ? false
-, processManager
-}:
-
-let
+{
+  pkgs ? import <nixpkgs> {inherit system;},
+  system ? builtins.currentSystem,
+  stateDir ? "/var",
+  runtimeDir ? "${stateDir}/run",
+  logDir ? "${stateDir}/log",
+  cacheDir ? "${stateDir}/cache",
+  tmpDir ? (
+    if stateDir == "/var"
+    then "/tmp"
+    else "${stateDir}/tmp"
+  ),
+  forceDisableUserChange ? false,
+  processManager,
+}: let
   spoolDir = "${stateDir}/spool";
   libDir = "${stateDir}/lib";
 
@@ -24,8 +27,7 @@ let
   hydraInstanceName = "hydra${instanceSuffix}";
   hydraQueueRunnerUser = "hydra-queue-runner${instanceSuffix}";
   hydraServerUser = "hydra-www${instanceSuffix}";
-in
-rec {
+in rec {
   nix-daemon = {
     pkg = constructors.nix-daemon;
   };

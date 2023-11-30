@@ -1,5 +1,9 @@
-{ stdenv, lib, fetchurl, autoreconfHook }:
-
+{
+  stdenv,
+  lib,
+  fetchurl,
+  autoreconfHook,
+}:
 stdenv.mkDerivation {
   name = "cubew-4.6";
   src = fetchurl {
@@ -9,5 +13,5 @@ stdenv.mkDerivation {
   configureFlags = [
     "${lib.optionalString stdenv.cc.isIntel or false "--with-nocross-compiler-suite=intel"}"
   ];
-  nativeBuildInputs = [ autoreconfHook ];
+  nativeBuildInputs = [autoreconfHook];
 }

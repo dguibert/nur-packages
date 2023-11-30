@@ -15,11 +15,11 @@ index 6b4775683..18c6d6302 100644
 @@ -204,7 +204,7 @@ public:
            default is `true`.
          )"};
- 
+
 -    Setting<bool> useSQLiteWAL{this, !isWSL1(), "use-sqlite-wal",
 +    Setting<bool> useSQLiteWAL{this, false /*!isWSL1()*/, "use-sqlite-wal",
          "Whether SQLite should use WAL mode."};
- 
+
      Setting<bool> syncBeforeRegistering{this, false, "sync-before-registering",
 diff --git a/src/libstore/sqlite.cc b/src/libstore/sqlite.cc
 index f5935ee5c..0ae2d7dae 100644
@@ -32,8 +32,8 @@ index f5935ee5c..0ae2d7dae 100644
 -            SQLITE_OPEN_READWRITE | (create ? SQLITE_OPEN_CREATE : 0), 0) != SQLITE_OK)
 +            SQLITE_OPEN_READWRITE | (create ? SQLITE_OPEN_CREATE : 0), "unix-dotfile") != SQLITE_OK)
          throw Error("cannot open SQLite database '%s'", path);
- 
+
      if (sqlite3_busy_timeout(db, 60 * 60 * 1000) != SQLITE_OK)
--- 
+--
 2.29.2
 

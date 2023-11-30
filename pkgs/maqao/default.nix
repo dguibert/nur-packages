@@ -1,5 +1,8 @@
-{ stdenv, requireFile, autoPatchelfHook }:
-
+{
+  stdenv,
+  requireFile,
+  autoPatchelfHook,
+}:
 stdenv.mkDerivation {
   name = "maqao-2.10.14";
   src = requireFile {
@@ -8,9 +11,9 @@ stdenv.mkDerivation {
     sha256 = "00q6y5pq38cmv2lqg87ak0g6268336amylzcydk9w3pfqxiipmrp";
   };
 
-  buildInputs = [ autoPatchelfHook ];
+  buildInputs = [autoPatchelfHook];
 
-  phases = [ "unpackPhase" "installPhase" ];
+  phases = ["unpackPhase" "installPhase"];
   installPhase = ''
     mkdir -p $out/bin
     cp bin/maqao $out/bin/

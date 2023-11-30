@@ -1,15 +1,16 @@
-{ stdenv, fetchFromGitHub
-, cmake
-, boost
-, otf2
-, binutils
-, git
-, libbfd
-, zlib
-, libiberty
-, pkgconfig
+{
+  stdenv,
+  fetchFromGitHub,
+  cmake,
+  boost,
+  otf2,
+  binutils,
+  git,
+  libbfd,
+  zlib,
+  libiberty,
+  pkg-config,
 }:
-
 stdenv.mkDerivation {
   name = "lo2s-1.4.0";
   src = fetchFromGitHub {
@@ -33,8 +34,12 @@ stdenv.mkDerivation {
     cmake
     #(boost.override { enableStatic=true; }).all
     boost
-    otf2 git libbfd zlib libiberty pkgconfig
+    otf2
+    git
+    libbfd
+    zlib
+    libiberty
+    pkg-config
   ];
-#  meta.broken = true;
+  #  meta.broken = true;
 }
-

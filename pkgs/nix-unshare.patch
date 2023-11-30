@@ -3,7 +3,7 @@
 @@ -118,10 +118,6 @@
    startDaemon
  }
- 
+
 -if [[ $(uname) == Linux ]] && [[ -L /proc/self/ns/user ]] && unshare --user true; then
 -    _canUseSandbox=1
 -fi
@@ -13,7 +13,7 @@
    local requiredVersion="$1"
 @@ -134,8 +130,15 @@
  }
- 
+
  canUseSandbox() {
 -    if [[ ! $_canUseSandbox ]]; then
 -        echo "Sandboxing not supported, skipping this test..."
@@ -28,4 +28,4 @@
 +        echo "Unprivileged user namespaces disabled by sysctl, skipping this test..."
          return 1
      fi
- 
+
