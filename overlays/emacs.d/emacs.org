@@ -27,6 +27,7 @@
   - [[#org-attach][Org attach]]
   - [[#org-id][Org-Id]]
   - [[#org-caldav][org-caldav]]
+  - [[#org-present][org-present]]
 - [[#theme][Theme]]
 - [[#notmuch][Notmuch]]
 - [[#magit][Magit]]
@@ -89,6 +90,7 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
 * General Keybindings
 #+begin_src emacs-lisp
   (use-package general
+    :defines dg/leader-keys
     :config
     (general-evil-setup)
     (general-create-definer dg/leader-keys
@@ -376,14 +378,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
   ;(require 'tramp)
 
-  ;(defun efs/org-mode-visual-fill ()
-  ;  (setq visual-fill-column-width 100
-  ;        visual-fill-column-center-text 0)
-  ;  (visual-fill-column-mode 1))
-
-  (use-package visual-fill-column :ensure t)
-  ;  :hook (org-mode . efs/org-mode-visual-fill))
-
   (use-package pdf-tools :ensure t) ;; required for org-noter
   (use-package org-noter
     :ensure t
@@ -451,11 +445,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
   (savehist-mode 1)
   (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
-
-  (use-package org-tree-slide
-    :ensure t
-    :custom
-    (org-image-actual-width nil))
 
   (setq ediff-diff-options "-w")
   (setq ediff-split-window-function 'split-window-horizontally)
@@ -560,6 +549,11 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
 
 (defun efs/org-font-setup ()
+    (org-display-inline-images)
+    (setq fill-column 75)
+    (abbrev-mode)
+    (org-indent-mode)
+
   ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
@@ -577,14 +571,19 @@ Org-tempo is not a separate package but a module within org that can be enabled.
     (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-                                        ; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+;(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-date nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-footnote nil :inherit 'fixed-pitch)
+nil)
+; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
+
 (use-package org :ensure t
   :hook (org-mode . efs/org-mode-setup)
   :init
@@ -653,15 +652,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
   ;;(setq org-ellipsis " [+]")
   (setq org-agenda-files '("~/Documents/roam"))
   (custom-set-faces '(org-ellipsis ((t (:foreground "gray40" :underline nil)))))
-
-  (defun my-org-settings ()
-    (org-display-inline-images)
-    (setq fill-column 75)
-    (abbrev-mode)
-    (org-indent-mode)
-    nil)
-
-  (add-hook 'org-mode-hook #'my-org-settings)
 
   (setq org-tags-column 69)
 
@@ -890,6 +880,75 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 	  (org-caldav-url "http://localhost:1080/users/david.guibert@atos.net")
 	  (org-caldav-files '("~/org/calendar.org")))
       (call-interactively 'org-caldav-sync)))
+#+end_src
+** org-present
+#+begin_src emacs-lisp
+(use-package hide-mode-line)
+(use-package visual-fill-column)
+(use-package org-present)
+(eval-after-load "org-present"
+  '(progn
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+(set-frame-parameter nil 'alpha-background 90)
+(add-to-list 'default-frame-alist '(alpha-background . 90))
+                 (setq visual-fill-column-width 210)
+                 (setq visual-fill-column-center-text t)
+                 (visual-fill-column-mode 1)
+                 (visual-line-mode 1)
+                 (hide-mode-line-mode 1)
+                 (setq header-line-format " ")
+                 (org-display-inline-images) ;; can also use org-starup-with-inline-images
+                 (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                                    (header-line (:height 4.0) variable-pitch)
+                                                    (org-document-title (:height 4.0) org-document-title)
+                                                    (org-code (:height 1.55) org-code)
+                                                    (org-verbatim (:height 1.55) org-verbatim)
+                                                    ;(org-block (:height 1.25) org-block)
+                                                    (org-block-begin-line (:height 0.7) org-block)))
+;; https://emacs.stackexchange.com/questions/19880/font-size-control-of-latex-previews-in-org-files
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+                 ;(org-present-big)
+                 (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+(set-frame-parameter nil 'alpha-background 100)
+(add-to-list 'default-frame-alist '(alpha-background . 100))
+                 ;; reset font customizations
+                 (setq-local face-remapping-alist '((default variable-pitch default)))
+;; https://emacs.stackexchange.com/questions/19880/font-size-control-of-latex-previews-in-org-files
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
+                 ;; stop centering the presentation
+                 (visual-fill-column-mode 0)
+                 (visual-line-mode 0)
+                 (hide-mode-line-mode 0)
+                 (setq header-line-format nil)
+                 (org-present-small)
+                 (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)))))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun my/org-present-prepare-slide (buffer-name heading)
+  ;; Show only top-level headlines
+  (org-overview)
+
+  ;; Unfold the current entry
+  (org-show-entry)
+
+  ;; Show only direct subheadings of the slide but don't expand them
+  (org-show-children))
+(add-hook 'org-present-after-navigate-functions 'my/org-present-prepare-slide)
+#+end_src
+
+#+begin_src emacs-lisp
+(dg/leader-keys
+  "s s" '(org-present :wk "launch org-present")
+  "<left>" '(org-present-prev :wk "org-present-prev")
+  "<right>" '(org-present-next :wk "org-present-next"))
 #+end_src
 * Theme
 :PROPERTIES:
