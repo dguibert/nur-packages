@@ -549,6 +549,11 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
 
 (defun efs/org-font-setup ()
+    (org-display-inline-images)
+    (setq fill-column 75)
+    (abbrev-mode)
+    (org-indent-mode)
+
   ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
@@ -575,8 +580,10 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
 (set-face-attribute 'org-date nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-footnote nil :inherit 'fixed-pitch))
-                                        ; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
+(set-face-attribute 'org-footnote nil :inherit 'fixed-pitch)
+nil)
+; https://yannesposito.com/posts/0015-how-i-use-org-mode/index.html
+
 (use-package org :ensure t
   :hook (org-mode . efs/org-mode-setup)
   :init
@@ -645,15 +652,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
   ;;(setq org-ellipsis " [+]")
   (setq org-agenda-files '("~/Documents/roam"))
   (custom-set-faces '(org-ellipsis ((t (:foreground "gray40" :underline nil)))))
-
-  (defun my-org-settings ()
-    (org-display-inline-images)
-    (setq fill-column 75)
-    (abbrev-mode)
-    (org-indent-mode)
-    nil)
-
-  (add-hook 'org-mode-hook #'my-org-settings)
 
   (setq org-tags-column 69)
 
