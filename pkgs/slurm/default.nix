@@ -159,6 +159,4 @@ in rec {
       sha256 = "0ril6k4dj96qhx5x7r4nc2ghp7n9700808731v4qn9yvcslqzg9a";
     };
   });
-
-  slurm = slurm_20_11_7;
 }

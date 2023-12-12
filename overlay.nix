@@ -271,7 +271,6 @@ with final; {
       lib = final.lib;
       openmpi = prev.openmpi;
     })
-    openmpi
     openmpi_2_0_2
     openmpi_4_0_2
     openmpi_4_1_1
@@ -364,7 +363,6 @@ with final; {
     slurm_18_08_5
     slurm_19_05_3_2
     slurm_19_05_5
-    slurm
     ;
   st = prev.st.override {
     patches = [

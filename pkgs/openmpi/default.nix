@@ -18,7 +18,7 @@
   ucx,
   # Enable CUDA support
   cudaSupport ? false,
-  cudatoolkit ? null,
+  cudaPackages,
   # Enable the Sun Grid Engine bindings
   enableSGE ? false,
   # Pass PATH/LD_LIBRARY_PATH to point to current mpirun by default
@@ -111,7 +111,6 @@
     inherit openmpi_2_0_2;
     inherit openmpi_4_0_2;
     inherit openmpi_4_1_1;
-    openmpi = self.openmpi_4_1_1;
   };
 in
   self
