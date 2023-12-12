@@ -1135,6 +1135,22 @@ nil)
 
 #+end_src
 
+This code means to attach all marked dired "normal" files to a new message buffer if none exist or add attachments to an existing message buffer:
+Open dired buffer with `C-x 4 d`
+#+begin_src emacs-lisp
+(defun compose-attach-marked-files ()
+  "Compose mail and attach all the marked files from a dired buffer."
+  (interactive)
+  (let ((files (dired-get-marked-files)))
+    (compose-mail nil nil nil t)
+    (dolist (file files)
+          (if (file-regular-p file)
+              (mml-attach-file file
+                               (mm-default-file-encoding file)
+                               nil "attachment")
+            (message "skipping non-regular file %s" file)))))
+#+end_src
+
 * Magit
 :PROPERTIES:
 :ID:       99e7efb4-7af3-4d2f-a97e-4ebaca3501b1
