@@ -6,7 +6,8 @@
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nixpkgs.url = "github:dguibert/nixpkgs/pu";
-  inputs.nix.url = "github:dguibert/nix/pu";
+  inputs.nix.url = "github:NixOS/nix/2.18-maintenance";
+  inputs.nix-custom-store.url = "github:dguibert/nix-custom-store";
 
   # for overlays/updated-from-flake.nix
   inputs.dwl-src.flake = false;
