@@ -5,6 +5,7 @@
   inputs.emacs-overlay.url = "github:nix-community/emacs-overlay";
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.flake-parts.url = "github:hercules-ci/flake-parts";
 
   inputs.nixpkgs.url = "github:dguibert/nixpkgs/pu";
 
