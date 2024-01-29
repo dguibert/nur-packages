@@ -9,7 +9,7 @@
 
   inputs.nixpkgs.url = "github:dguibert/nixpkgs/pu";
 
-  inputs.nix.url = "github:NixOS/nix/2.18-maintenance";
+  inputs.nix.url = "github:NixOS/nix/master";
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nix.inputs.lowdown-src.follows = "lowdown-src";
 
