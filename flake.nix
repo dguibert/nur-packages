@@ -9,7 +9,7 @@
 
   inputs.nixpkgs.url = "github:dguibert/nixpkgs/pu";
 
-  inputs.nix.url = "github:NixOS/nix/master";
+  inputs.nix.url = "github:dguibert/nix/pu"; # boehmgc 8.2.4
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nix.inputs.lowdown-src.follows = "lowdown-src";
 
