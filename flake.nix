@@ -11,10 +11,6 @@
 
   inputs.nix.url = "github:dguibert/nix/pu"; # boehmgc 8.2.4
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.nix.inputs.lowdown-src.follows = "lowdown-src";
-
-  inputs.lowdown-src.url = "github:kristapsdz/lowdown/d2c2b44ff6c27b936ec27358a2653caaef8f73b8";
-  inputs.lowdown-src.flake = false;
 
   inputs.nix-custom-store.url = "github:dguibert/nix-custom-store";
   inputs.nix-custom-store.inputs.nix.follows = "nix";
