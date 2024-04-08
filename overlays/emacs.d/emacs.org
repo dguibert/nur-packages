@@ -1389,7 +1389,7 @@ Denote can optionally integrate with Org mode’s “dynamic blocks” facility.
 
 #+begin_src emacs-lisp
 ;; Register Denote's Org dynamic blocks
-(require 'denote-org-dblock)
+(require 'denote-org-extras)
 #+end_src
 
 These two types of blocks are named denote-links and denote-backlinks respectively. The latter does not accept any parameters, while the former does, which we explain below by also demonstrating how dynamic blocks are written.
