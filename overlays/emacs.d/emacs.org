@@ -529,8 +529,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
           (lambda ()
             (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
 
-(add-hook 'org-capture-prepare-finalize-hook 'org-id-get-create)
-
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
