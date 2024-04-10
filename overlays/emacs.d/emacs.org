@@ -488,21 +488,23 @@ Org-tempo is not a separate package but a module within org that can be enabled.
     :config
     (require 'shrface))
 
-  (use-package request :ensure t)
+  (use-package org-web-tools :ensure t)
 
-  (defun request-url-as-org (url)
-    (interactive "sRequest url: ")
-    (require 'shrface)
-    (require 'request)
-    (request url
-      :parser 'buffer-string
-      :headers '(("User-Agent" . "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36"))
-      :sync nil
-      :success (cl-function
-                (lambda (&key data &allow-other-keys)
-                  (let ((shrface-request-url url))
-                    (shrface-html-export-as-org data))))))
-
+  ;; https://www.reddit.com/r/emacs/comments/l42x1p/shrface_263_now_can_be_used_as_archiving_web_pages/
+(defun request-url-as-org (url)
+  (interactive "sRequest url: ")
+  (require 'shrface)
+  (let ((name "request-url")
+        (buf "*request-url*")
+        (cmd (format "curl -L %s" url)))
+    (if (get-buffer buf)
+        (kill-buffer buf))
+    (set-process-sentinel
+     (start-process-shell-command name buf cmd)
+     (lambda (p e)
+       (when (= 0 (process-exit-status p))
+         (with-current-buffer buf
+           (shrface-html-export-as-org (buffer-string))))))))
 #+end_src
 
 * Server
