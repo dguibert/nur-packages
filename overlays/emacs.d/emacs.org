@@ -952,13 +952,12 @@ nil)
 :PROPERTIES:
 :ID:       867c0c49-54ce-4c0f-b62a-95dd2cfb90b9
 :END:
-
-The theme is now handled by [[https://github.com/danth/stylix][stylix]].
-
 #+begin_src emacs-lisp
 ;(add-to-list 'default-frame-alist
 ;	       '(font . "Hack Nerd Font Mono-12"))
 ; https://emacs.stackexchange.com/questions/3912/force-using-fixed-width-font-in-org-mode
+(setq solarized-use-variable-pitch nil
+      solarized-scale-org-headlines nil)
 
 (use-package all-the-icons
 :if (display-graphic-p)
@@ -966,6 +965,27 @@ The theme is now handled by [[https://github.com/danth/stylix][stylix]].
 
 (use-package all-the-icons-dired
   :hook (dired-mode .(lambda() (all-the-icons-dired-mode t))))
+
+(use-package doom-themes
+  :ensure t
+  :after all-the-icons
+  :config
+  (setq
+   doom-themes-enable-bold t
+   doom-themes-enable-italic t)
+  ;(load-theme 'doom-vibrant t)
+  ;(load-theme 'doom-solarized-light t)
+  (load-theme 'doom-solarized-dark t)
+  ;(if (boundp 'scroll-bar-mode)
+  ;  (load-theme 'doom-solarized-dark t)
+  ;  (load-theme 'doom-solarized-light t)
+  ;  )
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
 
 (use-package doom-modeline
   :ensure t
@@ -1304,7 +1324,7 @@ https://protesilaos.com/emacs/denote
   :ensure t
   :config
   (setq
-   denote-directory (expand-file-name "~/Documents/denotes")
+   denote-directory (expand-file-name "~/Documents/denotes/")
    denote-known-keywords '("project" "testing" "emacs" "denote")
    denote-file-type nil ;; default Org
    )
