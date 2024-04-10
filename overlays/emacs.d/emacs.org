@@ -967,12 +967,6 @@ The theme is now handled by [[https://github.com/danth/stylix][stylix]].
 (use-package all-the-icons-dired
   :hook (dired-mode .(lambda() (all-the-icons-dired-mode t))))
 
-(use-package base16-theme
-  :ensure t
-  :config
-  (setq base16-theme-256-color-source 'base16-shell)
-  (load-theme 'base16-solarized-dark t))
-
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
