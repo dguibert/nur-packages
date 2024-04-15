@@ -12,9 +12,7 @@
     shortRev = "gfedcba";
   },
   pkgs ? import nixpkgs {},
-}:
-pkgs
-// {
+}: {
   # The `lib`, `modules`, and `overlay` names are special
   #lib = import ./lib { inherit pkgs; }; # functions
   modules = import ./modules; # NixOS modules
