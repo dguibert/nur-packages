@@ -87,6 +87,15 @@ Load custom module files from user directory (like: notmuch-switch-identity, not
     (setq evil-collection-mode-list '(dashboard dired ibuffer))
     (evil-collection-init))
 #+end_src
+
+Treat underscore as part of words
+#+begin_src emacs-lisp
+;; https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
+(with-eval-after-load 'evil
+    (defalias #'forward-evil-word #'forward-evil-symbol)
+    ;; make evil-search-word look for symbol rather than word boundaries
+    (setq-default evil-symbol-word-search t))
+#+end_src
 * General Keybindings
 #+begin_src emacs-lisp
   (use-package general
