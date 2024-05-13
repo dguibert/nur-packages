@@ -261,11 +261,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1713903209,
-        "narHash": "sha256-lyy2BALcf0lapY19yuTqs8PrVpZD4JsZMUaT+zvUNfk=",
+        "lastModified": 1715604653,
+        "narHash": "sha256-TEkf9554FGY4NC8t2uT2s5RGWUpRP3dgIBaYGp47NXE=",
         "owner": "dguibert",
         "repo": "nix",
-        "rev": "115a179280ec5abb2b93be5df187ecf983da500a",
+        "rev": "47b5f36d9b9014308ef7522b18766786c30ab41e",
         "type": "github"
       },
       "original": {
