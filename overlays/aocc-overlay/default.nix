@@ -68,7 +68,7 @@ final: prev: let
     aocc = wrapCCWith rec {
       cc = unwrapped;
       extraPackages = [
-        llvmPackages.libraries.libcxxabi
+        #llvmPackages.libraries.libcxxabi
         llvmPackages.libraries.compiler-rt
         llvmPackages.libraries.libunwind
       ];
@@ -119,6 +119,15 @@ in {
     gcc = final.gcc10.cc;
     version = "3.1.0";
     sha256 = "033davymqa7ir4r1w2pwr5y9w42nd5npj32w8iggw1h58d510j0r";
+    libcxx = prev.llvmPackages_12.libcxxClang;
+    bintools = prev.llvmPackages_12.bintools;
+  };
+  aoccPackages_500 = aoccPackages {
+    release_version = "12.0.0";
+    llvmPackages = prev.llvmPackages_12;
+    gcc = final.gcc10.cc;
+    version = "5.0.0";
+    sha256 = "1ahd723fqab86zm0f7kz7w8nqc3vgbd0mhb9x7k9v7km5hnsqvwn";
     libcxx = prev.llvmPackages_12.libcxxClang;
     bintools = prev.llvmPackages_12.bintools;
   };

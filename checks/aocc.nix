@@ -21,10 +21,10 @@
     };
     aoccPkgs = import inputs.nixpkgs {
       inherit system;
-      config.replaceStdenv = {pkgs, ...}: pkgs'.aoccPackages_310.stdenv;
+      config.replaceStdenv = {pkgs, ...}: pkgs'.aoccPackages_500.stdenv;
     };
   in {
-    checks.aocc-stdenv = pkgs.aoccPackages_310.stdenv;
+    checks.aocc-stdenv = pkgs.aoccPackages_500.stdenv;
     checks.aocc-zlib = aoccPkgs.zlib;
     #checks.aocc-zlib = pkgs.zlib;
   };
