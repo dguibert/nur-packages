@@ -260,6 +260,8 @@ with final; {
   #  nemo_meto_go8_4_0_2
   #;
 
+  nix-patchtools = callPackage ./pkgs/nix-patchtools {};
+
   nss_sss = callPackage ./pkgs/sssd/nss-client.nix {};
 
   nvptx-newlib = final.callPackage ./pkgs/nvptx-newlib {};
