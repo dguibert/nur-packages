@@ -10,7 +10,7 @@
   lib,
   libffi_3_2,
   elfutils,
-  rocm-runtime,
+  rocmPackages,
 }:
 stdenv.mkDerivation {
   name = "aocc-${version}";
@@ -44,7 +44,7 @@ stdenv.mkDerivation {
       elfutils
     ]
     ++ lib.optionals (lib.versionAtLeast version "3.1.0") [
-      rocm-runtime
+      rocmPackages.rocm-runtime
     ]);
   installPhase = ''
     mkdir $out
