@@ -12,7 +12,8 @@
     ...
   }: let
     drv = let
-      name = "build-locally-${builtins.replaceStrings ["/"] ["-"] pkgs.nixStore}";
+      nixStore = builtins.storeDir;
+      name = "build-locally-${builtins.replaceStrings ["/"] ["-"] nixStore}";
     in
       pkgs.writeScriptBin name (with pkgs; let
       in ''
