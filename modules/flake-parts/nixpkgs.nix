@@ -12,6 +12,7 @@
         (final: prev: import ../../overlays/extra-builtins final (prev // {inherit inputs;}))
         (final: prev: import ../../overlays/updated-from-flake.nix final (prev // {inherit inputs;}))
         (final: prev: import ../../overlays/emacs.nix final (prev // {inherit inputs;}))
+        (final: prev: import ../../overlays/aocc-overlay final (prev // {inherit inputs;}))
         inputs.emacs-overlay.overlay
       ];
       config.allowUnfree = true;
