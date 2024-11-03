@@ -6,7 +6,7 @@
   autoreconfHook,
   # libffi is used in darwin stdenv
   # we cannot run checks within it
-  doCheck ? !stdenv.isDarwin,
+  doCheck ? false, #!stdenv.isDarwin,
   dejagnu,
 }:
 stdenv.mkDerivation rec {

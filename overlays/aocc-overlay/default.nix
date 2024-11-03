@@ -78,57 +78,23 @@ final: prev: let
     stdenv = prev.overrideCC prev.stdenv aocc;
   };
 in {
-  aoccPackages_121 = aoccPackages {
-    release_version = "6.0.0";
-    llvmPackages = prev.llvmPackages_6;
-    version = "1.2.1";
-    sha256 = "008w6algs72d3klkdpaj95nz6ax1y2dyp4zflv4xpz3ybbc7whar";
-  };
-
-  aoccPackages_130 = aoccPackages {
-    release_version = "7.0.0";
-    llvmPackages = prev.llvmPackages_7;
-    version = "1.3.0";
-    sha256 = "0zi1j23h9gmw62d883m3yfa9hjkpznky5jlc4w2d34mmj4njwmms";
-  };
-
-  aoccPackages_131 = aoccPackages {
-    release_version = "9.0.0";
-    llvmPackages = prev.llvmPackages_9;
-    version = "1.3.1";
-    sha256 = "1nbzbw1jal4b8nzk0hj3zwalxna34f50j1v5l2aj2yp6aijla20s";
-  };
-
-  aoccPackages_200 = aoccPackages {
-    release_version = "9.0.0";
-    llvmPackages = prev.llvmPackages_9;
-    version = "2.0.0";
-    sha256 = "15syknz09hjdp4qnrzrbizfxxcvsg55i7417wvb417x3cis73z19";
-  };
-
-  aoccPackages_210 = aoccPackages {
-    release_version = "9.0.0";
-    gcc = final.gcc9.cc;
-    version = "2.1.0";
-    sha256 = "084xgg6xnrjrzl1iyqyrb51f7x2jnmpzdd39ad81dn10db99b405";
-  };
-
-  aoccPackages_310 = aoccPackages {
-    release_version = "12.0.0";
-    llvmPackages = prev.llvmPackages_12;
+  # https://github.com/spack/spack/blob/develop/var/spack/repos/builtin/packages/aocc/package.py
+  aoccPackages_320 = aoccPackages {
+    release_version = "13.0.0";
+    llvmPackages = prev.llvmPackages_13;
     gcc = final.gcc10.cc;
-    version = "3.1.0";
-    sha256 = "033davymqa7ir4r1w2pwr5y9w42nd5npj32w8iggw1h58d510j0r";
-    libcxx = prev.llvmPackages_12.libcxxClang;
-    bintools = prev.llvmPackages_12.bintools;
+    version = "3.2.0";
+    sha256 = "8493525b3df77f48ee16f3395a68ad4c42e18233a44b4d9282b25dbb95b113ec";
+    libcxx = prev.llvmPackages_13.libcxxClang;
+    bintools = prev.llvmPackages_13.bintools;
   };
   aoccPackages_500 = aoccPackages {
-    release_version = "12.0.0";
-    llvmPackages = prev.llvmPackages_12;
+    release_version = "13.0.0";
+    llvmPackages = prev.llvmPackages_13;
     gcc = final.gcc10.cc;
     version = "5.0.0";
     sha256 = "1ahd723fqab86zm0f7kz7w8nqc3vgbd0mhb9x7k9v7km5hnsqvwn";
-    libcxx = prev.llvmPackages_12.libcxxClang;
-    bintools = prev.llvmPackages_12.bintools;
+    libcxx = prev.llvmPackages_13.libcxxClang;
+    bintools = prev.llvmPackages_13.bintools;
   };
 }
