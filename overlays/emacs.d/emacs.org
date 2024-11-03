@@ -38,6 +38,7 @@
   - [[#minibuffer-histories][Minibuffer histories]]
   - [[#split-an-org-subtree-into-its-own-note][Split an Org subtree into its own note]]
   - [[#consult-notes][Consult-notes]]
+  - [[#denote-bibliography-bibtex-in-notes][Denote bibliography (bibtex in notes)]]
 - [[#terminal][Terminal]]
   - [[#eat-emulate-a-terminal][Eat (emulate a terminal)]]
 - [[#syntax-modes][syntax modes]]
@@ -1489,6 +1490,10 @@ Delete the original subtree."
   (setq consult-notes-denote-files-function (function denote-directory-text-only-files)))
 #+end_src
 
+** Denote bibliography (bibtex in notes)
+#+begin_src emacs-lisp
+  (require 'denote-bibliography nil nil) ;; t=no signaling an error
+#+end_src
 * Terminal
 ** Eat (emulate a terminal)
 #+begin_src emacs-lisp
