@@ -33,7 +33,7 @@ stdenv.mkDerivation {
       */
       #llvmPackages_7.llvm # libLLVM.7.so
       stdenv.cc.cc # libm
-      stdenv.glibc
+      stdenv.hostPlatform.libc
       zlib
       ncurses
       libxml2
@@ -55,7 +55,7 @@ stdenv.mkDerivation {
     # Hack around lack of libtinfo in NixOS
     ln -s ${ncurses.out}/lib/libncursesw.so.6 $out/lib/libtinfo.so.5
     ln -s ${zlib}/lib/libz.so.1 $out/lib/libz.so.1
-    ln -s ${stdenv.glibc}/lib/libdl.so* $out/lib
+    ln -s ${stdenv.hostPlatform.libc}/lib/libdl.so* $out/lib
 
     export libs=$libs:$out/lib
     echo "LIBS: $libs"
