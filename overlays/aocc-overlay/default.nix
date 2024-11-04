@@ -89,12 +89,12 @@ in {
     bintools = prev.llvmPackages_13.bintools;
   };
   aoccPackages_500 = aoccPackages {
-    release_version = "13.0.0";
-    llvmPackages = prev.llvmPackages_13;
+    release_version = "17";
+    llvmPackages = prev.llvmPackages_17;
     gcc = final.gcc10.cc;
     version = "5.0.0";
     sha256 = "1ahd723fqab86zm0f7kz7w8nqc3vgbd0mhb9x7k9v7km5hnsqvwn";
-    libcxx = prev.llvmPackages_13.libcxxClang;
-    bintools = prev.llvmPackages_13.bintools;
+    libcxx = prev.llvmPackages_17.libcxxClang;
+    bintools = prev.llvmPackages_17.bintools;
   };
 }
