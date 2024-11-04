@@ -80,5 +80,6 @@ in
     passthru = {
       isClang = true;
       langFortran = true;
+      hardeningUnsupportedFlags = ["zerocallusedregs"];
     };
   }

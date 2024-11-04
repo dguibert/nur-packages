@@ -27,6 +27,7 @@
     #checks.aocc-stdenv = pkgs.aoccPackages_500.stdenv;
     checks.aocc-stdenv = pkgs.aoccPackages_320.stdenv;
     checks.aocc-zlib = aoccPkgs.zlib;
+    checks.aocc-hello-override = pkgs.hello.override {stdenv = pkgs.aoccPackages_320.stdenv;};
     checks.aocc-zlib-override = pkgs.zlib.override {stdenv = pkgs.aoccPackages_320.stdenv;};
   };
 }

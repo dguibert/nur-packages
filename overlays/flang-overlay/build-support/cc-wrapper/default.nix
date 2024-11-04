@@ -484,10 +484,11 @@ in
           elif [ -e $ccPath/clang++ ]; then
             wrap ${targetPrefix}clang++ $wrapper $ccPath/clang++
             ln -s ${targetPrefix}clang++ $out/bin/${targetPrefix}c++
+            export named_cxx=${targetPrefix}clang++
           elif [ -e $ccPath/icpc ]; then
             wrap ${targetPrefix}icpc $wrapper $ccPath/icpc
             ln -s ${targetPrefix}icpc $out/bin/${targetPrefix}cc
-            export named_cc=${targetPrefix}icpc
+            export named_cxx=${targetPrefix}icpc
           fi
 
           if [ -e $ccPath/${targetPrefix}cpp ]; then
