@@ -29,6 +29,7 @@ in
       url =
         {
           "5.0.0" = "https://download.amd.com/developer/eula/aocc/aocc-5-0/aocc-compiler-5.0.0.tar";
+          "4.2.0" = "https://download.amd.com/developer/eula/aocc/aocc-4-2/aocc-compiler-4.2.0.tar";
           "3.2.0" = "https://download.amd.com/developer/eula/aocc-compiler/aocc-compiler-3.2.0.tar";
         }
         .${version};
