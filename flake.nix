@@ -9,7 +9,7 @@
 
   inputs.nixpkgs.url = "github:dguibert/nixpkgs/pu";
 
-  inputs.nix.url = "github:dguibert/nix?ref=83216a154a2b04f664b18afd9dfb94a6c722be6f"; # boehmgc 8.2.4
+  inputs.nix.url = "github:dguibert/nix?ref=3f7af30386adaf36d044c550776e3b05bb583960";
   inputs.nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nix.inputs.git-hooks-nix.follows = "git-hooks-nix";
 
