@@ -6,6 +6,7 @@
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+  inputs.flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
 
   inputs.nixpkgs.url = "github:dguibert/nixpkgs/pu";
 
@@ -28,11 +29,14 @@
   inputs.git-hooks-nix.url = "github:cachix/git-hooks.nix";
   inputs.git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
 
+  inputs.systems.url = "github:nix-systems/default";
+
   outputs = inputs @ {
     self,
     flake-parts,
     nixpkgs,
     nix,
+    systems,
     ...
   }: let
     inherit (self) outputs;
@@ -56,10 +60,7 @@
           };
         };
       };
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      systems = import systems;
       imports = [
         #./home/profiles
         #./hosts
