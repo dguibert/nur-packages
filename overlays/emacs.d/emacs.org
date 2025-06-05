@@ -13,6 +13,7 @@
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars and Scrollbars]]
   - [[#turn-off-some-crufty-defaults][Turn off some crufty defaults]]
   - [[#zooming-inout][Zooming In/Out]]
+  - [[#opening-2-files-side-by-side][Opening 2 files side-by-side]]
 - [[#org-mode][Org Mode]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
   - [[#enabling-org-bullets][Enabling Org Bullets]]
@@ -229,6 +230,22 @@ You can use the bindings CTRL plus =/- for zooming in/out. You can also use CTRL
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 #+end_src
 
+** Opening 2 files side-by-side
+
+https://stackoverflow.com/a/6697992
+#+begin_src emacs-lisp
+(defun 2-windows-vertical-to-horizontal ()
+  (let ((buffers (mapcar 'window-buffer (window-list))))
+    (when (>= 2 (length buffers))
+      (delete-other-windows)
+      (set-window-buffer (split-window-horizontally) (cadr buffers)))))
+#+end_src
+
+To do this automatically on startup, add this function to emacs-startup-hook:
+
+#+begin_src emacs-lisp
+(add-hook 'emacs-startup-hook '2-windows-vertical-to-horizontal)
+#+end_src
 * Org Mode
 ** Enabling Table of Contents
 
