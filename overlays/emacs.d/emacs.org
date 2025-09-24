@@ -44,6 +44,7 @@
   - [[#eat-emulate-a-terminal][Eat (emulate a terminal)]]
 - [[#syntax-modes][syntax modes]]
 - [[#bibtex][Bibtex]]
+- [[#lsp-language-server-server][LSP (Language-Server Server)]]
 
 * Package management
 :PROPERTIES:
@@ -1591,4 +1592,36 @@ BibTeX is old but stable software that was last updated in 1988 and has as such 
      '(("keywords" "Keywords to describe the entry" "")
        ("file" "Link to document file." ":")))
     (bibtex-align-at-equal-sign t))
+#+end_src
+
+* LSP (Language-Server Server)
+[[https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/]]
+
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :init
+  (setq-default
+   ;; lsp-clangd-version "15.0.6"
+   lsp-keymap-prefix "C-c l"
+   lsp-use-plists t
+   lsp-clients-clangd-args
+   ;; (append lsp-clients-clangd-args
+   '(
+     "--header-insertion-decorators=0"
+     "--limit-references=0"
+     "--limit-results=0"
+     "--rename-file-limit=0"
+     "--j=4"
+     "--background-index"
+     ;; "-log=error"
+     ))
+
+  (setq lsp-enable-imenu nil) ; allow jumping to functions not catched by #ifdef
+  :hook ((f90-mode . lsp)
+         (fortran-mode . lsp)
+         (c-mode . lsp)
+         (c++-mode . lsp)
+         (c-or-c++-mode . lsp)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
 #+end_src
