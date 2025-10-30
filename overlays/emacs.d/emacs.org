@@ -60,7 +60,7 @@ inspired from https://www.srid.ca/vanilla-emacs-nixos.html
 
 Setup use package that must use system packages (inside the use-package distribution)
 #+begin_src emacs-lisp
-(use-package use-package-ensure-system-package :ensure t)
+(use-package use-package-ensure-system-package)
 #+end_src
 
 Load custom module files from user directory (like: notmuch-switch-identity, notmuch-agenda)
@@ -389,19 +389,11 @@ Org-tempo is not a separate package but a module within org that can be enabled.
     (autoload #'tramp-register-crypt-file-name-handler "tramp-crypt")
     :config
   ;  ;;(setq tramp-verbose 6)
-    (tramp-default-method "sshx")
-  ;;
-    (vc-ignore-dir-regexp
-          (format "\\(%s\\)\\|\\(%s\\)"
-            vc-ignore-dir-regexp
-            tramp-file-name-regexp))
-  ;
-    ;; Honor remote PATH.
-    ; (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  ;; Honor remote PATH.
+  ; (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
-    (tramp-completion-reread-directory-timeout nil)
-    (tramp-default-remote-shell "/bin/bash")
-    (tramp-encoding-shell "/bin/bash")
+  (setq tramp-default-remote-shell "/bin/bash")
+  (setq tramp-encoding-shell "/bin/bash")
   ;  ;; Allow ssh connections to persist.
   ;  ;;
   ;  ;; This seems to maybe cause tramp to hang a lot.
@@ -1302,11 +1294,11 @@ https://protesilaos.com/emacs/denote
       "~/Documents/denotes"
       "~/work/notes"
       )
+   )
   (dg/leader-keys
     "n s" #'denote-silo-open-or-create
     )
   )
-)
 #+end_src
 ** Create note using Org capture
 
