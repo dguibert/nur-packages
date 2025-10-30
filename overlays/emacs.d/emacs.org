@@ -34,6 +34,7 @@
 - [[#magit][Magit]]
 - [[#org-roam-note][Org-roam (note)]]
 - [[#denote-note-taking][Denote (note taking)]]
+  - [[#denote-silo-formally-denote-silo-extras][Denote-silo (formally denote-silo-extras)]]
   - [[#create-note-using-org-capture][Create note using Org capture]]
   - [[#use-org-dynamic-blocks][Use Org dynamic blocks]]
   - [[#minibuffer-histories][Minibuffer histories]]
@@ -1389,10 +1390,6 @@ https://protesilaos.com/emacs/denote
   :config
   (setq
    denote-directory (expand-file-name "~/Documents/denotes")
-   denote-silo-extras-directories '(
-      "~/Documents/denotes"
-      "~/work/notes"
-   )
    denote-known-keywords '("project" "testing" "emacs" "denote")
    denote-file-type nil ;; default Org
    )
@@ -1401,7 +1398,6 @@ https://protesilaos.com/emacs/denote
     "n" '(:ignore t :wk "Denote")
     "n n" #'denote
     "n c" #'denote-open-or-create
-    "n s" #'denote-silo-extras-open-or-create
     "n N" #'denote-type
     "n d" #'denote-date
     "n z" #'denote-signature ; "zettelkasten" mnemonic
@@ -1438,6 +1434,23 @@ https://protesilaos.com/emacs/denote
 (citar-denote-mode)
 #+end_src
 
+** Denote-silo (formally denote-silo-extras)
+
+#+begin_src emacs-lisp
+(use-package denote-silo
+  :config
+  (setq
+   denote-silo-directories '(
+      denote-directory
+      "~/Documents/denotes"
+      "~/work/notes"
+      )
+  (dg/leader-keys
+    "n s" #'denote-silo-open-or-create
+    )
+  )
+)
+#+end_src
 ** Create note using Org capture
 
 For integration with org-capture, the user must first add the relevant template. Such as:
