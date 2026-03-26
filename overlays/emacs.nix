@@ -76,6 +76,9 @@ with prev; let
 
       pkgs.fortls
       pkgs.clang-tools
+
+      pkgs.fd
+      pkgs.ripgrep
     ];
 
     ## Optionally override derivations.
