@@ -538,8 +538,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 ;; Org Mode Configuration ------------------------------------------------------
 (defvar dg/denote-base-dir
   (file-truename
-    (if (file-exists-p (expand-file-name "~/.my-computer"))
-      "~/git/org/denote/" "~/Documents/denote/"))
+      "~/Documents/denotes/")
   "Where I put my notes; I need to provision differently for personal and work computers.")
 
 
