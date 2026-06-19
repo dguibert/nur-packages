@@ -694,7 +694,7 @@ otherwise."
       (split-string-and-unquote
         (shell-command-to-string
           (concat
-            "fd _project " directory " | xargs rg \"^#\\+PROJECT_NAME: +(" project ") *$\" "
+            "fd -e org _project " directory " | xargs rg \"^#\\+PROJECT_NAME: +(" project ") *$\" "
             " --ignore-case --follow --only-matching --no-ignore-vcs --with-filename "
             "-r '$1' | tr '\n' '#'"))
         "#")))
